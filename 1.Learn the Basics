@@ -1,0 +1,1099 @@
+/* Step 1.1: Things to Know in C++/Java/Python or any language */
+
+// User Input/Output
+
+#include<iostream>
+using namespace std;
+int main() {
+	char c;
+    cin>>c;
+    if(c>='A' && c<='Z'){
+        cout<<1<<endl;
+    }
+    else if(c>='a' && c<='z'){
+        cout<<0<<endl;
+    }
+    else {
+        cout<<-1<<endl;
+    }
+}
+
+// Data Types		
+
+int dataTypes(string str) {
+    if(str=="Long" ||str== "Double")
+    {
+        return 8;
+    }
+    else if(str=="Integer" || str=="Float")
+    {
+        return 4;
+    }
+    else if(str=="Character")
+    {
+        return 1;
+    }
+}
+
+// If Else statements		
+
+string compareIfElse(int a, int b) {
+	if (a < b) {
+		return "smaller";
+	} 
+	else if (a > b) {
+		return "greater";
+	} 
+	else {
+		return "equal";
+	}
+}
+
+// Switch Statement		
+
+double areaSwitchCase(int ch, vector<double> a) {
+	switch(ch) {
+		case 1:
+			return M_PI * a[0] * a[0];
+		case 2:
+			return a[0] * a[1];
+		default:
+			return 0;
+	}
+}
+
+// What are arrays, strings?		
+
+// For loops		
+
+#include<bits/stdc++.h>
+using namespace std;
+int main()
+{    
+    int n;
+    cin >> n;
+    if(n == 1 || n == 2 ){
+        cout<< 1;
+    }
+    else{
+        int ans = 0;
+        int a = 1;
+        int b = 1;
+        int c = 0;
+    for(int i = 3; i <= n; i++){
+        ans = a+b;
+        a = b;
+        b = ans;
+    }
+    cout<< ans;
+   }
+}
+
+// While loops		
+
+#include<iostream>
+using namespace std;
+
+int main() {
+	int n;
+	cin>>n;
+	int sumEven=0;
+	int sumOdd=0;
+	while(n!=0){
+		int d=n%10;
+		if(d%2==0)
+			sumEven+=d;
+		else
+			sumOdd+=d;
+		n/=10;
+	}
+	cout<<sumEven<<" "<<sumOdd;
+	return 0;
+}
+
+// Functions (Pass by Reference and Value)	
+
+#include <iostream>
+using namespace std;
+int Maximum(int x, int y)
+{
+	if(x>y){
+		return x;
+	}
+	else if(y>x){
+		return y;
+	}
+}
+void Swap(int &x, int &y)
+{
+	int temp=x;
+	x=y;
+	y=temp;
+}
+int main()
+{
+	int test, a, b, r;
+	cin >> test;
+	cin >> a >> b;
+	switch (test)
+	{
+	case 1:
+		r = Maximum(a, b);
+		cout << r;
+		break;
+	case 2:
+		Swap(a, b);
+		cout << a << " " << b;
+		break;
+	default:
+		cout << "Invalid test option";
+	}
+	return 0;
+}
+
+// Time Complexity
+
+/* Step 1.2 : Build-up Logical Thinking */
+
+// Patterns
+
+* * * * *
+* * * * *
+* * * * *
+* * * * *
+* * * * *
+
+class Solution {
+  public:
+    void printSquare(int n) {
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                cout<<"* ";
+            }
+            cout<<endl;
+        }
+    }
+};
+
+* 
+* * 
+* * * 
+* * * * 
+* * * * *
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i=0;i<n;i++){
+            for(int j=0;j<=i;j++){
+                cout<<"* ";
+            }
+            cout<<endl;
+        }
+    }
+};
+
+1
+1 2 
+1 2 3 
+1 2 3 4 
+1 2 3 4 5
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=i;j++){
+                cout<<j<<" ";
+            }
+            cout<<endl;
+        }
+    }
+};
+
+1
+2 2 
+3 3 3 
+4 4 4 4 
+5 5 5 5 5
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=i;j++){
+                cout<<i<<" ";
+            }
+            cout<<endl;
+        }
+    }
+};
+
+* * * * *
+* * * * 
+* * * 
+* *  
+* 
+
+class Solution{
+public:
+	void printTriangle(int n) {
+        for(int i=n;i>0;i--){
+            for(int j=i;j>0;j--){
+                cout<<"* ";
+            }
+            cout<<endl;
+        }
+	}
+};
+
+1 2 3 4 5
+1 2 3 4
+1 2 3 
+1 2  
+1 
+
+class Solution{
+public:
+	void printTriangle(int n) {
+	    for(int i=n;i>=1;i--){
+            for(int j=1;j<=i;j++){
+                cout<<j<<" ";
+	        }
+            cout<<endl;
+	    }
+	}
+};
+
+    *
+   ***
+  *****
+ *******
+*********
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n-i;j++){
+                cout<<" ";
+            }
+            for(int j=0;j<2*i-1;j++){
+                cout<<"*";
+            }
+            for(int j=0; j<n-i; j++){
+                cout<<" ";
+            }
+            cout<<endl;
+        }
+    }
+};
+
+*********
+ *******
+  *****
+   ***
+    *
+
+class Solution{
+public:
+	void printTriangle(int n) {
+	    for( int i=n; i>0; i--){
+            for(int j=0; j<n-i; j++){
+                cout << " ";
+	        }
+            for(int j=0; j< 2*i -1; j++){
+                cout << "*";
+	        }   
+            cout << endl;
+        }
+	}
+};
+
+    *
+   * *
+  * * *
+ * * * *
+* * * * *
+* * * * *
+ * * * *
+  * * *
+   * *
+    *
+
+class Solution {
+  public:
+    void printDiamond(int n) {
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n-i;j++){
+                cout<<" ";
+            }
+            for(int j=0;j<i;j++){
+                cout<<"* ";
+            }
+            cout<<endl;
+        }
+        for( int i=n; i>0; i--){
+            for(int j=0; j<n-i; j++){
+                cout << " ";
+	        }
+            for(int j=0; j<i; j++){
+                cout << "* ";
+	        }   
+            cout << endl;
+        }
+    }
+};
+
+* 
+* * 
+* * * 
+* * * * 
+* * * * *
+* * * *
+* * *
+* *
+*
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i=0;i<n;i++){
+            for(int j=0;j<=i;j++){
+                cout<<"* ";
+            }
+            cout<<endl;
+        }
+        for(int i=n-1;i>0;i--){
+            for(int j=i;j>0;j--){
+                cout<<"* ";   
+            }
+            cout<<endl;
+        }
+    }
+};
+
+1
+0 1
+1 0 1
+0 1 0 1
+1 0 1 0 1
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i=1;i<=n;i++){
+            for(int j=0;j<i;j++){
+                if((i+j)%2==0){
+                    cout<<"0 ";
+                }
+                else{
+                    cout<<"1 ";
+                }
+            }
+            cout<<endl;
+        }
+    }
+};
+
+1                 1
+1 2             2 1
+1 2 3         3 2 1
+1 2 3 4     4 3 2 1
+1 2 3 4 5 5 4 3 2 1
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i = 1; i <= n; i++){
+            for(int j = 1; j <= i; j++){
+                cout << j << " ";
+            }
+            for (int j = 1; j <= 2 * (n - i); j++) {
+                cout<<" ";
+            }
+            for (int j = i; j >= 1; j--) {
+                cout <<j << " ";
+            }
+            cout<<endl;
+        }
+        
+    }
+};
+
+1 
+2 3 
+4 5 6 
+7 8 9 10 
+11 12 13 14 15
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        int count=1;
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=i;j++){
+                cout<<count<<" ";
+                count++;
+            }
+            cout<<endl;
+        }
+    }
+};
+
+A
+AB
+ABC
+ABCD
+ABCDE
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i=0; i<n; i++){
+            for(int j=0;j<=i;j++){
+                int a=65;
+                cout<<(char)(a+j);
+            }
+            cout<<endl;
+        }      
+    }
+};
+
+ABCDE
+ABCD
+ABC
+AB
+A
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i=n;i>0;i--){
+            char a='A';
+            for(int j=i;j>=1;j--){
+                cout<<a;
+                a++;
+            }
+            cout<<endl;
+        }
+    }
+};
+
+A
+BB
+CCC
+DDDD
+EEEEE
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i=0; i<n; i++){
+            for(int j=0;j<=i;j++){
+                int a=65;
+                cout<<(char)(a+i);
+            }
+            cout<<endl;
+        }      
+    }
+};
+
+   A
+  ABA
+ ABCBA
+ABCDCBA
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < n-i-1; j++){
+                cout << " ";
+            }
+            char ch = 64;
+            for(int j = 0; j < 2*i+1; j++) {
+                if(j <= i){
+                    ch++;
+                    cout << ch;
+                }
+                else{
+                    ch--;
+                    cout << ch;
+                }    
+            }
+            cout << endl;
+        }
+    }
+};
+
+E
+E D
+E D C
+E D C B
+E D C B A
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i=0;i<n;i++){
+            char a='A'+(char)n-1;
+            for(int j=0;j<=i;j++){
+                cout<<a<<" ";
+                a--;
+            }
+            cout<<endl;
+        }
+    }
+};
+
+**********
+****  ****
+***    ***
+**      **
+*        *
+*        *
+**      **
+***    ***
+****  ****
+**********
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i=1; i<=n; i++){
+            for(int j=1; j<=n-i+1; j++){
+                cout<<"*";
+            }
+            for(int j=1; j<=2*i-2; j++){
+                cout<<" ";
+            }
+            for(int j=1; j<=n-i+1; j++){
+                cout<<"*";
+            }
+            cout<<endl;
+        }
+        for(int i=1; i<=n; i++){
+             for( int j=1; j<=i; j++){
+                cout<<"*";
+            }
+            for(int j=1; j<=2*(n-i); j++){
+                cout<<" ";
+            }
+            for(int j=1; j<=i; j++){
+                cout<<"*";
+            }
+            cout<< endl;
+        }
+    }
+};
+
+*        *
+**      **
+***    ***
+****  ****
+**********
+****  ****
+***    ***
+**      **
+*        *
+
+class Solution {
+  public:
+    void printTriangle(int n) {
+        for(int i=1; i<=n; i++){
+            for(int j=1; j<=i; j++){
+                cout<<"*";
+            }
+            for(int j=1; j<=2*(n-i);j++){
+                cout<<" ";
+            }
+            for(int j=1; j<=i; j++){
+                cout<<"*";
+            }
+            cout<<endl;
+        }
+        for(int i=1; i<=n-1; i++){
+            for(int j=1; j<=n-i; j++){
+                cout<<"*";
+            }
+            for(int j=1; j<=i*2; j++){
+                cout<<" ";
+            }
+            for(int j=1; j<=n-i; j++){
+                cout<<"*";
+            }
+            cout<<endl;
+        }
+    }
+};
+
+****
+*  *
+*  *
+****
+
+class Solution {
+  public:
+    void printSquare(int n) {
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n;j++){
+                if(i==1 || j==1 || i==n || j==n){
+                    cout<<"*";
+                }
+                else{
+                    cout<<" ";
+                }
+            }
+            cout<<endl;
+        }        
+    }
+};
+
+4 4 4 4 4 4 4
+4 3 3 3 3 3 4
+4 3 2 2 2 3 4
+4 3 2 1 2 3 4
+4 3 2 2 2 3 4
+4 3 3 3 3 3 4
+4 4 4 4 4 4 4
+
+class Solution {
+  public:
+    void printSquare(int n) {
+        for(int i=1;i<=n;i++){
+            int k = n;
+            for(int j=1;j<i;j++){
+                cout<<k--<<" ";
+            }
+            for(int j=1;j<=2*(n-i)+1;j++){
+                cout<<k<<" ";
+            }
+            k++;
+            for(int j=1;j<i;j++){
+                cout<<k++<<" ";
+            }
+            cout<<endl;
+        }
+        for(int i=n-1;i>=1;i--){
+            int k = n;
+            for(int j=1;j<i;j++){
+                cout<<k--<<" ";
+            }
+            for(int j=1;j<=2*(n-i)+1;j++){
+                cout<<k<<" ";
+            }
+            k++;
+            for(int j=1;j<i;j++){
+                cout<<k++<<" ";
+            }
+            cout<<endl;
+        }
+    }
+};
+
+/* Step 1.3: Learn STL/Java-Collections or similar thing in your language */
+
+/* Step 1.4: Know Basic Maths */
+
+// Count Digits		
+
+int countDigits(int n) {
+  int count = 0;
+  int temp = n;
+  while (n) {
+    int r = n % 10;
+	  n /= 10;
+    if (r == 0) {
+      continue;
+    } 
+    else if (temp % r == 0) {
+        count += 1;
+      }
+  }
+  return count;
+}
+
+// Reverse bits
+	
+long reverseBits(long n) {
+    long decimal=0;
+    int power=31;
+    while(n>0){
+        int bit=n%2;
+        decimal+=pow(2,power)*bit;
+        n/=2;
+        power--;
+    }
+    return decimal;
+}
+
+// Check Palindrome		
+	
+class Solution {
+public:
+    bool isPalindrome(int x) {
+        // If x is negative or ends with 0 but is not 0 itself, it cannot be a palindrome.
+        if (x < 0 || (x % 10 == 0 && x != 0)) {
+            return false;
+        }
+        int reversed = 0;
+        while (x > reversed) {
+            reversed = reversed * 10 + x % 10;
+            x /= 10;
+        }
+        // When the length of the remaining number is odd, we can remove the middle digit.
+        // For example, in the number 12321, we can remove the middle '3'.
+        return x == reversed || x == reversed / 10;
+    }
+};
+
+// GCD Or HCF		
+
+int calcGCD(int n, int m) {
+    if (n == m)
+        return n;
+    else if(n>m){
+        n=n-m;
+    }
+    else{
+        m=m-n;
+    }
+    for(int i=min(n,m);i>=1;i--){
+        if(n%i==0 && m%i==0){
+            return i;
+        }
+    }
+    return 1;
+}
+
+// Armstrong Numbers		
+	
+bool checkArmstrong(int n){
+	int power=0;
+    int temp=n;
+    int ans=0;
+    while(temp!=0){
+        temp/=10;
+        power++;
+    }
+    temp=n;
+    while(temp!=0){
+        int r=temp%10;
+        ans+=pow(r,power);
+        temp/=10;
+    }
+    if(ans==n){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+// Print all Divisors		
+
+int sumOfAllDivisors(int n){
+	int sum=0;
+	int i=1;
+	while(i<=n){
+		sum+=i*(n/i);
+		i++;
+	}
+	return sum;
+}
+
+// Check for Prime
+
+bool isPrime(int n)
+{
+	if(n==0 || n==1){
+		return 0;
+	}
+	else if(n==2){
+		return 1;
+	}
+	int flag=0;
+	for(int i=2;i*i<=n;i++){
+		if(n%i==0){
+			flag=1;
+		}
+	}
+	if(flag==0){
+		return 1;
+	}
+	else{
+		return 0;
+	}
+}
+
+/* Step 1.5: Learn Basic Recursion */
+
+// Understand recursion by print something N times ( 1 to N without loop )
+
+void print(vector<int> &ans, int x) {
+    if (x == 0) {
+        return;
+    }
+    else {
+        print(ans, x - 1);
+        ans.push_back(x);
+    }
+}
+vector<int> printNos(int x) {
+    vector<int> ans;
+    print(ans, x);
+    return ans;
+}
+
+// Print name N times using recursion		
+
+vector<string> printNTimes(int n) {
+	if(n==0){
+		return vector <string> ();
+	}
+	vector<string> ans = printNTimes(n-1);
+	ans.push_back("Coding Ninjas");
+	return ans;
+}
+
+// Print 1 to N using recursion		
+
+void print(vector<int> &ans, int x) {
+    if (x == 0) {
+        return;
+    }
+    else {
+        print(ans, x - 1);
+        ans.push_back(x);
+    }
+}
+vector<int> printNos(int x) {
+    vector<int> ans;
+    print(ans, x);
+    return ans;
+}
+
+// Print N to 1 using recursionvoid print(vector<int> &ans,int x){
+    if(x==0){
+        return;
+    }
+    ans.push_back(x);
+    print(ans,x-1);
+}
+
+vector<int> printNos(int x) {
+    vector<int> ans;
+    print(ans,x);
+    return ans;
+}		
+
+// Sum of first N numbers		
+
+// Method-1
+long long solve(long long n)
+{
+    if (n <= 1)
+        return n;
+    return n + solve(n - 1);
+}
+long long sumFirstN(long long n) {
+    return solve(n);
+}
+
+// Method-2
+long long sumFirstN(long long n) {
+    long long ans;
+    ans = n * (n + 1) / 2;
+    return ans;
+}
+
+// Factorial of N numbers		
+
+// Method-1
+int factorial(int n) {
+  if(n < 1)
+    return 1;
+  else
+    return n * factorial(n - 1);
+}
+
+// Method-2
+void solve(long long n, vector<long long> &ans, int i, long long fact) {
+  if (fact > n)
+    return;
+  ans.push_back(fact);
+  solve(n, ans, i + 1, fact * i);
+}
+vector<long long> factorialNumbers(long long n) {
+  vector<long long> ans;
+  solve(n, ans, 2, 1);
+  return ans;
+}
+
+// Reverse an array		
+
+// Method-1
+void solve(int n, vector<int> &nums,vector<int> &ans){
+    if(n<0)
+        return;
+    ans.emplace_back(nums[n]);
+    solve(n-1,nums,ans);
+}
+vector<int> reverseArray(int n, vector<int> &nums){
+    vector<int> ans;
+    solve(n-1,nums,ans);
+    return ans;
+}
+
+// Method-2
+void reverse(int n){
+   if (n < 10) {
+      cout<<n;
+      return;
+   }
+   else{
+      cout<<n%10;
+      reverse(n/10);
+   }
+}
+
+// Check if a string is palindrome or not
+
+bool result(string &str, int start, int end) {
+    if(start>=end)
+        return true;
+    if(str[start]==str[end])
+        return result(str,start+1,end-1);
+    else
+        return false;
+}
+bool isPalindrome(string& str) {
+    int n=str.length();
+    if(n==0 || n==1)
+        return true;
+    return result(str,0,n-1);
+}
+
+// Fibonacci Number
+
+vector<int> generateFibonacciNumbers(int n) {
+    if(n==1){
+       vector<int> p={0};
+       return p;
+    }
+    if(n==2){
+        vector<int> p={0,1};
+        return p;
+    }
+    vector<int> p=generateFibonacciNumbers(n-1);
+    int sum=p[n-2]+p[n-3];
+    p.push_back(sum);
+    return p;
+}
+
+/* Step 1.6: Learn Basic Hashing */
+
+// Hashing Theory ( https://takeuforward.org/hashing/hashing-maps-time-complexity-collisions-division-rule-of-hashing-strivers-a2z-dsa-course/ )
+
+// Count Freuency in a range
+
+// Method-1
+vector<int> countFrequency(int n, int x, vector<int> &nums){
+    vector<int> v(n,0);
+    for(int i =0 ;i<n;i++){
+        v[nums[i]-1]++;
+    }
+    return v;
+}
+
+// Method-2
+vector<int> countFrequency(int n, int x, vector<int> &nums)
+{
+    int i = 0;
+    while (i < n){
+        if (nums[i] > n || nums[i] < 1){
+            i++;
+            continue;
+        }
+        // Calculate the index of the element.
+        int j = nums[i] - 1;
+        // Update the frequencies.
+        if (nums[j] < 0){
+            nums[i] = 0;
+            nums[j]--;
+            i++;
+            continue;
+        }
+        else{
+            swap(nums[j], nums[i]);
+            nums[j] = -1;
+        }
+    }
+    for (int &x : nums){
+        if (x < 0)
+            x *= -1;
+        else
+            x = 0;
+    }
+    return nums;
+}
+
+// Highest / Lowest freuency Element
+
+// Method-1
+vector<int> getFrequencies(vector<int> &v) {
+    map<int, int> m;
+    vector<int> ans;
+    for (int i = 0; i < v.size(); i++) {
+        m[v[i]]++;
+    }
+    int maximum = INT_MIN;
+    int minimum = INT_MAX;
+    for (auto p : m) {
+        int freq = p.second;
+        if (freq > maximum) {
+            maximum = freq;
+        }
+        if (freq < minimum) {
+            minimum = p.second;
+        }
+    }
+    for (auto p : m) {
+        if (p.second == maximum) {
+            ans.push_back(p.first);
+            break;
+        }
+    }
+    for (auto p : m) {
+        if (p.second == minimum) {
+            ans.push_back(p.first);
+            break;
+        }
+    }
+    return ans;
+}
+
+// Method-2 (Leetcode)
+class Solution {
+public:
+    int maxFrequency(vector<int>& nums, int k) {
+        sort(nums.begin(),nums.end());
+        int pos = 0;
+        long result = 0;
+        long window_size = 0;
+        long window_sum = 0;
+        for(int i = 0;i<nums.size();i++)
+        {
+            window_sum+=nums[i];
+            window_size = i-pos+1;
+            while(( nums[i]*window_size - window_sum ) > k)
+            {
+                window_sum-=nums[pos++];
+                window_size--;
+            }
+            result = max(result,window_size);
+        }
+        return result;   
+    }
+};

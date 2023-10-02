@@ -1,0 +1,180 @@
+/* Step 2.1: Sorting-I */
+
+// Selection Sort		
+
+void selectionSort(vector<int> &arr) {
+    int n = arr.size();
+    for (int i = 0; i < n ; i++) {
+        int pos = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[pos] > arr[j]) {
+                pos = j;
+            }
+        }
+        int temp = arr[pos];
+        arr[pos] = arr[i];
+        arr[i] = temp;
+    }
+}
+
+// Bubble Sort		
+
+void bubbleSort(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+            }
+        }
+    }
+}
+
+// Insertion Sort		
+
+void insertionSort(int arr[], int n)
+{
+    int i, key, j;
+    for (i = 1; i < n; i++) {
+        key = arr[i];
+        j = i - 1;
+        // Move elements of arr[0..i-1], that are greater than key, to one position ahead of their current position
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+/* Step 2.2: Sorting-II */
+
+// Merge Sort		
+
+#include<bits/stdc++.h>
+using namespace std;
+void merge(int arr[], int low, int mid, int high) {
+    vector<int> temp;
+    int left = low;
+    int right = mid + 1;
+    while (left <= mid && right <= high) {
+        if (arr[left] <= arr[right]) {
+            temp.push_back(arr[left]);
+            left++;
+        }
+        else {
+            temp.push_back(arr[right]);
+            right++;
+        }
+    }
+    while (left <= mid) {
+        temp.push_back(arr[left]);
+        left++;
+    }
+    while (right <= high) {
+        temp.push_back(arr[right]);
+        right++;
+    }
+    for (int i = low; i <= high; i++) {
+        arr[i] = temp[i - low];
+    }
+}
+void mS(int arr[], int low, int high) {
+    if (low == high) 
+        return;
+    int mid = (low + high) / 2;
+    mS(arr, low, mid);
+    mS(arr, mid + 1, high);
+    merge(arr, low, mid, high);
+}
+void mergeSort(int arr[], int l, int r) {
+    if (l <= r) {
+        int mid = l + (r - l) / 2;
+        mergeSort(arr, l, mid);
+        mergeSort(arr, mid + 1, r);
+        merge(arr, l, mid, r);
+    }
+}
+
+// Recursive Bubble Sort				
+
+void bubbleSort(int arr[], int n) {
+    // Base case: If there's only one element or the array is empty, it's already sorted.
+    if (n <= 1) {
+        return;
+    }
+    bool swapped = false;
+    // One pass of bubble sort to move the largest element to the end.
+    for (int i = 0; i < n - 1; i++) {
+        if (arr[i] > arr[i + 1]) {
+          // Swap arr[i] and arr[i+1]
+          int temp = arr[i];
+          arr[i] = arr[i + 1];
+          arr[i + 1] = temp;
+          swapped = true;
+        }
+    }
+    // If no two elements were swapped in the last pass, the array is sorted.
+    if (!swapped) {
+        return;
+    }
+    // Recursive call on the remaining unsorted portion (excluding the last element).
+    bubbleSort(arr, n - 1);
+}
+
+// Recursive Insertion Sort
+
+void insertionSort(int arr[], int n) {
+    if (n <= 1) {
+        return;
+    }
+    insertionSort(arr, n - 1);
+    int temp = arr[n - 1];
+    int j = n - 2;
+    while (j >= 0 && arr[j] > temp) {
+        arr[j + 1] = arr[j];
+        j = j - 1;
+    }
+    arr[j + 1] = temp;
+}
+
+// Quick Sort
+
+int parts(int arr[], int s, int e) {
+    int pivot = arr[s];
+    int count = 0;
+    for (int i = s + 1; i <= e; i++) {
+        if (arr[i] <= pivot) {
+            count++;
+        }
+    }
+    int pivotIndex = s + count;
+    int temp = arr[pivotIndex];
+    arr[pivotIndex] = arr[s];
+    arr[s] = temp;
+    int i = s, j = e;
+    while (i < pivotIndex && j > pivotIndex) {
+        while (arr[i] < pivot) {
+            i++;
+        }
+        while (arr[i] > pivot) {
+            j--;
+        }
+        if (i < pivotIndex && j > pivotIndex) {
+            int temp = arr[i++];
+            arr[i++] = arr[j--];
+            arr[j--] = temp;
+        }
+    }
+    return pivotIndex;
+}
+void QuickSort(int arr[], int s, int e) {
+    if (s >= e) {
+        return;
+    }
+    int p = parts(arr, s, e);
+    QuickSort(arr, s, p - 1);
+    QuickSort(arr, p + 1, e);
+}
+void quickSort(int input[], int size) {
+    QuickSort(input, 0, size - 1);
+}

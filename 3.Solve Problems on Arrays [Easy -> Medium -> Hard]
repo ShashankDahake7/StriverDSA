@@ -579,42 +579,937 @@ public:
 
 // Kadane's Algorithm, largest sum contiguos subarray		
 	
+long long maxSubarraySum(vector<int> arr, int n){
+    long long sum=0;
+    long long maximum =arr[0];
+    for(int i=0;i<n;i++){
+        sum+=arr[i];
+        if(sum<0){
+            sum=0;
+        }
+        maximum=max(maximum,sum);
+    }
+    return maximum;
+}
 
+// Print subarray with maximum subarray sum	
 
-// Print subarray with maximum subarra…		
-
-
+int longestSubarrayWithSumK(vector<int> &nums, long long targetSum) {
+    int right = 0, left = 0;
+    int maxSubarrayLength = 0;
+    int n = nums.size();
+    long long currentSum = 0;
+    while (right < n) {
+        while (currentSum > targetSum && left <= right) {
+            currentSum -= nums[left];
+            left++;
+        }
+        if (currentSum == targetSum) {
+            maxSubarrayLength = max(maxSubarrayLength, right - left);
+        }
+        if (right < n) {
+            currentSum += nums[right++];
+        }
+    }
+    int result;
+    if (currentSum == targetSum) {
+        result = max(maxSubarrayLength, right - left);
+    }
+    else {
+        result = maxSubarrayLength;
+    }
+    return result;
+}
 
 // Stock Buy and Sell		
 	
+int bestTimeToBuyAndSellStock(vector<int>&prices) {
+    int minimum = prices[0];
+    int maximumProfit=0;
+    for(int i=0;i<prices.size();i++){
+        minimum = min(minimum,prices[i]);
+        int profit = prices[i] - minimum;
+        maximumProfit = max(maximumProfit,profit);
+    }
+    return maximumProfit;
+}
 
+// Rearrange the array in alternating positive and negative items (Not following proper order)	
 
-// Rearrange the array in alternating …		
-	
+// Method-1
+vector<int> alternateNumbers(vector<int> &a) {
+    int n = a.size();
+    // Define 2 vectors, one for storing positive and other for negative elements of the array.
+    vector<int> pos;
+    vector<int> neg;
+    // Segregate the array into positives and negatives.
+    for (int i = 0; i < n; i++) {
+        if (a[i] > 0)
+            pos.push_back(a[i]);
+        else
+            neg.push_back(a[i]);
+    }
+    // Positives on even indices, negatives on odd.
+    for (int i = 0; i < n / 2; i++) {
+        a[2 * i] = pos[i];
+        a[2 * i + 1] = neg[i];
+    }
+    return a;
+}
 
+// Method-2
+vector<int> alternateNumbers(vector<int> &a) {
+    int n = a.size();
+    // Define array for storing the ans separately.
+    vector<int> ans(n, 0);
+    // positive elements start from 0 and negative from 1.
+    int posIndex = 0, negIndex = 1;
+    for (int i = 0; i < n; i++) {
+        // Fill negative elements in odd indices and inc by 2.
+        if (a[i] < 0) {
+            ans[negIndex] = a[i];
+            negIndex += 2;
+        }
+        // Fill positive elements in even indices and inc by 2.
+        else {
+            ans[posIndex] = a[i];
+            posIndex += 2;
+        }
+    }
+    return ans;
+}
+
+// Rearrange the array in alternating positive and negative items (Following proper order)	
+
+class Solution {
+public:
+    vector<int> rearrangeArray(vector<int>& nums) {
+        vector<int>ne;
+        vector<int>po;
+        vector<int>ans;
+        for(int i=0; i<nums.size(); i++){
+            if(nums[i]>0){
+                po.push_back(nums[i]);
+
+            }
+            else{
+                ne.push_back(nums[i]);
+            }
+        }
+        int k=0;
+        int l=0;
+        for(int i=0; i<nums.size(); i++){
+            if(i%2==0){
+                ans.push_back(po[k]);
+                k++;
+            }
+            else{
+                ans.push_back(ne[l]);
+                l++;
+            }
+        }
+        return ans;
+            
+    }
+};
 
 // Next Permutation		
 	
-
+vector<int> nextGreaterPermutation(vector<int> &A) {
+    int n=A.size();
+    if(n==1){
+        return A;
+    }
+    int idx1=-1;
+    for(int i=n-2;i>=0;i--){
+        if(A[i]<A[i+1]){
+            idx1=i;
+            break;
+        }
+    }
+    if(idx1<0){
+        reverse(A.begin(),A.end());
+    }
+    else{
+        int idx2=0;
+        for(int i=n-1;i>=0;i--){
+            if(A[i]>A[idx1]){
+                idx2=i;
+                break;
+            }
+        }
+        swap(A[idx1],A[idx2]);
+        reverse(A.begin()+idx1+1,A.end());
+    }
+    return A;
+}
 
 // Leaders in an Array problem		
 
+vector<int> superiorElements(vector<int> &a) {
+    int n = a.size();
+    vector<int> v;
+    int maximum = 0;
+    for (int i = n - 1; i >= 0; i--) {
+        if (a[i] > maximum) {
+            v.push_back(a[i]);
+            maximum = a[i];
+        }
+    }
+    return v;
+}
 
-
-// Longest Consecutive Sequence in an …		
+// Longest Consecutive Sequence in an array		
 	
+// Method-1
+int longestSuccessiveElements(vector<int> &arr) {
+    int N=arr.size();
+    unordered_set<int> s;
+    for (int i = 0; i < N; i++){
+        s.insert(arr[i]);
+    }
+    int ans = 0;
+    for (int i = 0; i < N; i++){
+        if (s.find(arr[i] - 1) != s.end()){
+            continue;
+        }
+        else{
+            int count = 0;
+            int current = arr[i];
+            while (s.find(current) != s.end()){
+                count++;
+                current++;
+            }
+            ans = max(ans, count);
+        }
+    }
+    return ans;
+}
 
+// Method-2
+int longestSuccessiveElements(vector<int>&a) {
+    sort(a.begin(),a.end());
+    int cnt = 1,ans=INT_MIN,flag = 0;
+    for(int i=1;i<a.size();i++){
+        if( (a[i] - a[i-1])== 1 ){
+            cnt++;
+        }
+        else if(a[i] == a[i-1]){
+            continue;
+        }
+        else{
+            flag=1;
+            ans=max(ans,cnt);
+            cnt=1;
+        }
+    }
+    if(flag == 0){
+        return cnt;
+    }
+    return ans;
+}
 
 // Set Matrix Zeros		
 	
-
+#include <bits/stdc++.h> 
+vector<vector<int>> zeroMatrix(vector<vector<int>> &matrix, int n, int m) {
+    vector<vector<int>>p;
+    for(int i=0;i<n;i++{
+		for(int j=0;j<m;j++){
+        	if(matrix[i][j]==0){
+        	    p.push_back({i,j});
+    	    }
+	    }
+    }
+    for(int i=0;i<p.size();i++){
+        int r=p[i][0],c=p[i][1];
+        for(int k=0;k<m;k++){
+            matrix[r][k]=0;
+        }
+        for(int k=0;k<n;k++){
+            matrix[k][c]=0;
+        }
+    }
+    return matrix;
+}
 
 // Rotate Matrix by 90 degrees		
 	
-
+#include<vector>
+void rotateMatrix(vector<vector<int>> &mat){
+	int r=mat.size();
+	for(int i=0;i<r;i++){
+		for(int j=i+1;j<r;j++){
+			swap(mat[i][j],mat[j][i]);
+		}
+	}	
+	for(int k=0;k<r;k++){
+		reverse(mat[k].begin(),mat[k].end());
+	}
+}
 
 // Print the matrix in spiral manner		
 	
-
+vector<int> spiralMatrix(vector<vector<int>>&m) {
+    int r=m.size();
+    int c=m[0].size();
+    int total = r*c;
+    int count=0;
+    int sr=0;
+    int er=r-1;
+    int sc=0;
+    int ec=c-1;
+    vector<int> result;
+    while(count<total){
+        for(int i=sc;count<total && i<=ec;i++){
+            result.push_back(m[sr][i]);
+            count++;
+        }
+        sr++;
+        for(int i=sr;count<total && i<=er;i++){
+            result.push_back(m[i][ec]);
+            count++;
+        }
+        ec--;
+        for(int i=ec;count<total && i>=sc;i--){
+            result.push_back(m[er][i]);
+            count++;
+        }
+        er--;
+        for(int i=er;count<total && i>=sr;i--){
+            result.push_back(m[i][sc]);
+            count++;
+        }
+        sc++;
+    }
+    return result;
+}
 
 // Count subarrays with given sum
+
+// Method-1
+int findAllSubarraysWithGivenSum(vector < int > & nums, int k) {
+    unordered_map<int,int> mp;
+    int sum=0,ans=0;
+    mp[sum] = 1;
+    for(auto it:nums){
+        sum += it;
+        int find = sum - k;
+        if(mp.find(find) != mp.end()){
+            ans += mp[find];
+        }
+        mp[sum]++;
+    }
+    return ans;
+}
+
+// Method-2
+int findAllSubarraysWithGivenSum(vector < int > & arr, int k) {
+    int i=0,j=0,n=arr.size(),sum=0,ans=0;
+    while(j<n and i<n){
+        if(sum<k){
+            sum+=arr[j];
+            j++;
+        }
+        else if(sum==k){
+            ans++;
+            sum-=arr[i];
+            i++;
+        }
+        else{
+            sum-=arr[i];
+            i++;
+        }
+    }
+    while(i<n){
+        if(sum==k){
+            ans++;
+            break;
+        }
+        else{
+            sum-=arr[i];
+        }
+        i++;
+    }
+    return ans;
+}
+
+/* Step 3.3: Hard */
+
+// Pascal's Triangle		
+	
+vector<vector<int>> pascalTriangle(int N) {
+    vector<vector<int>> ans(N);
+        for(int i=0;i<N;i++){
+            for(int j=0;j<i+1;j++){
+                if(j==0 || j==i)
+                    ans[i].push_back(1);
+                else
+                    ans[i].push_back(ans[i-1][j]+ans[i-1][j-1]);
+            }
+        }
+    return ans;  
+}
+
+// Majority Element (n/3 times)		
+	
+// Method-1
+#include<bits/stdc++.h>
+vector<int> majorityElement(vector<int> v) {
+    vector<int> ans;
+    map<int, int> mp;
+    for(int i=0; i<v.size(); i++)
+    	mp[v[i]]++;
+    for (auto it : mp) {
+        if (it.second > v.size() / 3)
+        	ans.push_back(it.first);
+    }
+    return ans;
+}
+
+// Method-2
+vector<int> majorityElement(vector<int> v) 
+{
+	vector<int>res;
+	int n=v.size();
+	int m=n/3;
+	sort(v.begin(),v.end());
+	int i=0;
+	while(i<n)
+	{
+        int count=1;
+		while(v[i]==v[i+1])
+		{
+			count++;
+			i++;
+		}
+		if(count>m)
+		   res.push_back(v[i]);
+		i++;
+    }
+	return res;
+}
+
+// Method-3
+class Solution {
+public:
+    vector<int> majorityElement(vector<int>& nums) {
+        int candidate1 = 0, candidate2 = 0, count1 = 0, count2 = 0;
+        // First pass to find potential candidates
+        for (auto num : nums) {
+            if (candidate1 == num){
+                count1++;
+            }
+            else if (candidate2 == num){
+                count2++;
+            }
+            else if (count1 == 0){
+                candidate1 = num, count1 = 1;
+            }
+            else if (count2 == 0){
+                candidate2 = num, count2 = 1;
+            }
+            else{
+                count1--;
+                count2--;
+            }
+        }
+         // Second pass to verify candidates
+        count1 = count2 = 0;
+        for (int num : nums) {
+            if (num == candidate1){
+                count1++;
+            }
+            else if (num == candidate2){
+                count2++;
+            }
+        }
+        vector<int> ans;
+        if (count1 > nums.size() / 3) {
+            ans.push_back(candidate1);
+        }
+        if (count2 > nums.size() / 3) {
+            ans.push_back(candidate2);
+        }
+        return ans;
+    }
+};
+
+// 3-Sum Problem		
+	
+vector<vector<int>> triplet(int n, vector<int> &arr){
+    sort(arr.begin(),arr.end());
+    vector<vector<int>> ans;
+    for(int i = 0;i<n;i++){
+        if(i > 0 && arr[i] == arr[i-1]) continue;
+        int j = i+1;
+        int k = n-1;
+        while(j < k){
+            int sum = arr[i] + arr[j] + arr[k];
+            if(sum < 0) {
+                j++;
+            }
+            else if(sum >0) {
+                k--;
+            }
+            else{
+                ans.push_back({arr[i], arr[j], arr[k]});
+                j++;
+                k--;
+                while (j < k && arr[j] == arr[j - 1]) {
+                    j++;
+                }
+                while (j < k && arr[k] == arr[k + 1]) {
+                    k--;
+                }
+            }
+        }
+    }
+    return ans;
+}
+
+// 4-Sum Problem		
+	
+// Method-1
+#include <bits/stdc++.h>
+vector<vector<int>> fourSum(vector<int> &nums, int target) {
+    int n = nums.size();
+    set<vector<int>> st;
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            for (int k = j + 1; k < n; k++) {
+                for (int l = k + 1; l < n; l++) {
+                    if (nums[i] + nums[j] + nums[k] + nums[l] == target) {
+                      vector<int> temp = {nums[i], nums[j], nums[k], nums[l]};
+                      sort(temp.begin(), temp.end());
+                      st.insert(temp);
+                    }
+                }
+            }
+        }
+    }
+    vector<vector<int>> ans(st.begin(), st.end());
+    return ans;
+};
+
+// Method-2
+#include <bits/stdc++.h>
+vector<vector<int>> fourSum(vector<int> &nums, int target) {
+    int n = nums.size(); // size of the array
+    vector<vector<int>> ans;
+    // sort the given array:
+    sort(nums.begin(), nums.end());
+    // calculating the quadruplets:
+    for (int i = 0; i < n; i++) {
+        // avoid the duplicates while moving i:
+        if (i > 0 && nums[i] == nums[i - 1])
+            continue;
+        for (int j = i + 1; j < n; j++) {
+            // avoid the duplicates while moving j:
+            if (j > i + 1 && nums[j] == nums[j - 1])
+                continue;
+            // 2 pointers:
+            int k = j + 1;
+            int l = n - 1;
+            while (k < l) {
+                long long sum = nums[i] + nums[j] + nums[k] +nums[l];
+                if (sum == target) {
+                    ans.push_back({nums[i], nums[j], nums[k], nums[l]});
+                    k++;
+                    l--;
+                    // skip the duplicates:
+                    while (k < l && nums[k] == nums[k - 1]) {
+                        k++;
+                    }
+                    while (k < l && nums[l] == nums[l + 1]) {
+                        l--;
+                    }
+                } 
+                else if (sum < target) {
+                    k++;
+                }
+                else {
+                    l--;
+                }
+            }
+        }
+    }
+    return ans;
+};
+
+// Method-3
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> output;
+        for(int i=0; i<n-3; i++){
+            for(int j=i+1; j<n-2; j++){
+                long long newTarget = (long long)target - (long long)nums[i] - (long long)nums[j];
+                int low = j+1, high = n-1;
+                while(low < high){
+                    if(nums[low] + nums[high] < newTarget){
+                        low++;
+                    }
+                    else if(nums[low] + nums[high] > newTarget){
+                        high--;
+                    }
+                    else{
+                        output.push_back({nums[i], nums[j], nums[low], nums[high]});
+                        int tempIndex1 = low, tempIndex2 = high;
+                        while(low < high && nums[low] == nums[tempIndex1]) low++;
+                        while(low < high && nums[high] == nums[tempIndex2]) high--;
+                    }
+                }
+                while(j+1 < n && nums[j] == nums[j+1]) j++;
+            }
+            while(i+1 < n && nums[i] == nums[i+1]) i++;
+        }
+        return output;
+    }
+};
+
+// Largest Subarray with 0 Sum		
+
+#include<bits/stdc++.h>>
+int getLongestZeroSumSubarrayLength(vector<int> &arr){
+    int maxi = 0 , sum = 0 ;
+    unordered_map<int , int> mpp ;
+    for(int i = 0 ; i < arr.size() ; i++){
+        sum += arr[i] ;
+        if(sum == 0){
+            maxi = i + 1 ;
+        }
+        else{
+            if(mpp.find(sum) != mpp.end()){
+                maxi = max(maxi , i - mpp[sum]);
+            }
+            else{
+                mpp[sum] = i ;
+            }
+        }
+    }
+    return maxi ;
+}
+
+// Count number of subarrays with given sum	
+	
+// Method-1
+int subarraysWithSumK(vector < int > a, int b) {
+    int n = a.size();
+    int x;
+    int count=0;
+    for(int i=0;i<n;i++){
+        x=0;
+        for(int j=i;j<n;j++){
+            x=x^a[j];
+            if(x==b){
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+// Method-2
+#include<bits/stdc++.h>
+int subarraysWithSumK(vector < int > a, int b) {
+    int n = a.size();
+    int xr=0;
+    int count=0;
+    map<int,int> m;
+    m[xr]++; // {0,1}
+    for(int i=0;i<n;i++){
+        xr=xr^a[i];
+        int x = b^xr;
+        count+=m[x];
+        m[xr]++;
+    }
+    return count;
+}
+
+// Merge Overlapping Subintervals		
+	
+#include<vector>
+vector<vector<int>> mergeOverlappingIntervals(vector<vector<int>> &arr){
+	int n=arr.size();
+	vector<vector<int>> result;
+	if(n==0){
+		return result;
+	}
+	sort(arr.begin(),arr.end());
+	result.push_back(arr[0]);
+	int j=0;
+	for(int i=1;i<n;i++){
+		if(result[j][1]>=arr[i][0]){
+			result[j][1]=max(result[j][1],arr[i][1]);
+		}
+		else{
+			result.push_back(arr[i]);
+			j++;
+		}
+	}
+	return result;
+}
+
+// Merge two sorted arrays without extra space	
+	
+// Methdo-1
+#include<vector>
+void mergeTwoSortedArraysWithoutExtraSpace(vector<long long> &a, vector<long long> &b){
+    int n=a.size(),m=b.size();
+    int left=n-1,right=0;
+    while(left<n and right<m){
+        if(a[left]>b[right]){
+			swap(a[left],b[right]);
+			right++;
+			left--;
+        }
+        else{
+            break;
+        }
+    }
+    sort(a.begin(),a.end());
+    sort(b.begin(),b.end());
+}
+
+// Method-2
+class Solution {
+public:
+    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        while(nums1.size()>m){
+            nums1.pop_back();
+        }
+        for(int j=0; j<n; j++){
+            nums1.push_back(nums2[j]);
+        }
+        sort(nums1.begin(), nums1.end());
+    }
+};
+
+// Find the repeating and missing number		
+
+// Method-1
+vector<int> findMissingRepeatingNumbers(vector < int > a) {
+    int repeating = -1 , missing = -1 ;
+    for(int i = 1 ; i <= a.size() ; i++){
+        int count = 0 ;
+        for(int j = 0 ; j < a.size() ; j++){
+            if(a[j] == i){
+                count++;
+            }
+        }
+        if(count == 2){
+            repeating = i;
+        }
+        else if(count == 0){
+            missing = i ;
+        }
+    }
+    return {repeating , missing} ;
+}
+
+// Method-2
+#include <bits/stdc++.h>
+vector<int> findMissingRepeatingNumbers(vector<int> a) {
+    unordered_map<int, int> umap;
+    int n = a.size();
+    vector<int> ans;
+    int maxi = INT_MIN;
+    int sum = 0;
+    for (int i = 0; i < n; i++) {
+        sum += a[i];
+        maxi = max(maxi, a[i]);
+        umap[a[i]]++;
+    }
+    for (auto u : umap) {
+        if (u.second == 2) {
+            ans.push_back(u.first);
+            sum -= u.first;
+        }
+    }
+    int sumt = maxi * (maxi + 1) / 2;
+    if (sum < sumt)
+        ans.push_back(sumt - sum);
+    if (sumt == sum)
+        ans.push_back(maxi + 1);
+    return ans;
+}
+
+// Method-3
+vector<int> findMissingRepeatingNumbers(vector < int > a) {
+    long long n = a.size() ;
+    long long s = 0 ;
+    long long sn = (n*(n+1))/2 ;
+    long long s2 = 0 ;
+    long long s2n = (n* (n+1) * (2*n+1))/6;
+    for(int i = 0 ; i < n ; i++){
+        s += a[i];
+        s2 += (long long)a[i] * (long long)a[i] ;
+    }
+    long long val1 = s - sn ;
+    long long val2 = s2 - s2n ;
+    val2 = val2 / val1 ;
+    long long x = (val1 + val2) / 2 ;
+    long long y = (val2 - x) ;
+    return {(int)x ,(int)y};
+}
+
+// Count Inversions		
+
+// Method-1
+#include<bits/stdc++.h> 
+int numberOfInversions(vector<int>&a, int n) {    
+   int count=0;
+   for(int i=0;i<n;i++){
+       for(int j=i+1;j<n;j++){
+           if(a[i]>a[j]){
+               count++;
+           }        
+       }    
+    }    
+    return count;
+}  
+
+// Method-2
+int merge(vector<int> &arr, int low, int mid, int high) {
+    vector<int> temp; // temporary array
+    int left = low;      // starting index of left half of arr
+    int right = mid + 1;   // starting index of right half of arr
+    //storing elements in the temporary array in a sorted manner//
+    int cnt = 0;
+    while (left <= mid && right <= high) {
+        if (arr[left] <= arr[right]) {
+            temp.push_back(arr[left]);
+            left++;
+        }
+        else {
+            temp.push_back(arr[right]);
+            cnt += (mid-left) + 1;
+            right++;
+        }
+    }
+    // if elements on the left half are still left //
+    while (left <= mid) {
+        temp.push_back(arr[left]);
+        left++;
+    }
+    // if elements on the right half are still left //
+    while (right <= high) {
+        temp.push_back(arr[right]);
+        right++;
+    }
+    // transfering all elements from temporary to arr //
+    for (int i = low; i <= high; i++) {
+        arr[i] = temp[i - low];
+    }
+    return cnt;
+}
+int mergeSort(vector<int> &arr, int low, int high) {
+    int cnt = 0;
+    if (low >= high) return cnt;
+    int mid = (low + high) / 2 ;
+    cnt += mergeSort(arr, low, mid);  // left half
+    cnt += mergeSort(arr, mid + 1, high); // right half
+    cnt += merge(arr, low, mid, high);  // merging sorted halves
+    return cnt;
+}
+int numberOfInversions(vector<int>&a, int n) {
+    return mergeSort(a, 0, n-1);
+}
+
+// Reverse Pairs		
+	
+// Method-1
+class Solution {
+public:
+    int reversePairs(vector<int>& nums) {
+        int n = nums.size();
+        long long reversePairsCount = 0;
+        for(int i=0; i<n-1; i++){
+            for(int j=i+1; j<n; j++){
+                if(nums[i] > 2*(long long)nums[j]){
+                    reversePairsCount++;
+                }
+            }
+        }
+        return reversePairsCount;
+    }
+};
+
+// Method-2
+class Solution {
+private: 
+    void merge(vector<int>& nums, int low, int mid, int high, int& reversePairsCount){
+        int j = mid+1;
+        for(int i=low; i<=mid; i++){
+            while(j<=high && nums[i] > 2*(long long)nums[j]){
+                j++;
+            }
+            reversePairsCount += j-(mid+1);
+        }
+        int size = high-low+1;
+        vector<int> temp(size, 0);
+        int left = low, right = mid+1, k=0;
+        while(left<=mid && right<=high){
+            if(nums[left] < nums[right]){
+                temp[k++] = nums[left++];
+            }
+            else{
+                temp[k++] = nums[right++];
+            }
+        }
+        while(left<=mid){
+            temp[k++] = nums[left++]; 
+        }
+        while(right<=high){
+            temp[k++] = nums[right++]; 
+        }
+        int m=0;
+        for(int i=low; i<=high; i++){
+            nums[i] = temp[m++];
+        }
+    }
+
+    void mergeSort(vector<int>& nums, int low, int high, int& reversePairsCount){
+        if(low >= high){
+            return;
+        }
+        int mid = (low + high) >> 1;
+        mergeSort(nums, low, mid, reversePairsCount);
+        mergeSort(nums, mid+1, high, reversePairsCount);
+        merge(nums, low, mid, high, reversePairsCount);
+    }
+public:
+    int reversePairs(vector<int>& nums) {
+        int reversePairsCount = 0;
+        mergeSort(nums, 0, nums.size()-1, reversePairsCount);
+        return reversePairsCount;
+    }
+};
+
+// Maximum Product Subarray
+
+#include<bits/stdc++.h>
+int subarrayWithMaxProduct(vector<int> &arr){
+	int n=arr.size();
+	long long prod=1;
+	long long maxProd=INT_MIN;
+	for(int i=0;i<n;i++){
+		prod*=arr[i];
+		if(prod==0){
+			prod=1;
+		}
+		maxProd=max(maxProd,prod);
+	}
+	prod=1;
+	for(int i=n-1;i>=0;i--){
+		prod*=arr[i];
+		if(prod==0){
+			prod=1;
+		}
+		maxProd=max(maxProd,prod);
+	}
+	return maxProd;
+}

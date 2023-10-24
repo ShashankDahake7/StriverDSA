@@ -594,6 +594,42 @@ long long maxSubarraySum(vector<int> arr, int n){
 
 // Print subarray with maximum subarray sum	
 
+// Method-1
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void SubarrayWithMaxSum(vector<int> nums) {
+    int currMax = nums[0], globalMax = nums[0];
+    int endIndex = 0;
+    int startIndex = 0, globalMaxStartIndex = 0;
+
+    for (int i = 1; i < nums.size(); ++i) {
+        if (nums[i] > nums[i] + currMax) {
+            currMax = nums[i];
+            startIndex = i;
+        } else if (nums[i] < nums[i] + currMax) {
+            currMax = nums[i] + currMax;
+        }
+
+        if (currMax > globalMax) {
+            globalMax = currMax;
+            endIndex = i;
+            globalMaxStartIndex = startIndex;
+        }
+    }
+
+    for (int i = globalMaxStartIndex; i <= endIndex; ++i) {
+        cout << nums[i] << " ";
+    }
+}
+int main() {
+    vector<int> arr{ -2, -5, 6, -2, -3, 1, 5, -6 };
+    SubarrayWithMaxSum(arr);
+    return 0;
+}
+
+// Method 2
 int longestSubarrayWithSumK(vector<int> &nums, long long targetSum) {
     int right = 0, left = 0;
     int maxSubarrayLength = 0;

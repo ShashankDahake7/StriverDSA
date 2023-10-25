@@ -1,6 +1,6 @@
 /* Step 4.1: BS on 1D Arrays */
 
-// Binary Search to find X in sorted a…		
+// Binary Search to find X in sorted array 
 
 // Method-1
 class Solution {

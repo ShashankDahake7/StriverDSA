@@ -1,0 +1,392 @@
+// Step 6.1: Learn 1D LinkedList
+
+// Introduction to Linked list
+
+/**
+ * Definition of linked list
+ * class Node {
+ *
+ * public:
+ *     int data;
+ *     Node* next;
+ *     Node() : data(0), next(nullptr) {}
+ *     Node(int x) : data(x), next(nullptr) {}
+ *     Node(int x, Node* next) : data(x), next(next) {}
+ * };
+ */
+
+Node* constructLL(vector<int>& arr) {
+    if(arr.size()==0){
+        return NULL;
+    }
+    Node *head=new Node(arr[0]);
+    Node *temp=head;
+    for(int i=1;i<arr.size();i++){
+        Node *newNode=new Node(arr[i]);
+        temp->next=newNode;
+        temp=temp->next;
+    }
+    return head;
+}
+
+// Inserting a node in LinkedList
+
+Node* insertAtFirst(Node* list, int newValue) {
+    Node *temp=new Node(newValue);
+    temp->next=list;
+    list=temp;
+}
+
+// Deleting a node in LinkedList
+
+// Coding Ninja
+Node *deleteLast(Node *list){
+    Node *temp=list;
+    while(temp->next->next!=NULL){
+        temp=temp->next;
+    }
+    temp->next=NULL;
+    return list;
+}
+
+// Leetcode
+void deleteNode(ListNode* node) {
+  node->val = node->next->val;
+  ListNode* k = node->next;
+  node->next = node->next->next;
+  delete(k);
+}
+
+// Find the length of the linkedlist [ Learn Traversal ]
+
+int length(Node *head){
+    int count=0;
+	  Node *temp=head;
+    while(temp!=NULL){
+        count++;
+        temp=temp->next;
+    }
+    return count;
+}
+
+// Search an element in the LL
+
+int searchInLinkedList(Node<int> *head, int k) {
+    Node<int> *temp=head;
+    while(temp!=NULL){
+        if(temp->data==k){
+            return 1;
+        }
+        temp=temp->next;
+    }
+    return 0;
+}
+
+// Step 6.2: Learn Doubly List
+
+// Introduction to DLL, learn about struct and how node is represented	
+
+/*
+ * Definition for doubly-linked list.
+ * class Node
+ * {
+ * public:
+ *    int data;
+ *    Node *next, *prev;
+ *    Node() : data(0), next(nullptr), prev(nullptr) {}
+ *    Node(int x) : data(x), next(nullptr), prev(nullptr) {}
+ *    Node(int x, Node *next, Node *prev) : data(x), next(next), prev(prev) {}
+ * };
+ */
+
+Node* constructDLL(vector<int>& arr) {
+    if(arr.size()==0){
+        return NULL;
+    }
+    Node *head=new Node(arr[0]);
+    Node *temp=head;
+    for(int i=1;i<arr.size();i++){
+        Node *newNode=new Node(arr[i]);
+        temp->next=newNode;
+        newNode->prev=temp;
+        temp=temp->next;
+    }
+    return head;
+}
+
+// Insert a node in DLL				
+
+Node * insertAtTail(Node *head, int k) {
+    Node *newNode=new Node(k);
+    if(head==NULL){
+        head=newNode;
+        return head;
+    }
+    Node *temp=head;
+    while(temp->next!=NULL){
+        temp=temp->next;
+    }
+    temp->next=newNode;
+    newNode->prev=temp;
+    return head;
+}
+
+// Delete a node in DLL				
+
+Node *deleteLastNode(Node *head) {
+    if (head == NULL){
+        return NULL;
+    }
+    if (head->next == NULL){
+        return NULL;
+    }
+    Node* temp = head;
+    while(temp -> next != NULL){
+        temp = temp -> next;
+    }
+    Node* t = temp;
+    temp -> prev -> next = NULL;
+    delete temp;
+    return head;
+}
+
+// Reverse a DLL
+
+Node* reverseDLL(Node* head){   
+    if(head==NULL || head->next==NULL){
+        return head;
+    }
+    Node *curr=head;
+    Node *prev=NULL;
+    Node *forw=NULL;
+    while(curr!=NULL){
+        forw=curr->next;
+        curr->next=curr->prev;
+        curr->prev=forw;
+        prev=curr;
+        curr=curr->prev;
+    }
+    head=prev;
+    return head;
+}
+
+// Step 6.3: Medium Problems of LL
+
+// Middle of a LinkedList [TortoiseHare Method]
+	
+// Method-1
+int getLength(Node *head){
+    int count=0;
+    while(head){
+        count++;
+        head=head->next;
+    }
+    return count;
+}
+Node *findMiddle(Node *head) {
+    int n=getLength(head);
+    int t=n/2;
+    Node *temp=head;
+    while(t--){
+        temp=temp->next;
+    }
+    return temp;
+}
+
+// Method-2
+class Solution {
+public:
+    ListNode* middleNode(ListNode* head) {
+        if(head==NULL || head->next==NULL){
+            return head;
+        }
+        if(head->next->next==NULL){
+            return head->next;
+        }
+        ListNode *slow=head;
+        ListNode *fast=head->next;
+        while(fast!=NULL){
+            fast=fast->next;
+            if(fast!=NULL){
+                fast=fast->next;
+            }
+            slow=slow->next;
+        }
+        return slow;
+    }
+};
+
+// Reverse a LinkedList [Iterative]		
+	
+Node* reverseLinkedList(Node *head){
+    Node *curr=head;
+    Node *prev=NULL;
+    Node *forw=NULL;
+    while(curr!=NULL){
+        forw=curr->next;
+        curr->next=prev;
+        prev=curr;
+        curr=forw;
+    }
+    head=prev;
+    return head;
+}
+
+// Reverse a LL [Recursive]		
+	
+Node* reverseLinkedList(Node *head){
+    if(head==NULL || head->next==NULL){
+        return head;
+    }
+    Node *newNode=reverseLinkedList(head->next);
+    head->next->next=head;
+    head->next=NULL;
+    return newNode;
+}
+
+// Detect a loop in LL		
+	
+bool detectCycle(Node *head){
+    if(head==NULL || head->next==NULL){
+        return false;
+    }
+    Node *slow=head;
+    Node *fast=head->next;
+    while(fast!=NULL && fast->next!=NULL){
+        slow=slow->next;
+        fast=fast->next->next;
+        if(fast==slow){
+            return true;
+        }
+    }
+    return false;
+}
+
+// Find the starting point in LL		
+	
+class Solution {
+ public:
+    ListNode* detectCycle(ListNode* head) {
+        ListNode* slow = head;
+        ListNode* fast = head;
+        while (fast!=NULL && fast->next!=NULL) {
+             slow = slow->next;
+             fast = fast->next->next;
+             if (slow == fast) {
+                // If the pointers meet, there is a cycle in the linked list.
+                // Reset the slow pointer to the head of the linked list, and move both pointers one step at a time
+                // until they meet again. The node where they meet is the starting point of the cycle.
+                slow = head;
+                while (slow != fast) {
+                    slow = slow->next;
+                    fast = fast->next;
+                }
+                return slow;
+             }
+        }
+        return nullptr;
+    }
+};
+
+// Length of Loop in LL				
+
+int lengthOfLoop(Node *head) {
+    if(head == NULL || head -> next == NULL){
+        return NULL;
+    }
+    Node* slow = head;
+    Node* fast = head;
+    int count = 0;
+    while(fast -> next && fast -> next -> next){
+        slow = slow -> next;
+        fast = fast -> next -> next;
+        if(slow == fast){
+            slow = slow -> next;
+            count++;
+            while(slow != fast){
+                slow = slow -> next;
+                count++;
+            }
+            return count;
+        }
+    }
+    return NULL;
+}
+
+// Check if LL is palindrome or not		
+	
+Node *getMid(Node *head){
+    Node *slow=head;
+    Node *fast=head->next;
+    while(fast!=NULL && fast->next!=NULL){
+        fast=fast->next->next;
+        slow=slow->next;
+    }
+    return slow;
+}
+Node *reverse(Node *head){
+    Node *curr=head;
+    Node *prev=NULL;
+    Node *forward=NULL;
+    while(curr!=NULL){
+        forward=curr->next;
+        curr->next=prev;
+        prev=curr;
+        curr=forward;
+    }    
+    return prev;
+}
+bool isPalindrome(Node *head) {
+    if (head->next == NULL){
+        return true;
+    }
+    Node *mid=getMid(head);
+    Node *temp=mid->next;
+    mid->next=reverse(temp);
+    Node *head1=head;
+    Node *head2=mid->next;
+    while(head2!=NULL){
+        if(head2->data!=head1->data){
+            return false;
+        }
+        head1=head1->next;
+        head2=head2->next;
+    }
+    //temp=mid->next;
+    //mid->next=reverse(temp);
+    return true;
+}
+
+// Segrregate odd and even nodes in LL				
+
+
+
+// Remove Nth node from the back of the LL
+	
+
+
+// Delete the middle node of LL				
+
+
+
+// Sort LL				
+
+
+
+// Sort a LL of 0's 1's and 2's by cha…				
+
+
+
+// Find the intersection point of Y LL		
+	
+
+
+// Add 1 to a number represented by LL				
+
+
+
+// Add 2 numbers in LL
+
+
+
+// Step 6.4: Medium Problems of DLL

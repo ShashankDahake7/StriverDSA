@@ -61,7 +61,7 @@ void deleteNode(ListNode* node) {
 
 int length(Node *head){
     int count=0;
-	   Node *temp=head;
+Node *temp=head;
     while(temp!=NULL){
         count++;
         temp=temp->next;

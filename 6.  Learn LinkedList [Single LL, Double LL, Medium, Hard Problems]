@@ -359,34 +359,471 @@ bool isPalindrome(Node *head) {
 
 // Segrregate odd and even nodes in LL				
 
+// Coding Ninjas
+Node* segregateEvenOdd(Node* head){
+    if(head==NULL || head->next==NULL){
+        return head;
+    }
+    Node *oddH=NULL;
+    Node *evenH=NULL;
+    Node *oddT=NULL;
+    Node *evenT=NULL;
+    while(head!=NULL){
+        if((head->data)%2==0){
+            if(evenH==NULL){
+                evenH=head;
+                evenT=head;
+            }
+            else{
+                evenT->next=head;
+                evenT=evenT->next;
+            }
+        }
+        else{
+            if(oddH==NULL){
+                oddH=head;
+                oddT=head;
+            }
+            else{
+                oddT->next=head;
+                oddT=oddT->next;
+            }
+        }
+        head=head->next;
+    }
+    if(oddH==NULL){
+        return evenH;
+    }
+    else if(evenH==NULL){
+        return oddH;
+    }
+    else {
+        evenT->next = oddH;
+        oddT->next = NULL;
+        return evenH;
+    }
+}
 
+// Leetcode
+class Solution {
+public:
+    ListNode* oddEvenList(ListNode* head) {
+        ListNode *oddH=NULL;
+        ListNode *evenH=NULL;
+        ListNode *oddT=NULL;
+        ListNode *evenT=NULL;
+        int count=1;
+        while(head!=NULL){
+            if(count%2==0){
+                if(evenH==NULL){
+                    evenH=head;
+                    evenT=head;
+                    head=head->next;
+                }
+                else{
+                    evenT->next=head;
+                    evenT=evenT->next;
+                    head=head->next;
+                }
+            }
+            else{
+                if(oddH==NULL){
+                    oddH=oddT=head;
+                    head=head->next;
+                }
+                else{
+                    oddT->next=head;
+                    oddT=oddT->next;
+                    head=head->next;
+                }
+            }
+            count++;
+        }
+        if(oddH==NULL){
+            return evenH;
+        }
+        if(evenH==NULL){
+            return oddH;
+        }
+        evenT->next=NULL;
+        oddT->next=evenH;
+        return oddH;
+    }
+};
 
 // Remove Nth node from the back of the LL
 	
-
+int len(Node* head){
+    int count = 0; 
+    Node* temp = head;
+    while(temp != NULL){
+        count++;
+        temp = temp->next;
+    }
+    return count;
+}
+Node* removeKthNode(Node* head, int K){
+    int l = len(head);
+    if (K == l) {
+        Node* temp = head;
+        head = head->next;
+        delete temp;
+        return head;
+    }
+    Node* curr = head;
+    Node* prev = NULL;
+    int count = l - K;
+    for(int i = 0; i<count; i++){
+        prev = curr;
+        curr = curr->next;
+    }
+    prev->next = curr->next;
+    delete curr;
+    return head;
+}
 
 // Delete the middle node of LL				
 
+// Method-1
+Node* deleteMiddle(Node* head){
+    if(head==NULL || head->next==NULL){
+        return head->next;
+    }
+    Node* temp=head;
+    int l=0;
+    while(temp!=NULL){
+	temp=temp->next;
+	l++;
+    }
+    l/=2;
+    temp=head;
+    while(l>1){
+	temp=temp->next;
+	l--;
+    }
+    temp->next=temp->next->next;
+    return head;
+}
 
+// Method-2
+Node* deleteMiddle(Node* head) {
+    if (head == NULL || head->next == NULL) {
+        return NULL;
+    }
+    Node* slow = head;
+    Node* fast = head;
+    Node* prev = NULL;
+    while (fast != NULL && fast->next != NULL) {
+        prev = slow;
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    prev->next = prev->next->next;
+    delete slow;
+    return head;
+}
 
 // Sort LL				
 
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        // If List Contain a Single or 0 Node
+        if(head == NULL || head ->next == NULL)
+            return head;
+        ListNode *temp = NULL;
+        ListNode *slow = head;
+        ListNode *fast = head;
+        // 2 pointer appraoach / turtle-hare Algorithm (Finding the middle element)
+        while(fast !=  NULL && fast -> next != NULL){
+            temp = slow;
+            slow = slow->next;          // low increment by 1
+            fast = fast ->next ->next;  // fast incremented by 2
+        }   
+        temp -> next = NULL;              // end of first left half
+        ListNode* l1 = sortList(head);    // left half recursive call
+        ListNode* l2 = sortList(slow);    // right half recursive call
+        return mergelist(l1, l2);         // mergelist Function call       
+    }
+    // MergeSort Function O(n*logn)
+    ListNode* mergelist(ListNode *l1, ListNode *l2){
+        ListNode *ptr = new ListNode(0);
+        ListNode *curr = ptr;
+        while(l1 != NULL && l2 != NULL){
+            if(l1->val <= l2->val){
+                curr -> next = l1;
+                l1 = l1 -> next;
+            }
+            else{
+                curr -> next = l2;
+                l2 = l2 -> next;
+            }
+            curr = curr ->next;
+        }
+        // for unequal length linked list
+        if(l1 != NULL){
+            curr -> next = l1;
+            l1 = l1->next;
+        }
+        if(l2 != NULL){
+            curr -> next = l2;
+            l2 = l2 ->next;
+        }
+        return ptr->next;
+    }
+};
 
+// Sort a LL of 0's 1's and 2's by changing links			
 
-// Sort a LL of 0's 1's and 2's by cha…				
-
-
+Node* sortList(Node *head)
+{
+    int zeroCount=0,oneCount=0,twoCount=0;
+    Node *temp=head;
+    while(temp!=NULL){
+        if(temp->data==0) zeroCount++;
+        else if(temp->data==1) oneCount++;
+        else if(temp->data==2) twoCount++;
+        temp=temp->next;
+    }
+    temp=head;
+    while(temp!=NULL){
+        if(zeroCount!=0){
+            temp->data=0;
+            zeroCount--;
+        }
+        else if(oneCount!=0){
+            temp->data=1;
+            oneCount--;
+        }
+        else if(twoCount!=0){
+            temp->data=2;
+            twoCount--;
+        }
+    	temp=temp->next;
+    }
+    return head;
+}
 
 // Find the intersection point of Y LL		
 	
+// Method-1
+class Solution {
+public:
+    int length(ListNode *head){
+        int len = 0;
+        while(head){
+            len++;
+            head = head->next;
+        }
+        return len;
+    }
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        if(!headA || !headB) return NULL;
+        // step1
+        int lenA = length(headA), lenB = length(headB);
+        // step2
+        if(lenA>lenB){
+            while(lenA>lenB){
+                headA = headA->next;
+                lenA--;
+            }
+        }
+        else if(lenA<lenB){
+            while(lenA<lenB){
+                headB = headB->next;
+                lenB--;
+            }
+        }
+        // step 3
+        while(headA && headB){
+            if(headA==headB) return headA;
+            headA = headA->next;
+            headB = headB->next;
+        }
+        return NULL;
+    }
+};
 
+// Method-2
+ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+    // getting the tail
+    ListNode* tail = headA;
+    while(tail->next){
+        tail = tail->next;
+    }
+    // creating a loop
+    tail->next = headA;
+    // detecting and finding the intersection
+    ListNode *fast = headB, *slow = headB;
+    while(fast && fast->next){
+        slow = slow->next;
+        fast = fast->next->next;
+        if(slow==fast) {
+            slow = headB;
+            while(slow!=fast){
+                slow = slow->next;
+                fast = fast->next;
+            }
+            //undoing the loop
+            tail->next = NULL;
+            return slow;
+        };
+    }
+    tail->next = NULL;
+    return NULL;
+}
 
 // Add 1 to a number represented by LL				
 
-
+Node *addOne(Node *head)
+{
+    //simply traverse to tail, if num<9 simply incr by 1.
+    //if 9 then move back 1 node and check the above condi again. If somehow we came all the 
+    //way to head and head also 9 then we create a node and put val = 1 while rest all nodes 0s
+    //Now comes the question, how we traverse back?
+    //BUT WAIT, while traversing till tail, we keep on checking all data
+    //Any node with val = 9, is stored.
+    //EDGE CASE N=1
+    if(head->next==NULL){
+        if(head->data==9){
+            Node* newN = new Node(1);
+            newN->next = head;
+            head->data = 0;
+        }
+        else{
+            head->data = head->data+1;
+        }
+        return head;
+    }
+    Node* NotNine = head;
+    Node* temp = head;
+    while(temp!=NULL){
+        if(temp->data!=9){
+            NotNine = temp;
+        }
+        temp = temp->next;
+    }
+    //now NotNine basically points to RHS node with val <9
+    temp = head; // reseting temp to head for future use
+    //if NotNine is still head. That means, all nodes after head has data = 9
+    //while head may or may not be 9.
+    //Edge case Check
+    if(NotNine->data==9){
+        Node* first = new Node(1);
+        first->next = head;
+        while(temp!=NULL){
+            temp->data = 0;
+            temp = temp->next;
+        }
+        return first;
+    }
+    //edge case ends
+    //Now, we incr NotNine node by 1. ANd whatev nodes is after,
+    //we set it all to 0s. Since,we made sure NotNine is our
+    //last possible Node that is NOT 9 or <9. Nodes after that is all
+    //9s
+    NotNine->data = NotNine->data+1;
+    NotNine = NotNine->next;
+    while(NotNine!=NULL){
+        NotNine->data = 0;
+        NotNine = NotNine->next;
+    }
+    return head;
+}
 
 // Add 2 numbers in LL
 
+// Coding Ninjas
+void insert(Node* &head, Node* &tail,int val){
+    Node* temp = new Node(val);
+    // if LL is empty
+    if(head == NULL){
+        head = temp;
+        tail = temp;
+    }
+    else{
+        tail -> next = temp;
+        tail = temp;
+    }
+}
+Node *addTwoNumbers(Node *head1, Node *head2)
+{
+    Node *head = NULL;
+    Node *tail = NULL;
+    int carry = 0;
+    while(head1 != NULL || head2 != NULL || carry != 0){
+        int val1 = 0;
+        if(head1 != NULL)
+            val1 = head1 -> data;
+        int val2 = 0;
+        if(head2 != NULL)
+            val2 = head2 -> data;
+        int sum = val1 + val2 + carry;
+        int digit = sum%10;
+        //insert new node 
+        insert(head,tail,digit);
+        carry = sum / 10;
+        if(head1 != NULL)
+            head1 = head1 -> next;
+        if(head2 != NULL)
+            head2 = head2 -> next;    
+    }
+    return head;
+}
 
+// Leetcode
+class Solution {
+public:
+    ListNode *reverse(ListNode* &head){
+        ListNode* curr=head;
+        ListNode* prev=NULL;
+        ListNode* forward=NULL;
+        while(curr!=NULL){
+            forward=curr->next;
+            curr->next=prev;
+            prev=curr;
+            curr=forward;
+        }
+        return prev;
+    }
+    void insertAtTail(ListNode* &head,ListNode* &tail,int value){
+        ListNode* temp=new ListNode(value);
+        if(head==NULL){
+            head=temp;
+            tail=temp;
+            return;
+        }
+        else{
+            tail->next=temp;
+            tail=temp;
+        }
+    }
+    ListNode* add(ListNode* l1,ListNode* l2){
+        ListNode* ansHead=NULL;
+        ListNode *ansTail=NULL;
+        int carry=0;
+        while(l1!=NULL || l2!=NULL || carry!=0){
+            int val1=0;
+            if(l1!=NULL){
+                val1=l1->val;
+                l1=l1->next;
+            }
+            int val2=0;
+            if(l2!=NULL){
+                val2=l2->val;
+                l2=l2->next;
+            }
+            int sum=carry+val1+val2;
+            int digit=sum%10;
+            insertAtTail(ansHead,ansTail,digit);
+            carry=sum/10;
+        }
+        return ansHead;
+    }
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode* ans=add(l1,l2);
+        return ans;
+    }
+};
 
 // Step 6.4: Medium Problems of DLL

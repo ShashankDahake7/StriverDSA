@@ -827,3 +827,323 @@ public:
 };
 
 // Step 6.4: Medium Problems of DLL
+
+// Delete all occurrences of a key in DLL			
+
+Node * deleteAllOccurrences(Node* head, int k) {
+    Node* temp=new Node();
+    temp->next=head;
+    head=temp;
+    while(temp->next){        
+        if(temp->next->data == k){       
+          Node* n= temp->next;
+          temp->next = temp->next->next;
+          delete n;
+        } 
+        else{
+            temp=temp->next;
+        }
+    }
+    return head->next;
+}
+
+// Find pairs with given sum in DLL				
+
+// Method-1
+#include <bits/stdc++.h>
+vector<pair<int, int>> findPairs(Node* head, int k)
+{
+    vector<pair<int,int>>res;
+    unordered_set<int> seen;
+    Node*temp=head;
+    while(temp!=NULL){
+        int curr=temp->data;
+        int target=k-curr;
+        if(seen.find(target)!=seen.end()){
+            res.push_back({curr,target});
+        }
+        seen.insert(curr);
+        temp=temp->next;
+    }
+    return res;
+}
+
+// Method-2
+#include<bits/stdc++.h>
+vector<pair<int, int>> findPairs(Node* head, int k){
+    vector<pair<int,int>> res;
+    Node*front=head;
+    Node*end=head;
+    while(end->next!=NULL){
+	end=end->next;
+    }
+    while(front->data < end->data){
+        int val=front->data+end->data;
+        if(val==k){
+            res.push_back({front->data,end->data});
+            front=front->next;
+            end=end->prev;
+        }
+        else if(val>k){
+            end=end->prev;
+        }
+        else{
+            front=front->next;
+        }
+    }
+    return res;
+}
+
+// Remove duplicates from sorted DLL
+
+Node * uniqueSortedList(Node * head) {
+    if(head==NULL)return NULL;
+    Node* curr=head;
+    while(curr!=NULL){
+        if(curr->next!=NULL && curr->data==curr->next->data){
+            Node* next_next=curr->next->next;
+            Node* nodeToDelete=curr->next;
+            delete(nodeToDelete);
+            curr->next= next_next;
+        }
+        else{
+            curr=curr->next; 
+        }
+    }
+    return head;
+}
+
+// Step 6.5: Hard Problems of LL
+
+// Reverse LL in group of given size K		
+	
+// Method-1
+Node *kReverse(Node *head, int k){
+    Node *curr = head;
+    Node *prev = NULL, *next = NULL;
+    int cnt = 0;
+    // Reversing the first K nodes of the given linked list.
+    while (curr != NULL && cnt < k){
+        next = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = next;
+        cnt++;
+    }
+    // If the last group has < k nodes, reversing it again to get the previous order.
+    if (cnt < k){
+        curr = prev;
+        prev = NULL;
+        next = NULL;
+        cnt = 0;
+        while (curr && cnt < k){
+            next = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = next;
+            cnt++;
+        }
+    }
+    // If some nodes are still left, then we pass it to the recursive function.
+    if (next != NULL){
+        head->next = kReverse(next, k);
+    }
+    return prev;
+}
+
+// Method-2
+Node *kReverse(Node *head, int k){
+    Node *prev = NULL;
+    Node *curr = head;
+    Node *next = NULL;
+    Node *tail = NULL;
+    Node *newHead = NULL;
+    Node *join = NULL;
+    // Reversing the list until we have nodes in the list.
+    while (curr){
+        int cnt = 0;
+        join = curr;
+        prev = NULL;
+        // Reversing the nodes in group of k.
+        while (curr && cnt < k){
+            next = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = next;
+            cnt++;
+        }
+        // If the last group has < k nodes, reversing it again to get the previous order.
+        if (cnt < k){
+            curr = prev;
+            prev = NULL;
+            join = curr;
+            cnt=0;
+            while (curr && cnt < k){      
+                next = curr->next;
+                curr->next = prev;
+                prev = curr;
+                curr = next;
+                cnt++;
+            }
+        }
+        // If the newHead is not yet assigned, then assign it
+        if (newHead == NULL){
+            newHead = prev;
+        }
+        if (tail != NULL){
+            tail->next = prev;
+        }
+        tail = join;
+    } 
+    return newHead;
+}
+
+// Rotate a LL		
+	
+Node *rotate(Node *head, int k) {
+     if(head==NULL || head->next==NULL || k==0){
+          return head;
+     }
+     Node *temp=head;
+     int size=1;
+     while(temp->next!=NULL){
+          temp=temp->next;
+          size++;
+     }
+     temp->next=head;
+     k=k%size;
+     k=size-k;
+     while(k!=0){
+          temp=temp->next;
+          k--;
+     }
+     head=temp->next;
+     temp->next=NULL;
+     return head;
+}
+
+// Flattening of LL		
+
+Node* mergeLL(Node* left, Node* right){
+    Node* res = new Node(-1);
+    Node* curr = res;
+    while(left != NULL && right != NULL){
+        if(left -> data < right -> data){
+            curr -> child = new Node(left -> data);
+            curr = curr -> child;
+            left = left -> child;
+        }
+        else{
+            curr -> child = new Node(right -> data);
+            curr = curr -> child;
+            right = right -> child;
+        }
+    }
+    if(left != NULL){
+        curr -> child = left;
+    }
+    if(right != NULL){
+        curr -> child = right;
+    }
+    return res -> child;
+}
+Node* flattenLinkedList(Node* head) {
+	Node* curr = head, *res = NULL;
+	while(curr != NULL){
+		res = mergeLL(res, curr);
+		curr = curr -> next;
+	}
+	return res;
+}
+
+// Clone a Linked List with random and next pointer
+
+// Method-1
+void insertAtTail(Node* &head,Node* &tail,int data){
+    Node* temp1 = new Node(data);
+    if(head == NULL){
+        head = temp1;
+        tail = temp1;
+    }
+    else{
+        tail->next = temp1;
+        tail = temp1;
+    }
+}
+Node *cloneLL(Node *head){
+    Node* cloneHead = NULL;
+    Node* cloneTail = NULL;
+    Node* temp = head;
+    while(temp!=NULL){
+        insertAtTail(cloneHead,cloneTail,temp->data);
+        temp = temp->next;
+    }
+    unordered_map<Node*,Node*>mapping;
+    Node* originalNode = head;
+    Node* cloneNode = cloneHead;
+    while(originalNode!=NULL){
+        mapping[originalNode] = cloneNode;
+        originalNode = originalNode->next;
+        cloneNode = cloneNode->next;
+    }
+    originalNode = head;
+    cloneNode = cloneHead;
+    while(originalNode!=NULL){
+        cloneNode->random = mapping[originalNode->random];
+        originalNode = originalNode->next;
+        cloneNode = cloneNode->next;
+    }
+    return cloneHead;
+}
+
+// Method-2
+Node *cloneLL(Node *head){
+    Node *curr = head, *temp = NULL;
+    // Insert duplicate nodes after every node of original list
+    while (curr != NULL){
+        temp = curr->next;
+        // Inserting node
+        curr->next = new Node(curr->data);
+        curr->next->next = temp;
+        curr = temp;
+    }
+    curr = head;
+    // Adjust the random pointers of the newly added nodes
+    while (curr != NULL){
+        if (curr->next != NULL){
+            if (curr->random != NULL){
+                curr->next->random = curr->random->next;
+            }
+            else{
+                curr->next->random = curr->random;
+            }
+        }
+        // Move to the next newly added node by skipping an original node
+        if (curr->next != NULL){
+            curr = curr->next->next;
+        }
+        else{
+            curr = curr->next;
+        }
+    }
+    Node *original = head, *copy = NULL;
+    if (head != NULL){
+        copy = head->next;
+    }
+    // Save the start of copied linked list
+    temp = copy;
+    // Separate the original list and copied list
+    while (original != NULL && copy != NULL)
+    {
+        if (original->next != NULL){
+            original->next = original->next->next;
+        }
+        if (copy->next != NULL){
+            copy->next = copy->next->next;
+        }
+        original = original->next;
+        copy = copy->next;
+    }
+    // Return the head of the cloned list
+    return temp;
+}

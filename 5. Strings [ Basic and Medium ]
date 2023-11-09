@@ -1,1 +1,698 @@
+/* Step 5: Strings [Basic and Medium] */
 
+// Remove outermost Paranthesis				
+
+// Method-1
+class Solution {
+public:
+    string removeOuterParentheses(string s) {
+        stack<int> st;
+        string ans;
+        for(int i=0;i<s.length();i++){
+            if(s[i] == '('){
+                if(!st.empty()){
+                    ans+="(";
+                }
+                st.push(s[i]);
+            }
+            else{
+                if(!st.empty()){
+                    st.pop();
+                    if(!st.empty()){
+                        ans+=")";
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    string removeOuterParentheses(string s) {
+        string result;
+        int index = 0;
+        for (char x : s) {
+           switch(x){
+               case '(':
+                  if(index++>0)
+                    result+=x;
+                  break;
+               case ')':
+                  if(index-->1)
+                    result+=x;
+                  break;
+           }
+        }
+        return result;
+    }
+};
+
+// Reverse words in a given string / Palindrome Check
+
+// Method-1
+class Solution {
+public:
+    string reverseWords(string s) {
+        stringstream str(s);
+        string word, ans = "";
+        while(str >> word)
+            ans = word + " " + ans;
+        ans.pop_back();
+        return ans;
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    string reverseWords(string s) {
+        string ans="";
+        string temp="";
+        int j = 0;
+        for( j = 0; s[j] == ' ' && j<s.length(); j++){}
+        for(int i = s.length()-1; i>=j; i--){
+            if(s[i] == ' '){
+                if(temp!=""){
+                    ans = ans + temp + ' ';
+                    temp="";
+                }
+                continue;
+            }
+            else{
+                temp = s[i] + temp;
+            }
+        }
+        return ans +temp;
+    }
+};
+
+// Method-3
+#include<bits/stdc++.h>
+string reverseString(string &str){
+	stack<string> st;
+	string ans;
+	for(int i=0; i<str.size(); i++) {
+		if(str[i] == ' ') continue;
+		string temp;
+		while(i < str.size() && str[i] != ' ') {
+			temp += str[i];
+			i++;
+		}
+		st.push(temp);
+	}	
+	while(!st.empty()) {
+		ans += st.top();
+		st.pop();
+		ans += " ";
+	}
+	return ans;
+}
+
+// Largest odd number in a string				
+
+// Method-1
+class Solution {
+public:
+    string largestOddNumber(string num) {
+        for(int i = num.size()-1; i >= 0; i--){
+            // char to ascii conversion by subtraction 48 (ASCII of 0)
+            if((int)(num[i] - 48) % 2 != 0){
+                // here return i+1 as the last index is excluded while using the substr function
+                return num.substr(0, i+1);
+            }
+        }
+        return "";
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    string largestOddNumber(string num) {
+        int n=num.size();
+        int i=0;
+
+        for(i=n-1; i>=0; i--){
+            if(num[i]%2!=0) break;
+            else if(i==0 and num[i]%2==0)  return "";
+        }
+        return num.substr(0,i+1);
+    }
+};
+
+// Longest Common Prefix				
+
+class Solution {
+public:
+    string longestCommonPrefix(vector<string>& strs) {
+        sort(strs.begin(),strs.end());
+        int a=strs.size();
+        string n=strs[0],m=strs[a-1],ans="";
+        for(int i=0;i<n.size();i++){
+            if(n[i]==m[i]){
+                ans+=n[i];
+            }
+            else{
+                break;
+            }
+        }
+        return ans;   
+    }
+};
+
+// Isomorphic String				
+
+class Solution {
+public:
+    bool isIsomorphic(string s, string t) {
+        unordered_map<char, char> mp1, mp2;
+        for (int i=0; i<s.length(); ++i) {
+            if (mp1[s[i]] && mp1[s[i]]!=t[i]){
+                return false;
+            }
+            if (mp2[t[i]] && mp2[t[i]]!=s[i]){
+                return false;
+            }
+            mp1[s[i]]=t[i];
+            mp2[t[i]]=s[i];
+        }
+        return true;
+    }
+};
+
+// Check whether one string is a rotation of another				
+
+// Method-1
+int isCyclicRotation(string &p, string &q){     
+    if(p.size() != q.size()){        
+        return 0;
+    }    
+    string temp = p+p;
+    if (temp.find(q) != -1){
+        return 1;
+    }    
+    return 0;
+}
+
+// Method-2
+#include<bits/stdc++.h>
+int isCyclicRotation(string &p, string &q) {
+    if (p.size()!=q.size()) {
+        return 0;
+    }
+    queue<char> q1;
+    for (int i=0; i<p.size();++i) {
+        q1.push(p[i]);
+    }
+    queue<char> q2;
+    for (int i=0; i<q.size();++i) {
+        q2.push(q[i]);
+    } 
+    int k = q.size();
+    while(k>0){
+        char x = q1.front();
+        q1.pop();
+        q1.push(x);
+        if (q1==q2) {
+            return 1;
+        }
+        --k;
+    }
+    return 0;
+}
+
+// Method-3
+int isCyclicRotation(string &p, string &q){
+    // Getting the size of the strings.
+    int n = p.length();
+    // Finding each rotation one by one.
+    for (int j = 0; j < n; j++{
+        // Setting the flag variable.
+        int isRotationPossible = 1;
+        // Iterating through each rotation and checking character by character.
+        for (int i = 0; i < n; i++){
+            if (p[(i + j) % n] != q[i]){
+                isRotationPossible = 0;
+                break;
+            }
+        }
+        // Checking if the flag is set to 1.
+        if (isRotationPossible){
+            return 1;
+        }
+    }
+    // If we were unable to cyclically rotate string 'p' right to form string 'q' then we will return 0.
+    return 0;
+}
+
+// Method-4
+int isSubstring(string &a, string &b){
+    // Finding the length of both strings.
+    int m = a.length();
+    int n = b.length();
+    // Defining and initializing the pointer variables to preprocess the string 'a'.
+    int i = 1, j = 0;
+    // Defining the lps array.
+    int lps[m] = {0};
+    while (i < m){
+        // If the ith index of string 'a' matches with its jth index, then store the value 'j'+1 at lps[i] and increment both 'i' and 'j'.
+        if (a[i] == a[j]){
+            lps[i] = j + 1;
+            i++;
+            j++;
+        }
+        // If the ith index of 'a' does not match with its jth index of 'a' and 'j' > 0, then 'j' redirects to lps[j-1].
+        else if (j > 0){
+            j = lps[j - 1];
+        }
+        // If none of the above condition matches then make lps[i] as 0 and increment 'i'.
+        else{
+            lps[i] = 0;
+            i++;
+        }
+    }
+    i = 0, j = 0;
+    // Iterating through both the strings to find a match.
+    while (i < n && j < m){
+        // If the ith character of 'b' matches with the jth character of 'a', then increment both 'i' and 'j'.
+        if (b[i] == a[j]){
+            i++;
+            j++;
+        }
+        // If the above characters do not match and 'j' > 0, then 'j' redirects to lps[j-1].
+        else if (j > 0){
+            j = lps[j - 1];
+        }
+        // If none of the above mentioned condition matches, then increment 'i'.
+        else{
+            i++;
+        }
+    }
+    // If 'j' is equal to 'm', then we will return 1 otherwise we will return 0.
+    if (j == m){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+int isCyclicRotation(string &p, string &q){
+    // Performing the concatenation of string 'p' with itself.
+    string res = p + p;
+    // Checking if the substring 'q' is present in the string 'res'.
+    return isSubstring(q, res);
+}
+
+// Check if two strings are anagram of each other
+
+// Method-1
+#include <iostream>
+#include <unordered_map>
+bool isAnagram(string str1, string str2) {
+    if (str1.length() != str2.length())
+        return false;
+    unordered_map<char, int> mp1;
+    unordered_map<char, int> mp2;
+    for (auto ch : str1) {
+        mp1[ch]++;
+    }
+    for (auto ch : str2) {
+        mp2[ch]++;
+    }
+    if (mp1 == mp2) {
+        return true;
+    } 
+    else {
+        return false;
+    }
+}
+
+// Method-2
+#include <bits/stdc++.h>
+
+bool isAnagram(string str1, string str2){
+    sort(str1.begin(),str1.end());
+    sort(str2.begin(),str2.end());
+    if(str1==str2){
+        return true;
+    }
+    return false;
+}
+
+// Method-3
+bool isAnagram(string str1, string str2){
+    if(str1.size()!=str2.size())
+        return 0;
+    int n=str1.size();
+    int arr1[256]={0};
+    int arr2[256]={0};
+    for(int i=0;i<n;i++){
+        arr1[str1[i]]++;
+        arr2[str2[i]]++;
+    }
+    for(int i=0;i<256;i++){
+        if(arr1[i]!=arr2[i])
+            return 0;
+    }
+    return 1;
+}
+
+/* Step 5.2: Medium String Problems */
+
+// Sort Characters by frequency				
+
+string sortByFrequency(int n, string &s) {
+	unordered_map<char, int> mp;
+	for (auto it : s)
+		  mp[it]++;
+	vector<pair<int, char>> temp;
+	for (auto i : mp)
+		  temp.push_back({i.second, i.first});
+	sort(temp.begin(), temp.end());
+	int k = s.size() - 1;
+	for (int i = 0; i < temp.size(); i++) {
+		for (int j = 0; j < temp[i].first; j++) {
+  			s[k] = temp[i].second;
+  			k--;
+		}
+	}
+	return s;
+}
+
+// Maximum Nesting Depth of Paranthesis				
+
+class Solution {
+public:
+    int maxDepth(string s) {
+        int count=0;
+        int maxi=INT_MIN;
+        for(int i=0;i<s.length();i++){
+            if(s[i]=='('){
+                count++;
+            }
+            else if(s[i]==')'){
+                count--;
+            }
+            maxi=max(maxi,count);
+        }
+        return maxi;
+    }
+};
+
+// Roman Number to Integer and vice versa				
+
+// Method-1
+class Solution {
+public:
+    int solve(char c){
+        int result;
+        switch(c){
+            case 'I':
+                result=1;
+                break;
+            case 'V':
+                result=5;
+                break;
+            case 'X':
+                result=10;
+                break;
+            case 'L':
+                result=50;
+                break;
+            case 'C':
+                result=100;
+                break;
+            case 'D':
+                result=500;
+                break;
+            case 'M':
+                result=1000;
+                break;
+        }
+        return result;
+    }
+    int romanToInt(string s) {
+        int ans=0;
+        for(int i=0;i<s.length();i++){
+            int c=solve(s[i]);
+            if(i+1<s.length()){
+                int curr=solve(s[i+1]);
+                if(c>=curr){
+                    ans+=c;
+                }
+                else{
+                    ans-=c;
+                }
+            }
+            else{
+                ans+=c;
+            }
+        }
+        return ans;
+    }
+};
+
+// Method-2
+#include<unordered_map>
+int romanToInt(string s) {
+    int sum = 0;
+    unordered_map<char, int> mp = {
+        {'I', 1}, {'V', 5}, {'X', 10}, {'L', 50}, {'C', 100}, {'D', 500}, {'M', 1000}
+    };
+    for(int i = 0; i < s.length(); i++)
+        mp[s[i]] < mp[s[i+1]] ? sum -= mp[s[i]] : sum += mp[s[i]];
+    return sum;
+}
+
+// Implement Atoi				
+
+// CN
+#include<bits/stdc++.h>
+int createAtoi(string s) {
+    long long ans=0;
+    int count=0;
+    int i=0;
+    for(;i<s.size();i++){
+        if(s[i]=='-' && count==0){
+            count++;
+            if(!(s[i+1]>=0 && s[i+1]<='9') || s[i+1]=='+'){
+                return 0;
+            }
+        }
+        else if(s[i]>='0' && s[i]<='9'){
+            ans=ans*10+(s[i]-'0');
+            if(ans>INT_MAX){
+                if(count>0){
+                    return INT_MIN;
+                }
+                return INT_MAX;
+            }
+        }
+        else if((!(s[i]>='0' && s[i]<='9')) && ans>0){
+            break;
+        }
+    } 
+    if(count>0){
+        ans=ans*(-1);
+    }
+    return ans;
+}
+
+// Leetcode
+class Solution {
+public:
+    int myAtoi(string s) {
+       int i=0; 
+       while(i<s.size() && s[i]==' '){
+            i++;
+       }
+       s= s.substr(i,s.size());
+       int sign =1;
+       long long ans=0;
+       if(s[0]=='-') sign=-1;
+       int MAX=INT_MAX, MIN=INT_MIN;
+       i= (s[0]=='-' || s[0]=='+') ? 1:0;
+       while(i<s.size()){
+          if(s[i]==' ' || !isdigit(s[i])) break;
+          ans= ans*10+s[i]-'0';
+          if(sign==-1 && sign*ans<MIN) return MIN;
+          if(sign==1 && ans>MAX) return MAX;
+          i++;
+       }
+       return (int) sign*ans;
+    }
+};
+
+// Count Number of Substrings				
+
+// Method-1
+int countSubStrings(string str, int k) {
+    int n = str.size();
+    int cnt = 0;
+    for (int i = 0; i < n; i++) {
+        vector<int> charCount(26, 0);  // Assuming lowercase letters only
+        int distinctChars = 0;
+        for (int j = i; j < n; j++) {
+            if (charCount[str[j] - 'a'] == 0) {
+                distinctChars++;
+            }
+            charCount[str[j] - 'a']++;
+            if (distinctChars == k) {
+                cnt++;
+            } else if (distinctChars > k) {
+                break;
+            }
+        }
+    }
+    return cnt;
+}
+
+// Method-2
+int helper(string str, int k) {
+    int i = 0, j = 0, currCount = 0;
+    int result = 0
+    // Array to store count of characters.
+    vector<int>count(26, 0);
+    while (j < str.size()) {
+        // Index for current character.
+        int index = str[j] - 'a';
+        // Increment count for the current character.
+        count[index] += 1;
+        if (count[index] == 1) {
+            currCount++;
+        }
+        // Decrement count and increase ith pointer.
+        while (currCount > k) {
+            count[str[i] - 'a']--;
+            if (count[str[i] - 'a'] == 0) {
+                currCount--;
+            }
+            i++;
+        }
+        // Total substrings.
+        result += (j - i + 1);
+        j++;
+    }
+    return result;
+}
+int countSubStrings(string str, int k) {
+    // Calculating for at most k and at most k-1 distinct chars.
+    int ans = helper(str, k) - helper(str, k - 1);
+    return ans;
+}
+
+// Longest Palindromic Substring[Do it without DP]				
+
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        if (s.length() <= 1)
+            return s;
+        string LPS = "";
+        for (int i = 1; i < s.length(); i++) {
+            // Consider odd length
+            int low = i;
+            int high = i;
+            while (low >= 0 && high < s.length() && s[low] == s[high]) {
+                low--;
+                high++;
+            }
+            string palindrome = s.substr(low + 1, high - low - 1);
+            if (palindrome.length() > LPS.length()) {
+                LPS = palindrome;
+            }
+            // Consider even length
+            low = i - 1;
+            high = i;
+            while (low >= 0 && high < s.length() && s[low] == s[high]) {
+                low--;
+                high++;
+            }
+            palindrome = s.substr(low + 1, high - low - 1);
+            if (palindrome.length() > LPS.length()) {
+                LPS = palindrome;
+            }
+        }
+        return LPS;
+    }
+};
+
+// Sum of Beauty of all substring				
+
+// Method-1
+class Solution {
+public:
+    int beautySum(string s) {
+        int n=s.size();
+        int ans=0;
+        for(int i=0 ; i<n ; i++){	
+            unordered_map<char , int> mp;
+            for(int j=i ; j<n ; j++){
+                mp[s[j]]++;
+                int mini=INT_MAX;
+                int maxi=INT_MIN;
+                for(auto it: mp){
+                    maxi=max(maxi , it.second);
+                    mini=min(mini , it.second);
+                }
+                ans+=(maxi-mini);
+            }	
+        }
+        return ans;
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int diffFreq(vector<int> v){
+        int minf = 501;
+        int maxf = -1;
+        for(int i=0; i<v.size(); i++){
+            if(v[i]!=0){
+                minf = min(v[i], minf);
+                maxf = max(v[i], maxf);
+            }   
+        }
+        return maxf-minf;
+    }
+    int beautySum(string s) {
+        int ans=0;
+        for(int l=0; l<s.size(); l++){
+            vector<int> alph(26,0);
+            for(int r=l; r<s.size(); r++){
+                alph[s[r]-'a']++;
+                ans += diffFreq(alph);
+            }
+        }
+        return ans;
+    }
+};
+
+// Reverse Every Word in A String
+
+class Solution {
+public:
+    string reverseWords(string s) {
+        string ans="";
+        string temp="";
+        int j = 0;
+        for( j = 0; s[j] == ' ' && j<s.length(); j++){}
+        for(int i = s.length()-1; i>=j; i--){
+            if(s[i] == ' '){
+                if(temp!=""){
+                    ans = ans + temp + ' ';
+                    temp="";
+                }
+                continue;
+            }
+            else{
+                temp = s[i] + temp;
+            }
+        }
+        return ans +temp;
+    }
+};

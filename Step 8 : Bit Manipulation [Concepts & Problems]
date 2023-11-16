@@ -1,0 +1,76 @@
+/* Step 8.1: Learn Bit Manipulation */
+
+// Introduction to Bit Manipulation [Theory]				
+
+
+
+// Check if the i-th bit is set or not				
+
+
+
+// Check if a number is odd or not				
+
+
+
+// Check if a number is power of 2 or not		
+
+
+
+// Count the number of set bits				
+
+
+
+// Set/Unset the rightmost unset bit				
+
+
+
+// Swap two numbers				
+
+
+
+// Divide two integers without using multiplication,division and mod operator
+
+
+
+/* Step 8.2: Interview Problems */
+
+// Count number of bits to be flipped to convert A to B		
+
+
+
+// Find the number that appears odd number of times				
+
+
+
+// Power Set		
+	
+
+
+// Find xor of numbers from L to R				
+
+
+
+// Find the two numbers appearing odd number of times
+
+
+
+/*  Step 8.3: Advanced Maths */
+
+// Print Prime Factors of a Number				
+
+
+
+// All Divisors of a Number				
+
+
+
+// Sieve of Eratosthenes				
+
+
+
+// Find Prime Factorisation of a Numbe…				
+
+
+
+// Power(n, x)
+

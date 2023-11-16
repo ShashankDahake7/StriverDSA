@@ -93,94 +93,967 @@ public:
 
 // Count Good numbers				
 
+// CN
+// Method-1
+bool goodWithoutDigit(int n, int digit) {
+    if (n % 10 == digit)
+        return false;
+    int sum = n % 10;
+    n = n / 10;
+    while (n > 0) {
+        if (n % 10 == digit || n % 10 <= sum)
+            return false;
+        sum += n % 10;
+        n /= 10;
+    }
+    return true;
+}
+vector<int> goodNumbers(int a, int b, int digit) {
+    vector<int> ans;
+    for (int i = a; i <= b; i++) {
+        if (goodWithoutDigit(i, digit))
+            ans.push_back(i);
+    }
+    return ans;
+}
 
+// Method-2
+bool Good_num(int x, int d, int sum) {
+    if (x == 0)
+        return true;
+    int temp = x % 10;
+    if (temp <= sum || temp == d)
+        return false;
+    return Good_num(x / 10, d, sum + temp);
+}
+vector<int> goodNumbers(int a, int b, int d) {
+    vector<int> res;
+    for (int i = a; i <= b; i++) {
+        if (i % 10 == d)
+            continue;
+        if (Good_num(i / 10, d, i % 10))
+            res.push_back(i);
+    }
+    return res;
+}
+
+// LC
+class Solution {
+    // At even indices there can be 5 values(0,2,4,6,8) i.e. all even numbers 0 to 9
+    // And At odd indices there can 4 values(2,3,5,7) i.e. all prime numbers 0 to 9
+    // Total number of good digit strings would be  (5 ^ even indices) * (4 ^ odd indices)
+    // We also need to return  % 10^9 + 7.
+public:
+    long long powerMod(int a, long long b, int mod) {
+        if(b == 0)
+            return 1;
+        long long x = powerMod(a, b/2, mod);
+        // Case 1 - b is even
+        // a^b can written as (a^(b/2)) * (a ^ (b/2))
+        if(b % 2 == 0)
+            return (x * x) % mod;
+        // Case 2 - b is odd
+        // a^b can be re-written as (a^(b/2)) * (a^(b/2)) * a
+        else
+            return (((a * x) % mod) * x) % mod;
+    }
+    int countGoodNumbers(long long n) {
+        int mod = 1e9+7;
+        return (powerMod(5, (n + 1) / 2, mod) * powerMod(4, n / 2, mod)) % mod;
+    }
+};
 
 // Sort a stack using recursion				
 
-
+#include <bits/stdc++.h>
+using namespace std;
+void sortedInsertion(stack<int> &st, int element) {
+    if (st.empty() || st.top() < element) {
+        st.push(element);
+        return;
+    }
+    int top_element = st.top();
+    st.pop();
+    // recursive call
+    sortedInsertion(st, element);
+    // inserting the popped element
+    st.push(top_element);
+}
+void sortStack(stack<int> &st) {
+    // base case
+    if (st.empty()){
+        return;
+    }
+    int element = st.top();
+    st.pop();
+    // recursive call
+    sortStack(st);
+    // insert the popped element in sorted stack
+    sortedInsertion(st, element);
+}
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        stack<int> st;
+        cin>>n;
+        for(int i=1; i<=n; i++){
+            int ele;
+            cin>>ele;
+            st.push(ele);
+        }
+        sortStack(st);
+        while (!st.empty()){
+            cout<<st.top()<<" ";
+            st.pop();
+        }
+        cout<<endl;
+    }
+    return 0;
+}
 
 // Reverse a stack using recursion
 
-
+void insertAtBottom(stack<int> &s,int element){
+    if(s.empty()){
+        s.push(element);
+        return;
+    }
+    int num=s.top();
+    s.pop();
+    insertAtBottom(s, element);
+    s.push(num);
+}
+void reverseStack(stack<int> &stack) {
+    if(stack.empty()){
+        return;
+    }
+    int num=stack.top();
+    stack.pop();
+    reverseStack(stack);
+    insertAtBottom(stack,num);
+}
 
 /* Step 7.2: Subsequences Pattern */
 
 // Generate all binary strings				
 
-
+#include<bits/stdc++.h>
+void recursion(int i, int prev, string temp, vector<string> &ans){
+    if(i < 0){
+        ans.push_back(temp);
+        return ;
+    }
+    recursion(i-1, 0, temp+"0", ans);
+    if(prev != 1){
+        recursion(i-1, 1, temp+"1", ans);
+    }
+}
+vector<string> generateString(int N) {
+    vector<string> ans;
+    recursion(N-1, 0, "", ans);
+    return ans;
+}
 
 // Generate Paranthesis				
 
-
+void recursiveCall(int openCnt,int closeCnt, int n, string str,vector<string>& ans){
+    // base condition
+    if(openCnt==n && closeCnt==n){
+        ans.push_back(str);
+        return;
+    }
+    // add open
+    if(openCnt<n){
+        recursiveCall(openCnt+1, closeCnt, n, str+'(', ans);
+    }
+    // add close
+    if (openCnt > closeCnt) {
+        recursiveCall(openCnt, closeCnt + 1, n, str + ')', ans);
+    }
+}
+vector<string> validParenthesis(int n){
+    vector<string> ans;
+    string str;
+    recursiveCall(0,0,n,str,ans);
+    return ans;
+}
 
 // Print all subsequences/Power Set		
 	
-
+void helper(string s,int index,vector<string>& ans,string res){
+    if(index == s.size()){
+        ans.push_back(res);
+        return;
+    }
+    // inclusion
+    helper(s,index+1,ans,res+s[index]);
+    // exclusion
+    helper(s,index+1,ans,res);
+}
+vector<string> generateSubsequences(string s){
+    vector<string> ans;
+    helper(s,0,ans,"");
+    return ans;
+}
 
 // Learn All Patterns of Subsequences (Theory)		
 
-
+string moreSubsequence(int n, int m, string a, string b){
+    set<char> s1,s2;
+    for(int i=0; i<n; i++){
+        s1.insert(a[i]);
+    }
+    for(int i=0; i<m; i++){
+        s2.insert(b[i]);
+    }
+    if(s1.size()==s2.size()){
+        return n < m ? b : a;
+    }
+    else{
+        return s1.size() < s2.size() ? b : a;
+    }
+}
 
 // Count all subsequences with sum K				
 
+// Method-1
+vector<vector<int>> subarraysWithSumK(vector<int> a, long long k) {
+    int i =0, j = 0, n = a.size();
+    vector<int> ans;
+    vector<vector<int>> finalans;
+    long long sum = 0;
+    while(j<=n && i<=j){
+        if(i==j && j<n){
+            sum+=a[j];
+            j++;
+            continue;
+        }
+        vector<int> ans;
+        ans.assign(a.begin()+i,a.begin()+j);
+        if(sum == k){
+            finalans.push_back(ans);
+        }
+        if(j<n && sum+a[j]<=k){
+            sum+=a[j];
+            j++;
+        }
+        else{
+            sum-=a[i];
+            i++;
+        }
+    }
+    return finalans;
+}
 
+// Method-2
+#include <bits/stdc++.h>
+using namespace std;
+
+void solve(vector<int> &nums, long long k, long long idx, long long sum,
+           vector<vector<int>> &ans, vector<int> temp){
+    if (idx >= nums.size())
+        return;
+    for (int i = idx; i < nums.size(); i++){
+        sum += nums[i];
+        temp.push_back(nums[i]);
+        if (sum == k){
+            ans.push_back(temp);
+            break;
+        }
+    }
+    solve(nums, k, idx + 1, 0, ans, {});
+}
+vector<vector<int>> subarraysWithSumK(vector<int> a, long long k) {
+    vector<vector<int>> ans;
+    vector<int> temp;
+    solve(a, k, 0, 0, ans, temp);
+    return ans;
+}
 
 // Check if there exists a subsequence with sum K			
 
-
+bool solve(int n, int k, vector<int> &a, int sum, int ind) {
+    if (sum == k) {
+        return true;
+    }
+    if (sum > k || ind >= n) {
+        return false;
+    }
+    return (solve(n, k, a, sum + a[ind], ind + 1) || solve(n, k, a, sum, ind + 1));
+}
+bool isSubsetPresent(int n, int k, vector<int> &a) {
+    return solve(n, k, a, 0, 0);
+}
 
 // Combination Sum		
 	
-
+void rec(vector<int> &v,vector<vector<int>> &res,vector<int> &a,int b,int i){
+    if(b == 0){
+        res.push_back(v);
+        return;
+    }
+    if(b < 0 || i == a.size()){
+        return;
+    }
+    rec(v,res,a,b,i+1);
+    v.push_back(a[i]);
+    rec(v,res,a,b-a[i],i);
+    v.pop_back();
+    return;
+}
+vector<vector<int>> combSum(vector<int> &a, int b){
+    vector<vector<int>> res;
+    vector<int> v;
+    sort(a.begin(),a.end());
+    rec(v,res,a,b,0);
+    return res;
+}
 
 // Combination Sum-II		
 	
-
+#include <bits/stdc++.h>
+void solve(int idx, int target, vector<int> &arr, int n, vector<int> &store,
+           vector<vector<int>> &ans) {
+	if (target == 0) {
+		ans.push_back(store);
+		return;
+	}
+	if (idx >= n || target < 0) {
+		return;
+	}
+	unordered_set<int> seen;
+	for (int i = idx; i < n; i++) {
+		if (seen.count(arr[i]) == 1) {
+			continue;
+		}
+		seen.insert(arr[i]);
+		store.push_back(arr[i]);
+		solve(i + 1, target - arr[i], arr, n, store, ans);
+		store.pop_back();
+	}
+}
+vector<vector<int>> combinationSum2(vector<int> &arr, int n, int target) {
+        sort(arr.begin(), arr.end());
+        vector<vector<int>> ans;
+        vector<int> store;
+        solve(0, target, arr, n, store, ans);
+        return ans;
+}
 
 // Subset Sum-I		
 
-
+#include <bits/stdc++.h> 
+void subsetSum(int index , int sum , vector<int> &arr, vector<int> &res){
+    if(index == arr.size()){
+        res.push_back(sum);
+        return;
+    }
+    // For adding element-->
+    subsetSum(index+1, sum + arr[index], arr, res);
+    // For skiping element-->
+    subsetSum(index+1, sum, arr, res);
+}
+vector<int> subsetSum(vector<int> &num){   
+    vector<int> res;
+    subsetSum(0, 0, num, res);
+    sort(res.begin(), res.end());
+    return res;
+}
 
 // Subset Sum-II		
 	
-
+class Solution {
+public:
+    void solve(vector<int>& arr, vector<int>output, int index, vector<vector<int>>&ans){
+        ans.push_back(output);
+        for(int i=index; i<arr.size(); i++){
+            if(i > index && arr[i]==arr[i-1]){
+                continue;
+            }
+            output.push_back(arr[i]);
+            solve(arr, output, i+1, ans);
+            output.pop_back();
+        }
+    }
+    vector<vector<int>> subsetsWithDup(vector<int>& arr) {
+        sort(arr.begin(), arr.end());
+        vector<vector<int>>ans;
+        vector<int>output;
+        int index = 0;
+        solve(arr, output, index, ans);
+        return ans;   
+    }
+};
 
 // Combination Sum - III				
 
-
+void helper(int index , int sum , int n , vector<int>& output, vector<vector<int>>& ans,int k ){
+    if(sum == n && k ==0){
+        ans.push_back(output);
+        return;
+    }
+    for(int i = index ; i <=9 ; i++){
+        if(i > n){
+            break;     
+        }
+        output.push_back(i);
+        helper(i+1,sum+i , n,output,ans , k-1);
+        output.pop_back();
+    }
+}
+vector<vector<int>> combinationSum(int k, int n) {
+    vector<int> output;
+    vector<vector<int>>ans ;
+    helper(1,0,n,output,ans,k);
+    return ans;
+}
 
 // Letter Combinations of a Phone number
 
+// CN
+void rec(string s,vector<string> &res,string t,int ind,vector<string> &a){
+    if(ind==s.size()){
+        res.push_back(t);
+        return;
+    }
+    for(int i=0;i<10;i++){
+        if(s[ind]-'0'==i){
+            for(int j=0;j<a[i].size();j++){
+                t.push_back(a[i][j]);
+                rec(s,res,t,ind+1,a);
+                t.pop_back();
+            }
+            break;
+        }
+    }
+}
+vector<string> letterCombinations(string s) {
+    vector<string> ans;
+    vector<string> a={"0","1","abc","def","ghi","jkl","mno","pqrs","tuv","wxyz"};
+    string t;
+    rec(s,ans,t,0,a);
+    return ans;
+}
 
+// LC
+class Solution {
+public:
+    void solve(string digits,string output,int index,vector<string> &ans,string mapping[]){
+        if(index>=digits.length()){
+            ans.push_back(output);
+            return;
+        }
+        int number=digits[index]-'0';
+        string value=mapping[number];
+        for(int i=0;i<value.length();i++){
+            output.push_back(value[i]);
+            solve(digits,output,index+1,ans,mapping);
+            output.pop_back();
+        }
+    }
+    vector<string> letterCombinations(string digits) {
+        vector<string> ans;
+        if(digits.length()==0){
+            return ans;
+        }
+        string output="";
+        int index=0;
+        string mapping[10]={""," ","abc","def","ghi","jkl","mno","pqrs","tuv","wxyz"};
+        solve(digits,output,index,ans,mapping);
+        return ans;
+    }
+};
 
 /* Step 7.3: Trying out all Combos / Hard */
 
 // Palindrome Partitioning		
 	
-
+class Solution {
+public:
+    bool isPalindrom(int start , int end , string &s){
+        while(start<end){
+            if(s[start]!=s[end]){
+                return false;
+            }
+            start++;
+            end--;
+        }
+        return true;
+    }
+    void f(int ind, int n, vector<string> &temp, vector<vector<string>> &ans, string &s){
+        if(ind == n){
+            ans.push_back(temp);
+            return;
+        }
+        for(int i = ind ; i < n ; i++){
+            if(isPalindrom(ind,i,s)){
+                temp.push_back(s.substr(ind , i-ind +1));
+                f(i+1,n , temp , ans , s);
+                temp.pop_back();
+            }
+        }
+    }
+    vector<vector<string>> partition(string s) {
+        vector<vector<string>> ans;
+        int n = s.length();
+        vector<string> temp;
+        f(0 ,n , temp , ans , s );
+        return ans; 
+    }
+};
 
 // Word Search				
 
-
+bool solve(vector<vector<char>> &board, string &word, int rows, int cols,int index,int row,int col){
+    if(index==word.size()){
+        return true;
+    }
+    if(row<0 || col<0 || row==rows || col==cols || board[row][col]!=word[index] || board[row][col]=='!'){
+        return false;
+    }
+    char c=board[row][col];
+    board[row][col]='!';
+    bool top= solve(board,word,rows,cols,index+1,row-1,col);
+    bool bottom = solve(board,word,rows,cols,index+1,row+1,col);
+    bool left=solve(board,word,rows,cols,index+1,row,col-1);
+    bool right =solve(board,word,rows,cols,index+1,row,col+1);
+    board[row][col]=c;
+    return top|| bottom||left ||right;
+}
+bool present(vector<vector<char>> &board, string &word, int n, int m) {
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            if(word[0]==board[i][j]){
+                if(solve(board,word,n,m,0,i,j)){
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
 
 // N Queen		
 	
+// CN
+#include<bits/stdc++.h>
+using namespace std;
+vector<vector<int>>ans;
+void insertAns(vector<vector<int>>&mat){
+    int n = mat.size();
+    vector<int>temp;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            temp.push_back(mat[i][j]);
+        }
+    }
+    ans.push_back(temp);
+}
+bool isSafe(int row,int col,vector<vector<int>>&mat){
+    int n = mat.size();
+    for(int i=0;i<row;i++){
+        if(mat[i][col]==1){
+            return false;
+        }
+    }
+    for(int i=row-1,j=col-1;i>=0 && j>=0 ;i--,j--){
+        if(mat[i][j]==1){
+            return false;
+        }
+    }
+    for(int i=row-1,j=col+1;i>=0 && j<n;i--,j++){
+        if (mat[i][j] == 1) {
+            return false;
+        }
+    }
+    return true;
+}
+void queen(int row,vector<vector<int>>&mat){
+    if(row==mat.size()){
+        insertAns(mat);
+        return;
+    }
+    int n = mat.size();
+    for(int i=0;i<n;i++){
+        if(isSafe(row,i,mat)){
+            mat[row][i]=1;
+            queen(row+1,mat);
+            mat[row][i]=0;
+        }
+    }
+}
+vector<vector<int>> nQueens(int n){
+    vector<vector<int>>mat(n,vector<int>(n,0));
+    queen(0,mat);
+    return ans;
+}
 
+// LC
+class Solution {
+    //since we are traversing cols from left side 1 no need to check all directions for attack only from left
+    bool notAttacking(int row, int col, vector<string> &board, int n) {
+        int tmpRow = row;
+        int tmpCol = col;
+        //checking left upper diagonal for attack for any queen
+        while(row >= 0 && col >= 0) {
+            if(board[row][col] == 'Q')  return false;
+            row--;
+            col--;
+        }
+        //checking left side of cols for attack from any queen
+        row = tmpRow;
+        col = tmpCol;
+        while(col>=0) {
+            if(board[row][col] == 'Q')  return false;
+            col--;
+        }
+        //checking left downward diagonal for any attack
+        row = tmpRow;
+        col = tmpCol;
+        while(row < n && col >= 0) {
+            if(board[row][col] == 'Q') return false;
+            row++;
+            col--;
+        }
+        //if not under attack
+        return true;
+    }
+    void solve(int col, vector<string> &board, vector<vector<string>> &res, int n) {
+        //Base Case - if col reaches the end
+        if(col == n) {
+            res.push_back(board);
+            return ;
+        }
+        
+        for(int row=0;row<n;row++) {
+            if(notAttacking(row,col,board,n)) { //row is fixed and traversed in column
+                board[row][col] = 'Q';
+                solve(col+1 , board, res, n);
+                board[row][col] = '.';
+            }
+        }
+    }
+    public:
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>> res;
+        vector<string> board(n);
+        string s(n,'.');
+        
+        for(int i=0;i<n;i++) {
+            board[i] = s;
+        }
+        solve(0,board,res,n);
+        return res;
+    }
+};
 
 // Rat in a Maze		
 
-
+class Solution{
+    private:
+    bool safe(int x ,int y , int n , vector<vector<int>> visited ,vector<vector<int>> &m ){
+        if( ( x >= 0 && x < n ) && ( y >= 0 && y < n ) && visited[x][y] == 0 && m[x][y] == 1){
+            return true; 
+        }
+        else{
+            return false;
+        }
+    }
+    void solve(vector<vector<int>> &m , int n ,vector<string>& ans , int x , int y ,vector<vector<int>> visited , string path){
+        // base case
+        if( x == n - 1 && y == n - 1 ){
+            ans.push_back(path);
+            return ;
+        }
+        // when you cover that index
+        visited[x][y] = 1;
+        // their are  choices     
+        // 1st is Down
+        int newx = x + 1;
+        int newy = y;
+        if( safe( newx , newy , n ,visited , m)){
+            path.push_back('D');
+            solve( m , n , ans , newx , newy , visited , path);
+            path.pop_back();
+        }
+        // 1st is Left
+        newx = x;
+        newy = y - 1;
+        if( safe( newx , newy , n ,visited , m)){
+            path.push_back('L');
+            solve( m , n , ans , newx , newy , visited , path);
+            path.pop_back();
+        }
+        // 1st is Right
+        newx = x;
+        newy = y + 1;
+        if( safe( newx , newy , n ,visited , m)){
+            path.push_back('R');
+            solve( m , n , ans , newx , newy , visited , path);
+            path.pop_back();
+        }
+        // 1st is Up
+        newx = x - 1;
+        newy = y;
+        if( safe( newx , newy , n ,visited , m)){
+            path.push_back('U');
+            solve( m , n , ans , newx , newy , visited , path);
+            path.pop_back();
+        }
+        visited[x][y] = 0;
+    }
+    public:
+    vector<string> findPath(vector<vector<int>> &m, int n) {
+        vector<string>ans ;
+        if( m [0][0] == 0){
+            return ans;
+        }
+        int srcx = 0;
+        int srcy = 0;
+        // Make a visited 2D vector
+        vector<vector<int>> visited = m;
+        // make it default by all indeces by 0
+        for( int i = 0; i < n; i++){
+            for( int j = 0; j < n; j++){
+                visited [i][j] = 0;
+            }
+        }
+        string path = "";
+        solve( m , n , ans , srcx , srcy , visited , path);
+        sort(ans.begin() , ans.end());
+        return ans;
+    }
+};
 
 // Word Break				
 
-
+void solve(int ind, string s, string temp, vector<string> &ans, vector<string> dict) {
+    if (ind == s.size()) {
+        ans.push_back(temp);
+        return;
+    }
+    for (int i = ind; i < s.size(); i++) {
+        string str = s.substr(ind, i - ind + 1);
+        auto it = find(dict.begin(), dict.end(), str);
+        if (it != dict.end()) {
+        solve(i + 1, s, temp + str + ' ', ans, dict);
+        }
+    }
+}
+vector<string> getAllValidSentences(string &s, vector<string> &dict){
+    vector<string> ans;
+    string temp;
+    solve(0, s, temp, ans, dict);
+    return ans;
+}
 
 // M Coloring Problem		
 	
+// CN
+bool isposs(vector<vector<int>> &mat, vector<int> &c , int col,int node,int m){
+    for(int i=0;i<mat.size();i++){
+        if(mat[node][i]==1 && c[i]==col){
+            return false ;
+        }
+    }
+    return true;
+}
+bool color(vector<vector<int>> &mat, int m, int node, vector<int> &c){
+    if(node==mat.size()){
+        return true;
+    }
+    for(int i=1;i<=m;i++){
+        if(isposs(mat,c,i,node,m)){
+            c[node]=i;
+            if(color(mat, m, node+1, c)){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+string graphColoring(vector<vector<int>> &mat, int m) {
+    vector<int> c(mat.size(),-1);
+    if(color(mat,m,0,c)){
+        return "YES";
+    }
+    else {
+        return "NO";
+    }
+}
 
+// LC
+bool isSafe(int node, int currCol, bool graph[101][101], int m, int n, int color[]) {
+	for(int i=0; i<n; i++) {
+            if(i!=node && graph[i][node]==true && color[i]==currCol) {
+                return false;
+            }
+        }
+        return true;
+}
+bool solve(int node, bool graph[101][101], int m, int n, int color[]) {
+	if(node == n) {
+            return true;
+        }
+        for(int i=1; i<=m; i++) {
+            if(isSafe(node, i, graph, m, n, color)) {
+                color[node] = i;
+                if(solve(node+1, graph, m, n, color)) {
+                    return true;
+                }
+                color[node] = 0;
+            }
+        }
+        return false;
+    }
+bool graphColoring(bool graph[101][101], int m, int n) {
+	int color[n] = {0};
+        if(solve(0, graph, m, n, color))   return true;
+        return false;
+}
 
 // Sudoko Solver		
 	
+// CN
+bool isSafe(int arr[][9],int x, int row, int col, int n){
+    for(int i=0; i<n; i++){
+        if(arr[row][i] == x){
+            return false;
+        }   
+        if(arr[i][col] == x){
+            return false;
+        }   
+    }
+    // case 3 not present in 3*3
+    int dup_row = row/3;
+    int dup_col = col/3;
+    for(int i=0; i<3; i++){
+        for(int j=0; j<3; j++){
+            if (arr[3 * dup_row + i][3 * dup_col + j] == x) {
+                return false;
+            }
+        }
+    }
+    return true;
+}   
+bool solve(int board[][9], int n){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            if(board[i][j]==0){
+                for(int k=0;k<=9;k++){
+                    if(isSafe(board, k, i, j, n)){
+                        board[i][j]=k;
+                        if(solve(board, n)==true){
+                            return true;
+                        }
+                        board[i][j]=0;
+                    }
+                }
+                return false;
+            }
+        }
+    }
+    return true;
+}
+bool sudokuSolver(int board[][9]) {
+    return solve(board, 9);
+}
 
+// LC
+class Solution {
+public:
+    bool isSafe(int row, int col, vector<vector<char>>& board, char val){
+        int n=board.size();
+        for(int i=0; i<n; i++){
+            //row check
+            if(board[row][i]==val){
+                return false;
+            }
+            //col check
+            if(board[i][col]==val){
+                return false;
+            }
+            //3*3 small matrix check
+            if(board[3*(row/3)+i/3][3*(col/3)+i%3]==val){
+                return false;
+            }
+        }
+        return true;
+    }
+    bool solve(vector<vector<char>>& board){
+        int n=board.size();
+        for(int i=0; i<n;i++){
+            for(int j=0; j<n;j++){
+                //checking for empty cell
+                if(board[i][j]=='.'){
+                    //now each empty cell can be filled with 1 to 9 digits, So lets check them one by one.
+                    for(char val='1'; val<='9';val++){
+                        //checking is the value which we are trying  to put int board[i][j]
+                        //is valid or not according to rule
+                        //here basically we are checking the specified rule
+                        //calling isSafe function
+                        if(isSafe(i, j, board,val)){
+                            board[i][j]=val;
+                            // recursive call to find next solution
+                            bool aageKaSolution=solve(board);
+                            if(aageKaSolution==true){
+                                return true;
+                            }
+                            else{
+                                //backtracking
+                                board[i][j]='.';
+                            }
+                        }
+                    }
+                    //if 1 to 9 tak koi bhi solution nhi nikala, current cell pr 
+                    //that means ki piche kahi wrong value put ho gyi hai 
+                    //therefore go back by returning false
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    void solveSudoku(vector<vector<char>>& board) {
+        solve(board);
+    }
+};
 
 // Expression Add Operators
+
+class Solution {
+public:
+    void solve(long long val, int prev, int &target, string &num, string output, int index, vector<string>&ans){
+        if(index >= num.size()){
+            if(val == target){
+                ans.push_back(output);
+            }
+            return;
+        }
+        string temp = "";
+        long long curr_val = 0;
+        for(int i=index; i<num.size(); i++){
+            temp += num[i];
+            curr_val = curr_val*10 + (num[i] - '0');
+            if(index == 0){
+                solve(curr_val, curr_val, target, num, temp, i+1, ans);
+            }
+            else{
+                solve(val+curr_val, curr_val, target, num, output+"+"+temp, i+1, ans);
+                solve(val-curr_val, -1*curr_val, target, num, output+"-"+temp, i+1, ans);
+                solve(val-prev+prev*curr_val, prev*curr_val, target, num, output+"*"+temp, i+1, ans);
+            }
+            if(num[index]=='0') break;
+        }
+    }
+    vector<string> addOperators(string num, int target) {
+        vector<string>ans;
+        string output;
+        int index = 0;
+        long long val = 0;
+        int prev = 0;
+        solve(val, prev, target, num, output, index, ans);
+        return ans;
+    }
+};

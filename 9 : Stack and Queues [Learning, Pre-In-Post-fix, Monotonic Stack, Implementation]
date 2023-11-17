@@ -2,36 +2,448 @@
 
 // Implement Stack using Arrays		
 
-
+class Stack {
+public:  
+    int size;
+    int *arr;
+    int topElement;
+    Stack(int capacity) {
+        this->size=capacity;
+        arr=new int[size];
+        topElement=-1;
+    }
+    void push(int num) {
+        if(topElement==size-1){
+            return;
+        }
+        else{
+            topElement++;
+            arr[topElement]=num;
+        }
+    }
+    int pop() {
+        if(topElement==-1){
+            return -1;
+        }
+        else{
+            int element=arr[topElement];
+            topElement--;
+            return element;
+        }
+    }
+    int top() {
+        if(topElement==-1){
+            return -1;
+        }
+        else{
+            return arr[topElement];
+        }
+    }
+    int isEmpty() {
+        if(topElement==-1){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
+    int isFull() {
+        if(topElement==size-1){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }    
+};
 
 // Implement Queue using Arrays		
 
-
+class Queue {
+public:
+	int front, rear;
+	vector<int> arr;
+	Queue(){
+		front = 0;
+		rear = 0;
+		arr.resize(100001);
+	}
+	// Enqueue (add) element 'e' at the end of the queue.
+	void enqueue(int e){
+		if(rear==arr.size()){
+			return;
+		}
+		else{
+			arr[rear]=e;
+			rear++;
+		}
+	}
+	// Dequeue (retrieve) the element from the front of the queue.
+	int dequeue(){
+		if(front==rear){
+			return -1;
+		}
+		else{
+			int element=arr[front];
+			front++;
+			return element;
+		}
+	}
+};
 
 // Implement Stack using Queue		
 	
+// Using Single Queue
+class Stack {
+public:
+    queue<int> q;
+    Stack() {}
+    int getSize() {
+        return q.size();
+    }
+    bool isEmpty() {
+        if(q.size()==0){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
+    void push(int element) {
+        q.push(element);
+        for(int i=0;i<q.size()-1;i++){
+            int x=q.front();
+            q.pop();
+            q.push(x);
+        }
+    }
+    int pop() {
+        if(q.size()==0){
+            return -1;
+        }
+        else{
+            int element=q.front();
+            q.pop();
+            return element;
+        }
+    }
+    int top() {
+        if(q.size()==0){
+            return -1;
+        }
+        else{
+            return q.front();
+        }
+    }
+};
 
+// Using Two Queues
+class Stack {
+public:
+    queue<int> q1,q2;
+    Stack() {}
+    int getSize() {
+        return q1.size();
+    }
+    bool isEmpty() {
+        if(q1.size()==0){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
+    void push(int element) {
+        q2.push(element);
+        while(!q1.empty()){
+            q2.push(q1.front());
+            q1.pop();
+        }
+        swap(q1,q2);
+    }
+    int pop() {
+        if(q1.size()==0){
+            return -1;
+        }
+        else{
+            int element=q1.front();
+            q1.pop();
+            return element;
+        }
+    }
+    int top() {
+        if(q1.size()==0){
+            return -1;
+        }
+        else{
+            return q1.front();
+        }
+    }
+};
 
 // Implement Queue using Stack		
-	
 
+class Queue {
+    stack<int> s1,s2;    
+public:
+    Queue() {}
+    void enQueue(int val) {
+        s1.push(val);
+    }
+    int deQueue() {
+        if(s2.empty()){
+            while(!s1.empty()){
+                s2.push(s1.top());
+                s1.pop();
+            }
+        }
+        if(s2.empty()){
+            return -1;
+        }
+        int x = s2.top();
+        s2.pop();
+        return x;
+    }
+    int peek() {
+        if(s2.empty()){
+            while(!s1.empty()){
+                s2.push(s1.top());
+                s1.pop();
+            }
+        }
+        if (s2.empty()) {
+            return -1;
+        }
+        return s2.top();
+    }
+    bool isEmpty() {
+        if(s1.empty() && s2.empty()){
+            return true;
+        }
+        return false;
+    }
+};
 
 // Implement stack using Linkedlist				
 
-
+class Node{
+public:
+	int data;
+        Node *next;
+        Node(){
+        	this->data = 0;
+                next = NULL;
+        }
+        Node(int data){
+                this->data = data;
+                this->next = NULL;
+        }
+        Node(int data, Node* next){
+                this->data = data;
+                this->next = next;
+        }
+};
+class Stack{
+public:
+    Node *head;
+    int size;
+    Stack(){
+        head = nullptr;
+        size = 0;
+    }
+    int getSize(){
+        return size;
+    }
+    bool isEmpty(){
+        if (size == 0){
+            return true;
+        }
+        return false;
+    }
+    void push(int data){
+        Node *temp = new Node(data);
+        temp->next = head;
+        head = temp;
+        size++;
+    }
+    void pop(){
+        if (size == 0) {
+            return;
+        } 
+        else {
+            Node *h = head;
+            head = head->next;
+            delete h;
+            size--;
+        }
+    }
+    int getTop(){
+        if (size == 0) {
+            return -1;
+        }
+        else {
+            return head->data;
+        }
+    }
+};
 
 // Implement queue using Linkedlist				
 
-
+class Node {
+public:
+      int data;
+      Node* next;
+      Node() : data(0), next(nullptr) {}
+      Node(int x) : data(x), next(nullptr) {}
+      Node(int x, Node* next) : data(x), next(next) {}
+};
+struct Queue {
+    Node* front;
+    Node* rear;
+    void push(int);
+    int pop();
+ 
+    Queue() {
+        front = rear = NULL;
+    }
+};
+void Queue::push(int x) {
+    Node *queue = new Node(x);
+    if (front == NULL) {
+        front = queue;
+        rear = queue;
+    } 
+    else {
+        rear->next = queue;
+        rear = queue;
+    }
+}
+int Queue::pop() {
+    if (front == NULL) {
+        return -1;
+        front = NULL;
+        rear = NULL;
+    } 
+    else {
+        Node *temp = front;
+        int x = front->data;
+        front = front->next;
+        free(temp);
+        return x;
+    }
+}
 
 // Check for balanced paranthesis		
 	
-
-
+class Solution {
+public:
+    bool isValid(string x)
+    {
+        stack<char> st;
+        for(int i=0; i < x.length(); i++){
+            char a = x[i];
+            if(a == '[' || a == '(' || a == '{'){
+                st.push(a);
+            }
+            else{
+                if(st.empty()){
+                    return false;
+                }
+                else{
+                    char t = st.top(); // for the top element of the stack
+                    if(t == '(' && a == ')' || t == '[' && a == ']' || t == '{' && a == '}'){
+                        st.pop();
+                    }
+                    else{
+                        return false;
+                    }
+                }
+            }
+        }
+        return st.empty();
+    }
+};
 
 // Implement Min Stack		
 	
+// Method-1
+class MinStack {
+private:
+    stack<int> minstack;  // auxiliary stack with minimum element at the top.
+    stack<int> mainstack; // main stack that has all elements
+public:
+    MinStack() {}
+    void push(int val){
+        if (minstack.empty() || val <= minstack.top()){
+            minstack.push(val); // if its the first element or minimum found so far, push it in both stacks
+        }
+        mainstack.push(val);
+    }
+    void pop(){
+        if (!mainstack.empty()){
+            if (minstack.top() == mainstack.top()){// if the top element is the minimum element found so far, remove it from both stacks
+                minstack.pop();
+            }
+            mainstack.pop();
+        }
+        else{
+            return;
+        }
+    }
+    int top(){
+        if (!mainstack.empty()){
+            return mainstack.top();
+        }
+        return -1;
+    }
+    int getMin(){
+        if (!minstack.empty()){
+            return minstack.top();
+        }
+        return -1;
+    }
+};
 
+// Method-2
+class node{
+public: 
+    int data;
+    int mini;
+    node *next;
+    node(int data,int mini){
+        this->data = data;
+        this->mini = mini;
+        this->next = NULL;
+    }
+};
+class MinStack {
+public:
+    node *head = NULL;
+    MinStack() {}
+    void push(int val) {
+        // insert at head
+        // if head is NULL
+        if(head == NULL){
+            node *newNode = new node(val,val);
+            head = newNode;
+        }
+        else{
+            int mini = min(val,head->mini);
+            node *newNode = new node(val,mini);
+            newNode->next = head;
+            head = newNode;
+        }
+    }
+    void pop() {
+        head = head -> next;
+    }    
+    int top() {
+        return head -> data;
+    }
+    int getMin() {
+        return head -> mini;
+    }
+};
 
 /* Step 9.2: Prefix, Infix, PostFix Conversion Problems */
 

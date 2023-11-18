@@ -449,90 +449,1220 @@ public:
 
 // Infix to Postfix Conversion using Stack				
 
-
+#include <bits/stdc++.h>
+int priority(char x) {
+	if (x == '(' || x == ')') {
+		return 0;
+	}
+	if (x == '+' || x == '-') {
+		return 1;
+	}
+	if (x == '*' || x == '/') {
+		return 2;
+	}
+	if (x == '^') {
+		return 3;
+	}
+	return -1;
+}
+string infixToPostfix(string str) {
+	string temp = "";
+	stack<int> st;
+	int n = str.length();
+	for (int i = 0; i < n; i++) {
+		if (str[i] >= '0' && str[i] <= '9' || (str[i] >= 'a' && str[i] <= 'z')) {
+			temp += str[i];
+		} 
+		else if (str[i] == '(') {
+			st.push(str[i]);
+		}
+		else if (str[i] == ')') {
+			while (st.top() != '(') {
+				char x = st.top();
+				st.pop();
+				temp += x;
+			}
+			st.pop();
+		} 
+		else {
+			while (!st.empty() && priority(st.top()) >= priority(str[i])) {
+				temp += st.top();
+				st.pop();
+			}
+			st.push(str[i]);
+		}
+	}
+	while (!st.empty()) {
+		temp += st.top();
+		st.pop();
+	}
+	return temp;
+}
 
 // Prefix to Infix Conversion				
 
+#include <bits/stdc++.h>
+string prefixToInfixConversion(string &str) {
+	int n = str.length();
+	stack<string> st;
+	// For prefix to infix for loop woll run in reverse order..
+	for (int i = n - 1; i >= 0; i--) {
+		if (str[i] >= 'a' && str[i] <= 'z') {
+			// You might think this step is not necessary, but it is..
+			// We have declared stack of type string, if we directly st.push(str[i])
+			// then it is error
+			string temp = "";
+			temp = str[i];
+			st.push(temp);
+		} 
+		else {
+			string s1 = st.top();
+			st.pop();
+			string s2 = st.top();
+			st.pop();
+			string exp = '(' + s1 + str[i] + s2 + ')';
+			st.push(exp);
+		}
+	}
+	return st.top();
+}
 
 
 // Prefix to Postfix Conversion				
 
+#include <bits/stdc++.h>
+bool isOperator(char ch) {
+    if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+        return true;
+    }
+    else{
+        return false;
+    }
+}
 
+string preToPost(string str) {
+    int n = str.length();
+    stack<string> st;
+    for (int i = n - 1; i >= 0; i--) {
+        if (!isOperator(str[i])) {
+            // string(1,str[i]) fucntion is used to create one length string
+            // containing of str[i].. so that we don't have to do : string
+            // temp="";temp = str[i];
+            st.push(string(1, str[i]));
+        } 
+        else {
+            string s1 = st.top();
+            st.pop();
+            string s2 = st.top();
+            st.pop();
+            string exp = s1 + s2 + str[i];
+            st.push(exp);
+        }
+    }
+    return st.top();
+}
 
 // Postfix to Prefix Conversion				
 
-
+#include <bits/stdc++.h>
+bool isOperator(char ch) {
+    if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+string postfixToPrefix(string &str) {
+    int n = str.length();
+    stack<string> st;
+    for (int i = 0; i < n; i++) {
+        if (!isOperator(str[i])){
+            st.push(string(1, str[i]));
+        }    
+        // string(1,str[i]) is used to make 1 length string containing str[i]...
+        else {
+            string s1 = st.top();
+            st.pop();
+            string s2 = st.top();
+            st.pop();
+            string exp = str[i] + s2 + s1;
+            st.push(exp);
+        }
+    }
+    return st.top();
+}
 
 // Postfix to Infix				
 
-
+string postToInfix(string postfix) {
+    stack<string> st;
+    for (int i = 0; i < postfix.length(); i++){
+        if (postfix[i] >= 'a' && postfix[i] <= 'z' || postfix[i] >= 'A' && postfix[i] <= 'Z') {
+            string temp = "";
+            temp = postfix[i];
+            st.push(temp);
+        } 
+        else {
+            string s1 = st.top();
+            st.pop();
+            string s2 = st.top();
+            st.pop();
+            string exp = "";
+            exp = '(' + s2 + postfix[i] + s1 + ')';
+            st.push(exp);
+        }
+    }
+    return st.top();
+}
 
 // Convert Infix To Prefix Notation				
 
+#include <bits/stdc++.h>
+int priority(char x) {
+	if (x == '(' || x == ')') {
+		return 0;
+	}
+	if (x == '+' || x == '-') {
+		return 1;
+	}
+	if (x == '*' || x == '/'){
+		return 2;
+	}
+	if (x == '^') {
+		return 3;
+	}
+	return -1;
+}
 
+string infixToPostfix(string str) {
+	string temp = "";
+	stack<int> st;
+	int n = str.length();
+	for (int i = 0; i < n; i++) {
+		if (str[i] >= '0' && str[i] <= '9' || (str[i] >= 'a' && str[i] <= 'z')) {
+			temp += str[i];
+		} 
+		else if (str[i] == '(') {
+			st.push(str[i]);
+		}
+		else if (str[i] == ')') {
+			while (st.top() != '(') {
+				char x = st.top();
+				st.pop();
+				temp += x;
+			}
+			st.pop();
+		} 
+		else {
+			while (!st.empty() && priority(st.top()) >= priority(str[i])) {
+				temp += st.top();
+				st.pop();
+			}
+			st.push(str[i]);
+		}
+	}
+	while (!st.empty()) {
+		temp += st.top();
+		st.pop();
+	}
+	return temp;
+}
 
 /* Step 9.3: Monotonic Stack/Queue Problems [VVV. Imp] */
 
 // Next Greater Element		
-	
 
+// CN
+#include <bits/stdc++.h>
+vector<int> nextGreaterElement(vector<int> &arr, int n){
+	stack<int> st;
+	vector<int> v;
+	for (int i = n - 1; i >= 0; i--) {
+		if (st.empty()) {
+			v.push_back(-1);
+		}
+		else if (arr[i] < st.top()) {
+			v.push_back(st.top());
+		}
+		else {
+			while (!st.empty() && st.top() <= arr[i]) {
+				st.pop();
+			}
+			// if stack got empty
+			if (st.empty()) {
+				v.push_back(-1);
+			}
+			// if we got stack top element greater than ith element
+			else {
+				v.push_back(st.top());
+			}
+		}
+		st.push(arr[i]);
+	}
+	reverse(v.begin(), v.end());
+	return v;
+}
+
+// LC
+class Solution {
+public:
+    vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
+        stack<int>st;
+        st.push(-1);
+        vector<int>ans(nums2.size());
+        for(int i=nums2.size()-1;i>=0;i--){
+            if(st.top()==-1 || st.top()>nums2[i]){
+                ans[i]=st.top();
+                st.push(nums2[i]);
+            }
+            else{
+                while(st.top()<=nums2[i] && st.top()!=-1){
+                    st.pop();
+                }
+                ans[i]=st.top();
+                st.push(nums2[i]);
+            }
+        }
+        int j;
+        vector<int>k(nums1.size());
+        for(int i=0;i<nums1.size();i++){
+            int ele=nums1[i];
+            for( j=0;j<nums2.size();j++){
+                if(ele==nums2[j]){
+                    break;
+                }
+            }
+            k[i]=ans[j];
+        }
+        return k;
+        
+
+    }
+};
 
 // Next Greater Element 2				
 
+// Method-1
+#include<stack>
+vector<int> nextGreaterElementII(vector<int>& a) {
+    int n=a.size();
+    vector<int>res(n,-1);
+    stack<int>st;
+    for(int i=2*n-1;i>=0;i--){
+        while(!st.empty() && st.top()<=a[i%n]){
+            st.pop();
+        }
+        if(i<n){
+            if(!st.empty()){
+                res[i]=st.top();
+            }
+        }
+        st.push(a[i%n]);
+    }
+    return res;
+}
 
+// Method-2
+#include<stack>
+vector<int> nextGreaterElementII(vector<int>& a) {
+    int n=a.size();
+    vector<int>res(n,-1);
+    stack<int>st;
+    for(int i=n-2;i>=0;i--){
+        while (!st.empty() && st.top() <= a[i]) {
+            st.pop();
+        }
+        st.push(a[i]);
+    }
+    for(int i=n-1;i>=0;i--){
+        while (!st.empty() && st.top() <= a[i]) {
+            st.pop();
+        }
+        if(st.empty()){
+            res[i]=-1;
+        }
+        else{
+            res[i]=st.top();
+        }
+        st.push(a[i]);
+    }
+    return res;
+}
 
 // Next Smaller Element				
 
+// Method-1
+void immediateSmaller(vector<int>& arr){
+	int n = arr.size();
+	for(int i=0; i<n-1; i++){
+		if(arr[i] > arr[i+1]){
+			arr[i] = arr[i+1];
+		} 
+		else{ 
+			arr[i] = -1;
+		}
+	}
+	arr[n-1] = -1;
+}
 
+// Method-2
+#include<bits/stdc++.h>
+void immediateSmaller(vector<int> &a) {
+    int n = a.size();
+    stack<int> s;
+    s.push(a[n - 1]);
+    a[n - 1] = -1;
+    for (int i = n - 2; i >= 0; i--) {
+        if (a[i] > s.top()) {
+            int temp = s.top();
+            s.pop();
+            s.push(a[i]);
+            a[i] = temp;
+        } 
+		else {
+            s.pop();
+            s.push(a[i]);
+            a[i] = -1;
+        }
+    }
+}
 
 // Number of NGEs to the right				
 
+// Method-1
+#include<bits/stdc++.h>
+vector<int> countGreater(vector<int>&arr, vector<int>&query) {
+    vector<int> ans;
+    for(auto ele: query) {
+        int cnt = 0;
+        for(int i = ele+1; i < arr.size(); i++) {
+            if(arr[i] > arr[ele]) {
+                cnt++;
+            }
+        }
+        ans.push_back(cnt);
+    }
+    return ans;
+}
 
+// Method-2
+void merge(vector<pair<int, int> >& vec, vector<int>& ans, int low, int mid, int high){
+    int n1 = mid - low + 1;
+    int n2 = high - mid; 
+    vector<pair<int, int> > arr;
+    vector<pair<int, int> > brr;
+    for (int i = 0; i < n1; i++) {
+        arr.push_back(vec[i + low]);
+    } 
+    for (int i = 0; i < n2; i++) {
+        brr.push_back(vec[i + mid + 1]);
+    }
+    int i = 0;
+    int j = 0;
+    int k = low; 
+    while (i < n1 && j < n2) {
+        if (arr[i].first < brr[j].first) {
+            // Finding Number of next greater element
+            ans[arr[i].second] += n2 - j;
+            vec[k] = arr[i];
+            i++;
+            k++;
+        }
+        else {
+            vec[k] = brr[j];
+            j++;
+            k++;
+        }
+    }
+    while (i < n1) {
+        vec[k] = arr[i];
+        i++;
+        k++;
+    }
+    while (j < n2) {
+        vec[k] = brr[j];
+        j++;
+        k++;
+    }
+}
+void mergesort(vector<pair<int, int> >& vec, vector<int>& ans, int low, int high){
+    int mid;
+    if (low < high) {
+        // Divide them into two different part
+        mid = low + (high - low) / 2;
+        // Calling mergesort function recursively for both the part
+        mergesort(vec, ans, low, mid);
+        mergesort(vec, ans, mid + 1, high);
+        // Merging both and part and calculating Number of Next greater element
+        merge(vec, ans, low, mid, high);
+    }
+}
+vector<int> countGreater(vector<int>&nums, vector<int>&queries) {
+    // Initialize integer variables 'n' and 'q' with arr.length and query.length respectively.
+    int n =  nums.size(), q = queries.size();
+    // Storing elements of vector with their index into vector of pair
+    vector<pair<int, int> > vec;
+    for (int i = 0; i < n; i++) {
+        vec.push_back({ nums[i], i });
+    }
+    // Declaring a vector to store Number of next greater element for every element
+    vector<int> ans(n, 0);
+    mergesort(vec, ans, 0, n - 1);
+    vector<int> answer(q, 0);
+    // Printing number of next greater element for Q queries
+    for (int i = 0; i < q; i++) {
+        int j = queries[i];
+        answer[i] = ans[j];
+    }
+    return answer;
+}
+
+// Method-3
+vector<int> countGreater(vector<int> &arr, vector<int> &query) {
+    int n = arr.size();
+    int m = query.size();
+    vector<int> ans;
+    stack<int> st;
+    for (int i = 0; i < m; i++) {
+        st.push(arr[query[i]]);
+        int count = 0;
+        for (int j = query[i] + 1; j < n; j++) {
+            if (arr[j] > st.top()) {
+                count++;
+            }
+        }
+        ans.push_back(count);
+        count = 0;
+    }
+    return ans;
+}
 
 // Trapping Rainwater		
 	
-
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        int n=height.size();
+        int left=0,right=n-1;
+        int ans=0;
+        int maxLeft=INT_MIN,maxRight=INT_MIN;
+        while(left<=right){
+            if(height[left]<=height[right]){
+                if(height[left]>=maxLeft){
+                    maxLeft=height[left];
+                }
+                else{
+                    ans+=maxLeft-height[left];
+                }
+                left++;
+            }
+            else{
+                if(height[right]>=maxRight){
+                    maxRight=height[right];
+                }
+                else{
+                    ans+=maxRight-height[right];
+                }
+                right--;
+            }
+        }
+        return ans;
+    }
+};
 
 // Sum of subarray minimum				
 
-
+class Solution {
+public:
+    int sumSubarrayMins(vector<int>& arr) {
+        int n=arr.size();
+        vector<int> psi(n),nsi(n);
+        // next smaller element index
+        for(int i=n-1;i>=0;i--){
+            nsi[i]=i+1;
+            while(nsi[i]!=n && arr[nsi[i]]>=arr[i])
+                nsi[i]=nsi[nsi[i]];
+        }
+        // previous smaller element index
+        for(int i=0;i<n;i++){
+            psi[i]=i-1;
+            while(psi[i]!=-1 && arr[i]<arr[psi[i]]){
+                psi[i]=psi[psi[i]];
+            }
+        }
+        int ans=0;
+        int mod=1e9+7;
+        // contibution of each element in the subarray 
+        for(int i=0;i<n;i++){
+            int temp=(1LL*(i-psi[i])*(nsi[i]-i))%mod;
+            temp=(1LL*temp*arr[i])%mod;
+            ans=(ans+temp)%mod;
+        }
+        return ans;
+    }
+};
 
 // Asteroid Collision				
 
-
+class Solution {
+public:
+    vector<int> asteroidCollision(vector<int>& asteroids) {
+        stack<int> st;
+        for (auto x : asteroids) {
+            if (st.empty()) {
+                st.push(x);
+            }
+            else {
+                if (x > 0) {
+                    st.push(x);
+                }
+                else {
+                    while (!st.empty() && st.top() > 0 && st.top() < abs(x)) {
+                        st.pop();
+                    }
+                    if (!st.empty() && st.top() == abs(x)) {
+                        st.pop();
+                        continue;
+                    }
+                    if (!st.empty() && st.top() > abs(x)){
+                        continue;
+                    }
+                    st.push(x);
+                }
+            }
+        }
+        vector<int> ans;
+        while (!st.empty()) {
+            ans.push_back(st.top());
+            st.pop();
+        }
+        reverse(ans.begin(), ans.end());
+        return ans;
+    }
+};
 
 // Sum of subarray ranges				
 
+class Solution {
+private:
+    vector<int> nextSmallerLeft(vector<int>& nums) {
+        int n = nums.size();
+        stack<int> st;
+        vector<int> leftMin;
+        for(int i=0;i<n;i++){
+             
+            // Ignoring equal to sign for this test case [71,55,82,55] whre subarray consisits minimum element more than once as I'm considering equal to sign in nextSmallerRight fn
+            while(!st.empty() && nums[st.top()]>nums[i]) {
+                st.pop();
+            }
+            if(st.empty()){
+                leftMin.push_back(-1);
+            }
+            else{
+                leftMin.push_back(st.top());
+            }
+            st.push(i);
+        }
+        return leftMin;
+    }
+    vector<int> nextSmallerRight(vector<int>& nums) {
+        int n = nums.size();
+        stack<int> st;
+        vector<int> rightMin;
+        for(int i=n-1;i>=0;i--){
+            while(!st.empty() && nums[st.top()]>=nums[i]){
+                st.pop();
+            }
+            if(st.empty()){
+                rightMin.push_back(n);
+            }
+            else{
+                rightMin.push_back(st.top());
+            }
+            st.push(i);
+        }
+        reverse(rightMin.begin(),rightMin.end());
+        return rightMin;
+    }
+    vector<int> nextGreaterLeft(vector<int>& nums) {
+        int n = nums.size();
+        stack<int> st;
+        vector<int> leftMax;
+        for(int i=0;i<n;i++){
+            while(!st.empty() && nums[st.top()]<nums[i]){
+                st.pop();
+            }
+            if(st.empty()){
+                leftMax.push_back(-1);
+            }
+            else{
+                leftMax.push_back(st.top());
+            }
+            st.push(i);
+        }
+        return leftMax;
+    }
+    vector<int> nextGreaterRight(vector<int>& nums) {
+        int n = nums.size();
+        stack<int> st;
+        vector<int> rightMax;
+        for(int i=n-1;i>=0;i--){
+            while(!st.empty() && nums[st.top()]<=nums[i]){
+                st.pop();
+            }
+            if(st.empty()){
+                rightMax.push_back(n);
+            }
+            else{
+                rightMax.push_back(st.top());
+            }
+            st.push(i);
+        }
+        reverse(rightMax.begin(),rightMax.end());
+        return rightMax;
+    }
 
+public:
+    long long subArrayRanges(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> leftMin = nextSmallerLeft(nums);
+        vector<int> rightMin = nextSmallerRight(nums);
+        vector<int> leftMax = nextGreaterLeft(nums);
+        vector<int> rightMax = nextGreaterRight(nums);
+        // Summation of Min
+        long long minSum = 0;
+        for(int i=0; i<n; i++) {
+            // Number of subarrays that the particular element will be minimum
+            long long noOfSubArrays = (rightMin[i]-i) * (i-leftMin[i]);
+            minSum = minSum + (nums[i] *  noOfSubArrays);
+        }
+        // Summation of Max
+        long long maxSum = 0;
+        for(int i=0; i<n; i++) {
+            // Number of subarrays that the particular element will be maximum
+            long long noOfSubArrays = (rightMax[i]-i) * (i-leftMax[i]);
+            maxSum = maxSum + (nums[i] *  noOfSubArrays);
+        }
+        return maxSum - minSum;
+    }
+};
 
 // Remove k Digits				
 
+// Method-1
+string removeKDigits(string num, int k) {
+    stack<char> st;
+    int n=num.size();
+    if(n==k){
+        return "0";
+    }
+    for(int i=0;i<n;i++){
+        while(!st.empty()&& st.top()>num[i]&& k>0){
+            st.pop();
+            k--;
+        }
+        st.push(num[i]);
+    }
+    while(k>0){
+        st.pop();
+        k--;
+    }
+    string res;
+    while(!st.empty()){
+        res.push_back(st.top());
+        st.pop();
+    }
+    reverse(res.begin(),res.end());
+    while(!res.empty() && res[0]=='0'){
+        res.erase(0,1);
+    }
+    if(res.size()==0){
+        res="0";
+    }
+    return res;
+}
 
+// Method-2
+class Solution {
+public:
+    string removeKdigits(string num, int k){
+        int n=num.size();
+        if(k>=n) return "0";
+        string ans="";
+        for(int nums:num){
+            while(ans.size() && k>0 && ans.back()>nums){
+                ans.pop_back();
+                k--;
+            }
+            if(ans.size() || nums!='0'){
+                ans.push_back(nums);
+                }
+        }
+        while(ans.size() && k--){
+            ans.pop_back();
+        }
+        return ans.size()?ans:"0";
+    }
+};
 
 // Largest rectangle in a histogram		
 	
-
+class Solution {
+private:
+    vector<int> nextSmallerElement(vector<int> arr, int n) {
+        stack<int> s;
+        s.push(-1);
+        vector<int> ans(n);
+        for(int i=n-1; i>=0 ; i--) {
+            int curr = arr[i];
+            while(s.top() != -1 && arr[s.top()] >= curr)
+            {
+                s.pop();
+            }
+            //ans is stack ka top
+            ans[i] = s.top();
+            s.push(i);
+        }
+        return ans;
+    }
+    vector<int> prevSmallerElement(vector<int> arr, int n) {
+        stack<int> s;
+        s.push(-1);
+        vector<int> ans(n);
+        for(int i=0; i<n; i++) {
+            int curr = arr[i];
+            while(s.top() != -1 && arr[s.top()] >= curr){
+                s.pop();
+            }
+            //ans is stack ka top
+            ans[i] = s.top();
+            s.push(i);
+        }
+        return ans; 
+    }
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        int n= heights.size();
+        vector<int> next(n);
+        next = nextSmallerElement(heights, n);
+        vector<int> prev(n);
+        prev = prevSmallerElement(heights, n);
+        int area = INT_MIN;
+        for(int i=0; i<n; i++) {
+            int l = heights[i];
+            if(next[i] == -1) {
+                next[i] = n;
+            }
+            int b = next[i] - prev[i] - 1;
+            int newArea = l*b;
+            area = max(area, newArea);
+        }
+        return area;
+    }
+};
 
 // Maximal Rectangles				
 
+// CN
+#include <bits/stdc++.h>
+int solve(vector<int> mat) {
+	int n = mat.size();
+	vector<int> left(n);
+	vector<int> right(n);
+	stack<int> st;
+	for (int i = 0; i < n; i++) {
+		while (!st.empty() && mat[st.top()] >= mat[i]) {
+			st.pop();
+		}
+		if (st.empty()) {
+			left[i] = 0;
+		}
+		else {
+			left[i] = st.top() + 1;
+		}
+		st.push(i);
+	}
+	while (!st.empty()) {
+		st.pop();
+	}
+	for (int i = n - 1; i >= 0; i--) {
+		while (!st.empty() && mat[st.top()] >= mat[i]) {
+			st.pop();
+		}
+		if (st.empty()) {
+			right[i] = n - 1;
+		}
+		else {
+			right[i] = st.top() - 1;
+		}
+		st.push(i);
+	}
+	int maxA = -1;
+	for (int i = 0; i < n; i++) {
+		maxA = max(maxA, mat[i] * (right[i] - left[i] + 1));
+	}
+	return maxA;
+}
+int maximalAreaOfSubMatrixOfAll1(vector<vector<int>> &mat, int n, int m) {
+	int ans = -1;
+	ans = solve(mat[0]);
+	for (int i = 1; i < n; i++) {
+		for (int j = 0; j < m; j++){
+			if (mat[i][j] != 0){
+				mat[i][j] += mat[i - 1][j];
+			}
+		}
+		ans = max(ans, solve(mat[i]));
+	}
+	return ans;
+}
 
+// LC
+class Solution {
+public:
+    int area_under_histogram(int histogram[], int cols) {
+        if (cols == 0) {
+            return 0;
+        }
+        stack<int>st;
+        st.push(0);
+        int area, res = 0, i;
+        for (i = 1; i<cols; i++) {
+            if (histogram[i] >= histogram[st.top()]) {
+                st.push(i);
+                continue;
+            }
+            while(!st.empty() and histogram[i] < histogram[st.top()]) {
+                int current_bar = st.top();
+                st.pop();
+                if (st.empty()) {
+                    area = histogram[current_bar] * i;
+                }
+                else {
+                    area = histogram[current_bar] * (i - st.top() - 1);
+                 }
+                res = max(res, area);
+            }
+            st.push(i);
+        }
+        while(!st.empty()) {
+             int current_bar = st.top();
+                st.pop();
+                if (st.empty()) {
+                    area = histogram[current_bar] * i;
+                }
+                else {
+                    area = histogram[current_bar] * (i - st.top() - 1);
+                }
+            res = max(res, area);
+        }
+        return max(area, res);
+    }
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        int rows = matrix.size();
+        if (rows == 0) {
+            return 0;
+        }
+        int cols = matrix[0].size();
+        if (cols == 0) {
+            return 0;
+        }
+        int histogram[cols];
+        memset(histogram, 0, sizeof(histogram));
+        int res = 0;
+        for (int i = 0; i<rows; i++) {
+            for (int j = 0; j<cols; j++) {
+                if (matrix[i][j] == '0') {
+                    histogram[j] = 0;
+                }
+                else {
+                    histogram[j] += (matrix[i][j] - '0');
+                }
+            }
+            int area = area_under_histogram(histogram, cols);
+            res = max(area, res);
+        }
+        return res;
+    }
+};
 
 /* Step 9.4: Implementation Problems */
 
 // Sliding Window maximum		
 	
-
+#include <bits/stdc++.h>
+vector<int> maxSlidingWindow(vector<int> &nums, int n, int k) {
+    deque<int> temp;
+    vector<int> ans;
+    for (int i = 0; i < k; i++) {
+        while (!temp.empty() && nums[i] >= nums[temp.back()]) {
+            temp.pop_back();
+        }
+        temp.push_back(i);
+    }
+    ans.push_back(nums[temp.front()]);
+    for (int i = k; i < n; i++) {
+        while (!temp.empty() && temp.front() <= i - k) {
+            temp.pop_front();
+        }
+        while (!temp.empty() && nums[i] >= nums[temp.back()]) {
+            temp.pop_back();
+        }
+        temp.push_back(i);
+        ans.push_back(nums[temp.front()]);
+    }
+    return ans;
+}
 
 // Stock span problem				
 
+// CN
+vector<int> findStockSpans(vector<int> &prices) {
+    vector<int> ans;
+    stack<int> s;
+    for (int i = 0; i < prices.size(); i++) {
+        while (!s.empty() && prices[s.top()] < prices[i]) {
+            s.pop();
+        }
+        if (s.empty()) {
+            ans.push_back(i + 1);
+            s.push(i);
+        }
+        else{
+            ans.push_back(i - s.top());
+            s.push(i);
+        }
+    }
+    return ans;
+}
 
+
+// LC
+class StockSpanner {
+public:
+    stack<pair<int,int>> st;
+    StockSpanner() {}
+    int next(int price) {
+        int count = 1;
+        while(st.size() and st.top().first <= price){ 
+				count+=st.top().second , st.pop();           
+        }
+        st.push({price , count});
+        return count;
+    }
+};
 
 // The Celebrity Problem				
 
-
+#include <bits/stdc++.h>
+int findCelebrity(int n) {
+    stack<int> st;
+    for (int i = 0; i < n; i++) {
+        st.push(i);
+    }
+    while (st.size() > 1) {
+        int a = st.top();
+        st.pop();
+        int b = st.top();
+        st.pop();
+        if (knows(a, b)) {
+            st.push(b);
+        } 
+        else {
+            st.push(a);
+        }
+    }
+    int candi = st.top();
+    int celeb = 0;
+    for (int i = 0; i < n; i++) {
+        if (knows(candi, i)) {
+            celeb++;
+        }
+    }
+    if (celeb != 0) {
+        return -1;
+    }
+    int people = 0;
+    for (int i = 0; i < n; i++) {
+        if (knows(i, candi)) {
+            people++;
+        }
+    }
+    // all element should be 1 other than diagonal
+    if (people != n - 1) {
+        return -1;
+    }
+    return candi;
+}
 
 // LRU cache (IMPORTANT)		
 	
+class LRUCache {
+public:
+    class Node{
+        public: 
+            int key;
+            int val;
+            Node* prev;
+            Node* next;
+            Node(int key, int val){
+                this->key = key;
+                this->val = val;
+            }
+    };
+    Node* head = new Node(-1, -1);
+    Node* tail = new Node(-1, -1);
+    int cap;
+    unordered_map<int, Node*> m;
+    LRUCache(int capacity) {
+        cap = capacity;
+        head -> next = tail;
+        tail -> prev = head;
+    }
+    void addNode(Node* newnode){
+        Node* temp = head -> next;
+        newnode -> next = temp;
+        newnode -> prev = head;
+        head -> next = newnode;
+        temp -> prev = newnode;
+    }
+    void deleteNode(Node* delnode){
+        Node* prevv = delnode -> prev;
+        Node* nextt = delnode -> next;
+        prevv -> next = nextt;
+        nextt -> prev = prevv;
+    }
+    int get(int key) {
+        if(m.find(key) != m.end()){
+            Node* resNode = m[key];
+            int ans = resNode -> val;
 
+            m.erase(key);
+            deleteNode(resNode);
+            addNode(resNode);
+
+            m[key] = head -> next;
+            return ans;
+        }
+        return -1;
+    }
+    void put(int key, int value) {
+        if(m.find(key) != m.end()){
+            Node* curr = m[key];
+            m.erase(key);
+            deleteNode(curr);
+        }
+        if(m.size() == cap){
+            m.erase(tail -> prev -> key);
+            deleteNode(tail -> prev);
+        }
+        addNode(new Node(key, value));
+        m[key] = head -> next;
+    }
+};
 
 // LFU cache
+
+struct Node{
+    int key,value,cnt;
+    Node *next;
+    Node *prev;
+    Node(int _key,int _value){
+        key=_key;
+        value=_value;
+        cnt=1;
+    }
+};
+struct List{
+    int size;
+    Node *head;
+    Node *tail;
+    List(){
+        head= new Node(0,0);
+        tail=new Node(0,0);
+        head->next=tail;
+        tail->prev=head;
+        size=0;
+    }
+    void addfront(Node *node){
+        Node *temp=head->next;
+        node->next=temp;
+        node->prev=head;
+        head->next=node;
+        temp->prev=node;
+        size++;
+    }
+    void removenode(Node *delnode){
+        Node *delprev=delnode->prev;
+        Node *delnext=delnode->next;
+        delprev->next=delnext;
+        delnext->prev=delprev;
+        size--;
+    }
+};
+class LFUCache {
+        map<int,Node*>keynode;
+        map<int,List*>freqlistmap;
+        int maxsizecache;
+        int minfreq;
+        int cursize;
+public:
+    LFUCache(int capacity) {
+        maxsizecache=capacity;
+        minfreq=0;
+        cursize=0;
+    }
+    void updatefreqlistmap(Node *node){
+        keynode.erase(node->key);
+        freqlistmap[node->cnt]->removenode(node);
+        if(node->cnt==minfreq and freqlistmap[node->cnt]->size==0){
+            minfreq++;
+        }
+        List *nexthigherfreqlist=new List();
+        if(freqlistmap.find(node->cnt+1)!=freqlistmap.end()){
+            nexthigherfreqlist=freqlistmap[node->cnt+1];
+        }
+        node->cnt+=1;
+        nexthigherfreqlist->addfront(node);
+        freqlistmap[node->cnt]=nexthigherfreqlist;
+        keynode[node->key]=node;
+    }
+    int get(int key) {
+        if(keynode.find(key)!=keynode.end()){
+            Node *node=keynode[key];
+            int val=node->value;
+            updatefreqlistmap(node);
+            return val;
+        }
+        return -1;
+    }
+    void put(int key, int value){
+        if(maxsizecache==0){
+            return;
+        }
+        if(keynode.find(key)!=keynode.end()){
+            Node *node=keynode[key];
+            node->value=value;
+            updatefreqlistmap(node);
+        }
+        else{
+            if(cursize==maxsizecache){
+                List *list=freqlistmap[minfreq];
+                keynode.erase(list->tail->prev->key);
+                freqlistmap[minfreq]->removenode(list->tail->prev);
+                cursize--;
+            }
+            cursize++;
+            minfreq=1;
+            List *listfreq=new List();
+            if(freqlistmap.find(minfreq)!=freqlistmap.end()){
+                listfreq=freqlistmap[minfreq];
+            }
+            Node *node=new Node(key,value);
+            listfreq->addfront(node);
+            keynode[key]=node;
+            freqlistmap[minfreq]=listfreq;
+        }
+    }
+};

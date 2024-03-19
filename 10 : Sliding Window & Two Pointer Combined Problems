@@ -223,15 +223,158 @@ public:
 
 // Longest Substring with At Most K Distinct characters			
 
+// Method-1
 
+#include <unordered_set>
+int kDistinctChars(int k, string &str){
+    int ans = 0;
+    for(int i = 0; i < str.length(); i++){
+        // Create a set of unique characters
+        unordered_set<char> uniqueChars;
+        for(int j = i; j < str.length(); j++){
+            // Add characters in the set
+            uniqueChars.insert(str[j]);
+            // If set size is greater than K then we won't consider this substring
+            if(uniqueChars.size() > k){
+                break;
+            }
+            // Update the answer
+            ans = max(ans, j - i + 1);
+        }
+    }
+    return ans;
+}
+
+// Method-2
+#include<bits/stdc++.h>
+int kDistinctChars(int k, string &str) {
+    int n = str.size();
+    int i = 0, j = 0, maxi = INT_MIN;
+    unordered_map<char, int> mp;
+    while (j < n) {
+        mp[str[j]]++;
+        while (mp.size() > k) {
+            mp[str[i]]--;
+            if (mp[str[i]] == 0) {
+                mp.erase(str[i]);
+            }
+            i++;
+        }
+        maxi = max(maxi, j - i + 1);
+        j++;
+    }
+    return maxi;
+}
 
 // Subarray with k different integers				
 
+// Method-1
+class Solution {
+public:
+    int subarraysWithKDistinct(vector<int>& nums, int k) {
+        int n = nums.size(), count = 0;
+        for(int i = 0; i < n; i++){
+            unordered_set<int> st;
+            for(int j = i; j < n; j++){
+                st.insert(nums[j]);
+                if(st.size() == k){
+                    count++;
+                }
+            }
+        }
+        return count++;
+    }
+};
 
+// Method-2
+class Solution {
+public:
+    int solve(vector<int>& nums, int k) {
+        int n = nums.size();
+        unordered_map<int, int> map;
+        int count = 0, i = 0, j = 0;
+        while (j < n) {
+            map[nums[j]]++;
+            while (map.size() > k) {
+                map[nums[i]]--;
+                if (map[nums[i]] == 0) {
+                    map.erase(nums[i]);
+                }
+                i++;
+            }
+            count += j - i + 1;
+            j++;
+        }
+        return count;
+    }
+    int subarraysWithKDistinct(vector<int>& nums, int k) {
+        return solve(nums, k) - solve(nums, k - 1);
+    }
+};
 
 // Minimum Window Substring				
 
-
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        vector<int> mp(128, 0);
+        int i = 0, j = 0;
+        int currWindowSize, mini = INT_MAX, start_i = 0;
+        for(char c : t){
+            mp[c]++;
+        }
+        int reqCount = t.size();
+        while(j < s.size()){
+            if(mp[s[j]] > 0){
+                reqCount--;
+            }
+            mp[s[j]]--;
+            while(reqCount == 0){
+                currWindowSize = j - i + 1;
+                if(currWindowSize < mini){
+                    mini = currWindowSize;
+                    start_i = i;
+                }
+                mp[s[i]]++;
+                if(mp[s[i]] > 0){
+                    reqCount++;
+                }
+                i++;
+            }
+            j++;
+        }
+        return mini == INT_MAX ? "" : s.substr(start_i, mini);
+    }
+};
 
 // Minimum Window Subsequence
 
+string minWindow(string S, string T) {
+    string ans;
+    int i = 0, j = 0, k = 0;
+    int len = INT_MAX;
+    while (j < S.length() && k < T.length()) {
+        if(S[j] == T[k]) {
+        	k++;
+        }
+	if (k == T.length()) {
+		i = j;
+		k = T.length() - 1;
+		while (i >= 0 && k >= 0) {
+			if (S[i] == T[k]) {
+				k--;
+			}
+			i--;
+		}
+		i++;
+		if (len > j - i + 1) {
+			len = j - i + 1;				
+			ans = S.substr(i, j - i + 1);
+		}
+		k = 0;
+		j = i + 1;
+	}
+	j++;
+    }
+    return ans;
+}

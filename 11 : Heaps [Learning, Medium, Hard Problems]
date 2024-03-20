@@ -1,0 +1,237 @@
+/* Step 11.1: Learning */
+
+// Introduction to Priority Queues using Binary Heaps		
+
+int pop(vector<int> &heap){
+    if(heap.empty()){
+        return -1;
+    }
+    int size = heap.size();
+    int ans = heap[0];
+    heap[0] = heap[size - 1];
+    heap.pop_back();
+    size--;
+    int i = 0;
+    while(i < size){
+        int largest = i;
+        int li = 2 * i + 1;
+        int ri = 2 * i + 2;
+        if(li < size && heap[li] > heap[largest]){
+            largest = li;
+        }
+        if(ri < size && heap[ri] > heap[largest]){
+            largest = ri;
+        }
+        if(i != largest){
+            swap(heap[i], heap[largest]);
+            i = largest;
+        }
+        else{
+            return ans;
+        }
+    }
+    return ans;
+}
+
+// Code Snippet of the push function: 
+//
+//     void push(vector<int> &heap, int x)
+//     {
+//           heap.push_back(x);
+//
+//            // Posistion of the current inserted element.
+//            int pos=heap.size()-1;
+//
+//            // Shifting the element up until it reaches the top most node if it is larger than its parent.
+//            while(pos>0)
+//            {
+//                int parent = (pos-1)/2;
+//                if(heap[pos] > heap[parent])
+//                {
+//                    swap(heap[parent],heap[pos]);
+//                    pos=parent;
+//               }
+//              else
+//              {
+//                  // As parent is larger the element now is in its correct position. 
+//                  break;
+//              }
+//          }
+//      }
+
+// Min Heap and Max Heap Implementation
+
+#include<bits/stdc++.h>
+class minHeap {
+public:
+    int *heap;
+    int heapsize;
+    minHeap(int c) {
+        heapsize = 0;
+        heap = new int[c];
+    }
+    int extractMinElement() {
+        if (heapsize < 1) 
+            return -1;
+        if (heapsize == 1) {
+            heapsize--;
+            return heap[0];
+        }
+        int ans = heap[0];
+        heapsize--;
+        heap[0] = heap[heapsize];
+        heapify(0);
+        return ans;
+    }
+
+    void deleteElement(int ind) {
+        if (ind < heapsize) {
+            decreaseKey(ind);
+            extractMinElement();
+        }
+    }
+
+    void insert(int val) {
+        int ind = heapsize;
+        heapsize++;
+        heap[ind] = val;
+        while (ind > 0) {
+            if (heap[ind] < heap[parent(ind)]) {
+                swap(heap[ind], heap[parent(ind)]);
+                ind = parent(ind);
+            } else {
+                break;
+            }
+        }
+    }
+
+    void heapify(int ind) {
+        int smallest = ind;
+        int l = leftChild(ind);
+        int r = rightChild(ind);
+        if (l < heapsize && heap[l] < heap[smallest])
+            smallest = l;
+        if (r < heapsize && heap[r] < heap[smallest])
+            smallest = r;
+
+        if (smallest != ind) {
+            swap(heap[ind], heap[smallest]);
+            heapify(smallest);
+        }
+    }
+
+    void decreaseKey(int ind) {
+        heap[ind] = INT_MIN;
+        while (ind > 0 && heap[ind] < heap[parent(ind)]) {
+            swap(heap[ind], heap[parent(ind)]);
+            ind = parent(ind);
+        }
+    }
+
+    int parent(int i) {
+        return (i - 1) / 2;
+    }
+
+    int leftChild(int i) {
+        return 2 * i + 1;
+    }
+
+    int rightChild(int i) {
+        return 2 * i + 2;
+    }
+};
+
+// Check if an array represents a min-heap or not	
+
+class Solution{
+    public:
+    bool isMaxHeap(int arr[], int n){
+        for(int i = 0; i < n / 2; i++){
+            int rootValue = arr[i];
+            int leftChildValue = arr[2 * i + 1];
+            int rightChildValue = arr[2 * i + 2];
+            if(rootValue < leftChildValue || rootValue < rightChildValue){
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+// Convert min Heap to max Heap
+
+void heapify(vector<int>& arr, int ind, int n){
+	int l = 2 * ind + 1;
+	int r = 2 * ind + 2;
+	int largest = ind;
+	if(l < n && arr[l] > arr[ind]){
+		largest = l;
+	}
+	if(r < n && arr[r] > arr[largest]){
+		largest = r;
+	}
+	if(largest != ind){
+		swap(arr[ind], arr[largest]);
+		heapify(arr, largest, n);
+	}
+}
+
+vector<int>MinToMaxHeap(int n, vector<int>&arr){
+	for(int i = (arr.size() - 2) / 2; i >= 0; i--){
+		heapify(arr, i, n);
+	}
+	return arr;
+}
+
+/* Step 11.2: Medium Problems */
+
+// Kth largest element in an array [using priority queue]			
+
+
+
+// Kth smallest element in an array [using priority queue]
+
+
+
+// Sort K sorted array
+
+
+
+// Merge M sorted Lists				
+
+
+
+// Replace each array element by its corresponding rank		
+
+
+
+// Task Scheduler				
+
+
+
+// Hands of Straights				
+
+
+
+/* Step 11.3: Hard Problems */
+
+// Design twitter				
+
+
+
+// Connect `n` ropes with minimal cost				
+
+
+
+// Kth largest element in a stream of running streams
+
+
+
+// Maximum Sum Combination				
+
+
+
+// Find Median from Data Stream				
+
+
+// K most frequent elements

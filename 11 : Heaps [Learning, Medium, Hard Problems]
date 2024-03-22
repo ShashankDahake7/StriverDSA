@@ -187,31 +187,384 @@ vector<int>MinToMaxHeap(int n, vector<int>&arr){
 
 // Kth largest element in an array [using priority queue]			
 
-
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        priority_queue<int, vector<int>, greater<>> pq;
+        for (auto it : nums) {
+            pq.push(it);
+        }
+        while (pq.size() > k) {
+            pq.pop();
+        }
+        return pq.top();
+    }
+};
 
 // Kth smallest element in an array [using priority queue]
 
+class Solution{
+    public:
+    int kthSmallest(int arr[], int l, int r, int k) {
+        priority_queue<int> pq;
+        for(int i=0;i<k;i++){
+            pq.push(arr[i]);
+        }
+        for(int i=k;i<=r;i++){
+            if(arr[i]<pq.top()){
+                pq.pop();
+                pq.push(arr[i]);
+            }
+        }
+        int ans=pq.top();
+        return ans;
+    }
+};
+
+// Merge K sorted Arrays
+
+// Method-1
+#include<algorithm>
+vector<int> mergeKSortedArrays(vector<vector<int>>&kArrays, int k){
+    // Output array.
+    vector<int> result;
+    // Traverse all the k vectors.
+    for(int i = 0;i < k; i++){
+        for(int j = 0; j < kArrays[i].size(); j++){
+            // Add the element to the output array.
+            result.push_back(kArrays[i][j]);
+        }
+    }
+    // Sort the output array.
+    sort(result.begin(), result.end());   
+    return result;
+}
+
+// Method-2
+vector<int> merge(vector<int>&a, vector<int>&b){
+    vector<int>ans; 
+    int n = a.size(), m = b.size();
+    int i = 0, j = 0;
+    // Traverse the both arrays.
+    while(i < n and j < m){
+        if(a[i] < b[j]){
+            ans.push_back(a[i]);
+            i += 1;
+        }
+        else{
+            ans.push_back(b[j]);
+            j += 1;
+        }
+    }
+    // Add remaining elements of the first array.
+    while(i < n){
+        ans.push_back(a[i]);
+        i += 1;
+    }
+    // Add remaining elements of the second array.
+    while(j < m){
+        ans.push_back(b[j]);
+        j += 1;
+    }   
+    return ans; 
+}
+vector<int>  mergeKSortedArraysHelper(vector<vector<int>>&kArrays, int start, int end){
+    // If there is only one array.
+    if(start == end){
+        return kArrays[start];
+    }
+    // If there are only two arrays, merge them.
+    if(start + 1 == end){
+        return merge(kArrays[start], kArrays[end]);
+    }
+    int mid = start + (end - start)/2;
+    // Divide the arrays into two halves.
+    vector<int> first = mergeKSortedArraysHelper(kArrays, start, mid);
+    vector<int> second = mergeKSortedArraysHelper(kArrays, mid + 1, end);
+    // Return the final merged array.
+    return merge(first, second);   
+}
+vector<int> mergeKSortedArrays(vector<vector<int>>&kArrays, int k){
+    vector<int> result = mergeKSortedArraysHelper(kArrays, 0, k - 1);
+    return result;
+}
+
+// Method-3 
+#include<queue>
+
+vector<int> mergeKSortedArrays(vector<vector<int>>&kArrays, int k){
+    vector<int> result; 
+    // Create a min heap to store atmost k heap nodes at a time.
+    priority_queue<pair<int, pair<int, int> >, vector<pair<int, pair<int, int> > >, greater<pair<int, pair<int, int> > > > minHeap; 
+    for (int i = 0; i < kArrays.size(); i++){
+        minHeap.push({ kArrays[i][0], { i, 0 } }); 
+    }
+    while (minHeap.empty() == false) { 
+        // Remove the minimum element from the heap.
+        pair<int, pair<int, int> > curr = minHeap.top(); 
+        minHeap.pop(); 
+        // i is the array number and j is the index of the removed element in the ith array.
+        int i = curr.second.first; 
+        int j = curr.second.second; 
+        // Add the removed element to the output array.
+        result.push_back(curr.first); 
+        // If the next element of the extracted element exists, add it to the heap.
+        if (j + 1 < kArrays[i].size()){
+            minHeap.push({ kArrays[i][j + 1], { i, j + 1 } }); 
+        }
+    } 
+    // Return the output array.
+    return result; 
+}
 
 
 // Sort K sorted array
 
-
+class Solution {
+    public:
+    string isKSortedArray(int arr[], int n, int k){
+        unordered_map<int,int> m;
+        for(int i = 0; i < n; i++){
+            m[arr[i]] = i;
+        }
+        sort(arr, arr + n);
+        for(int i = 0; i < n; i++){
+            int x = abs(m[arr[i]] - i);
+            if(x > k){
+                return "No";
+            }
+        }
+        return "Yes";
+    }
+};
 
 // Merge M sorted Lists				
 
+// Method-1
+class Solution {
+public:
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        if (lists.size() == 0) {
+            return NULL;
+        }
+        ListNode* dummyHead = new ListNode(-1);
+        ListNode* dummyTail = dummyHead;
+        priority_queue<pair<int, ListNode*>, vector<pair<int, ListNode*>>, greater<pair<int, ListNode*>>> pq;
+        for (auto head : lists) {
+            if (head != NULL) {
+                pq.push({head->val, head});
+            }
+        }
+        while (!pq.empty()) {
+            ListNode* minNode = pq.top().second;
+            pq.pop();
+            if (minNode->next != NULL) {
+                pq.push({minNode->next->val, minNode->next});
+            }
+            dummyTail->next = minNode;
+            dummyTail = dummyTail->next;
+        }
+        return dummyHead->next;
+    }
+};
 
+// Method-2
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        if (lists.size() == 0)
+            return NULL;
+        return mergeKListsHelper(lists, 0, lists.size() - 1);
+    }
+    ListNode* mergeKListsHelper(vector<ListNode*>& lists, int start, int end) {
+        if (start > end)
+            return NULL;
+        if (start == end)
+            return lists[start];
+        int mid = start + (end - start) / 2;
+        ListNode* left = mergeKListsHelper(lists, start, mid);
+        ListNode* right = mergeKListsHelper(lists, mid + 1, end);
+        return merge(left, right);
+    }
+    ListNode* merge(ListNode* list1Head, ListNode* list2Head) {
+        ListNode* dummyHead = new ListNode(-1);
+        ListNode* dummyTail = dummyHead;
+        while (list1Head != NULL && list2Head != NULL) {
+            if (list1Head->val < list2Head->val) {
+                dummyTail->next = list1Head;
+                list1Head = list1Head->next;
+            } 
+            else {
+                dummyTail->next = list2Head;
+                list2Head = list2Head->next;
+            }
+            dummyTail = dummyTail->next;
+        }
+        dummyTail->next = (list1Head != NULL) ? list1Head : list2Head;
+        return dummyHead->next;
+    }
+};
 
 // Replace each array element by its corresponding rank		
 
+// Method-1
+vector<int> replaceWithRank(vector<int> &arr, int n) {
+        if(n == 0){
+            return {};
+        }
+        vector<pair<int, int>> temp;
+        for(int i = 0; i < n; i++){
+            temp.push_back({arr[i], i});
+        }
+        sort(temp.begin(), temp.end());
+        int rank = 1;
+        for(int i = 0 ; i < n - 1; i++){
+            if(temp[i].first == temp[i + 1].first){
+                arr[temp[i].second] = rank;
+            }
+            else{
+                arr[temp[i].second] = rank;
+                rank++;
+            }
+        }
+        if(!temp.empty()){
+            arr[temp.back().second] = rank;
+        }
+        return arr;
+}
 
+// Method-2
+vector<int> replaceWithRank(vector<int> &arr, int n) {
+        if (n == 0)
+            return {};
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        for (int i = 0; i < n; i++) {
+            pq.push({arr[i], i});
+        }
+        int rank = 1;
+        int last = pq.top().first;
+        while (!pq.empty()) {
+            auto itr = pq.top();
+            pq.pop();
+            if (itr.first != last) {
+                rank = rank + 1;
+            }
+            arr[itr.second] = rank;
+            last = itr.first;
+        }
+        return arr;
+}
 
 // Task Scheduler				
 
+// Method-1
+class Solution {
+public:
+    int leastInterval(vector<char>& tasks, int n) {
+        vector<int> mp(26, 0);
+        for(auto i : tasks){
+            mp[i - 'A']++;
+        }
+        int time = 0;
+        priority_queue<int> pq;
+        for(int i = 0; i < 26; i++){
+            if(mp[i] > 0){
+                pq.push(mp[i]);
+            }
+        }
+        while(!pq.empty()){
+            vector<int> temp;
+            for(int i = 1; i <= n + 1; i++){
+                if(!pq.empty()){
+                    int freq = pq.top();
+                    pq.pop();
+                    freq--;
+                    temp.push_back(freq);
+                }
+            }
+            for(int i : temp){
+                if(i > 0){
+                    pq.push(i);
+                }
+            }
+            if(pq.empty()){
+                time += temp.size();
+            }
+            else{
+                time += n + 1;
+            }
+        }
+        return time;
+    }
+};
 
+// Method-2
+class Solution {
+public:
+    int leastInterval(vector<char>& tasks, int n) {
+        vector<int> mp(26, 0);
+        int maxi = 1;
+        for (auto& ch : tasks) {
+            mp[ch - 'A']++;
+            maxi = max(maxi, mp[ch - 'A']);
+        }
+        int maxcnt = 0;
+        for (int& x : mp){
+            if (maxi == x) {
+                maxcnt++;
+            }
+        }
+        return max((int)tasks.size(), ((n + 1) * (maxi - 1) + maxcnt));
+    }
+};
 
 // Hands of Straights				
 
-
+class Solution {
+public:
+    bool isNStraightHand(vector<int>& hand, int groupSize) {
+        int n = hand.size();
+        if (n % groupSize != 0) {
+            return false;
+        }
+        map<int, priority_queue<int, vector<int>, greater<int>>> mp;
+        sort(hand.begin(), hand.end());
+        vector<bool> vis(n);
+        for (int i = 0; i < n; i++){
+            mp[hand[i]].push(i);
+        }
+        for(int i = 0; i < n; i++){
+            if(!vis[i]){
+                for(int j = 0; j < groupSize; j++){
+                    int currCard = hand[i] + j;
+                    if(j == groupSize - 1){
+                        vis[mp[currCard].top()] = true;
+                        mp[currCard].pop();
+                        break;
+                    }
+                    if(mp[currCard + 1].empty()){
+                        return false;
+                    }
+                    else{
+                        vis[mp[currCard].top()] = true;
+                        mp[currCard].pop();
+                    }
+                }
+            }
+        }
+        return true;
+    }
+};
 
 /* Step 11.3: Hard Problems */
 

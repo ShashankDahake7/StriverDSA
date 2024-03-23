@@ -1,0 +1,557 @@
+/* Step 12.1: Easy Problems */
+
+// Assign Cookies
+
+class Solution {
+public:
+    int findContentChildren(vector<int>& g, vector<int>& s) {
+        sort(g.begin(), g.end());
+        sort(s.begin(), s.end());
+        int i = 0, j = 0, count = 0;
+        while (i < g.size() && j < s.size()) {
+            if (s[j] >= g[i]) {
+                count++;
+                i++;
+            }
+            j++;
+        }
+        return count;
+    }
+};
+
+// Fractional Knapsack Problem		
+	
+class Solution{
+    public:
+    double fractionalKnapsack(int W, Item arr[], int n){
+        sort(arr, arr + n, [](Item a, Item b){
+            return (double) a.value / a.weight > (double) b.value / b.weight; 
+        });
+        double ans = 0;
+        for(int i = 0; i < n; i++){
+            if(arr[i].weight <= W){
+                ans += arr[i].value;
+                W -= arr[i].weight;
+            }
+            else if(W){
+                ans += (double) arr[i].value / arr[i].weight * W;
+                W -= W;
+                break;
+            }
+        }
+        return ans;
+    }
+};
+
+// Greedy algorithm to find minimum number of coins		
+	
+class Solution{
+	public:
+	int solve(int nums[], int N, int x ){
+	    vector<int> dp(x + 1, INT_MAX);
+	    dp[0] = 0;
+	    int mini = INT_MAX;
+	    for(int i = 1; i <= x; i++){
+	        for(int j = 0; j < N; j++){
+    	        if(i - nums[j] >= 0 && dp[i - nums[j]] != INT_MAX){
+    	            dp[i] = min(dp[i], 1 + dp[i - nums[j]]);
+    	        }
+    	    }
+	    }
+	    return dp[x];
+	}
+	int minCoins(int coins[], int M, int V){ 
+	    int ans = solve(coins, M, V);
+	    if(ans == INT_MAX){
+	        return -1;
+	    }
+	    else{
+	        return ans;
+	    }
+	} 
+};
+
+// Lemonade Change				
+
+class Solution {
+public:
+    bool lemonadeChange(vector<int>& bills) {
+        int fives = 0;
+        int tens = 0;
+        for(int x : bills){
+            if(x == 5){
+                fives++;
+            }
+            else if(x == 10){
+                if(fives == 0){
+                    return false;
+                }
+                fives--;
+                tens++;
+            }
+            else{
+                if(tens > 0 && fives > 0){
+                    tens--;
+                    fives--;
+                }
+                else if(fives >= 3){
+                    fives -= 3;
+                }
+                else{
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+};
+
+// Valid Paranthesis Checker				
+
+// Recursion
+class Solution {
+public:
+    bool solve(int ind, int openingBracket, string& s) {
+        if (ind == s.size()){
+            return (openingBracket == 0);
+        }
+        bool ans = false;
+        if (s[ind] == '*') {
+            ans |= solve(ind + 1, openingBracket + 1, s); // Add '('
+            if (openingBracket) {
+                ans |= solve(ind + 1, openingBracket - 1, s); // Add ')'
+            }
+            ans |= solve(ind + 1, openingBracket, s); // Add Nothing
+        } 
+        else {
+            if (s[ind] == '(') {
+                ans = solve(ind + 1, openingBracket + 1, s);
+            } 
+            else {
+                if (openingBracket) {
+                    ans = solve(ind + 1, openingBracket - 1, s);
+                }
+            }
+        }
+        return ans;
+    }
+    bool checkValidString(string s) { 
+        return solve(0, 0, s); 
+    }
+};
+
+// Memoization
+class Solution {
+public:
+    bool solve(int ind, int openingBracket, const string& s, vector<vector<int>>& dp) {
+        if (ind == s.size()){
+            return (openingBracket == 0);
+        }
+        if (dp[ind][openingBracket] != -1) {
+            return dp[ind][openingBracket];
+        }
+        bool ans = false;
+        if (s[ind] == '*') {
+            ans |= solve(ind + 1, openingBracket + 1, s, dp); // Add '('
+            if (openingBracket) {
+                ans |= solve(ind + 1, openingBracket - 1, s, dp); // Add ')'
+            }
+            ans |= solve(ind + 1, openingBracket, s, dp); // Add Nothing
+        } 
+        else {
+            if (s[ind] == '(') {
+                ans = solve(ind + 1, openingBracket + 1, s, dp);
+            } 
+            else {
+                if (openingBracket) {
+                    ans = solve(ind + 1, openingBracket - 1, s, dp);
+                }
+            }
+        }
+        dp[ind][openingBracket] = ans ? 1 : 0;
+        return ans;
+    }
+    bool checkValidString(string s) {
+        int n = s.size();
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1, -1));
+        return solve(0, 0, s, dp); 
+    }
+};
+
+// Tabulation
+class Solution {
+public:
+    bool checkValidString(string s) {
+        vector<vector<int>> dp(s.size() + 1, vector<int>(s.size() + 1, 0));
+        dp[s.size()][0] = 1;
+        for (int ind = s.size() - 1; ind >= 0; ind--) {
+            for (int openingBracket = 0; openingBracket < s.size(); openingBracket++) {
+                bool ans = false;
+                if (s[ind] == '*') {
+                    ans |= dp[ind + 1][openingBracket + 1];
+                    if (openingBracket)
+                        ans |= dp[ind + 1][openingBracket - 1];
+                    ans |= dp[ind + 1][openingBracket];
+                } else {
+                    if (s[ind] == '(') {
+                        ans |= dp[ind + 1][openingBracket + 1];
+                    } else {
+                        if (openingBracket)
+                            ans |= dp[ind + 1][openingBracket - 1];
+                    }
+                }
+                dp[ind][openingBracket] = ans;
+            }
+        }
+        return dp[0][0];
+    }
+};
+
+// Stack 
+class Solution {
+public:
+    bool checkValidString(string s) {
+        stack<int> open, star;
+        int len = s.size();
+        for(int i = 0; s[i] != '\0'; i++){
+            if(s[i] == '('){
+                open.push(i);
+            }
+            else if(s[i] == '*'){
+                star.push(i);
+            }
+            else{
+                if(!open.empty()){
+                    open.pop();
+                }
+                else if(!star.empty()){
+                    star.pop();
+                }
+                else{
+                    return false;
+                }
+            }
+        }
+        while(!open.empty()){
+            if(star.empty()){
+                return false;
+            }
+            else if(open.top() < star.top()){
+                open.pop();
+                star.pop();
+            }
+            else{
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+/* Step 12.2: Medium/Hard */
+
+// N meetings in one room		
+	
+class Solution{
+    public:
+    int maxMeetings(int start[], int end[], int n){
+        vector<pair<int,int>> v;
+        for(int i=0;i<n;i++){
+            v.push_back({end[i],start[i]});
+        }
+        sort(v.begin(),v.end());
+        int ans=0;
+        int last=v[0].first;
+        for(int i=0;i<n;i++){
+            if(last<v[i].second){
+                ans++;
+                last=v[i].first;
+            }
+        }
+        return ans+1;
+    }
+};
+
+// Jump Game				
+
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int target = 0;
+        for (int i = 0; i <= target; i++) {
+            target = max(target, i + nums[i]);
+            if (target >= nums.size() - 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
+// Jump Game 2				
+
+class Solution {
+public:
+    int jump(vector<int>& nums) {
+        int n = nums.size();
+        for(int i = 1; i < n; i++){
+            nums[i] = max(nums[i] + i, nums[i - 1]);
+        }
+        int pos = 0, ans = 0;
+        while(pos < n - 1) {
+            ans++;
+            pos = nums[pos];
+        }
+        return ans;
+    }
+};
+
+// Minimum number of platforms required for a railway
+	
+class Solution{
+    public:
+    int findPlatform(int arr[], int dep[], int n){   
+        int ans = 0;
+        map<int,int> mp;
+        for(int i = 0; i < n; i++){
+            mp[arr[i]]++;
+            mp[dep[i] + 1]--;
+        }
+        int sum = 0;
+        for(auto x : mp){
+           sum += x.second;
+           ans = max(ans, sum);
+        }
+        return ans;
+    }
+};
+
+// Job sequencing Problem		
+	
+/*
+struct Job 
+{ 
+    int id;	 // Job Id 
+    int dead; // Deadline of job 
+    int profit; // Profit if job is over before or on deadline 
+};
+*/
+
+class Solution {
+    public:
+    static bool comp(Job a, Job b){
+        return a.profit > b.profit;
+    }
+    vector<int> JobScheduling(Job arr[], int n) { 
+        sort(arr, arr + n, comp);
+        int maxDead = INT_MIN;
+        for(int i = 0; i < n; i++){
+            maxDead = max(maxDead, arr[i].dead);
+        }
+        vector<int>scheduled(maxDead + 1, -1);
+        int count = 0;
+        int totalProfit = 0;
+        for(int i = 0; i < n; i++){
+            int currProfit = arr[i].profit;
+            int currJobID = arr[i].id;
+            int currDead = arr[i].dead;
+            for(int k = currDead; k > 0; k--){
+                if(scheduled[k] == -1){
+                    count++;
+                    totalProfit += currProfit;
+                    scheduled[k] = currJobID;
+                    break;
+                }
+            }
+        }
+        vector<int> ans;
+        ans.push_back(count);
+        ans.push_back(totalProfit);
+        return ans;
+    }
+};
+
+// Candy				
+
+class Solution {
+public:
+    int candy(vector<int>& ratings) {
+        int n = ratings.size();
+        int candy = n, i = 1;
+        while (i < n) {
+            if (ratings[i] == ratings[i - 1]) {
+                i++;
+                continue;
+            }
+            // For increasing slope
+            int peak = 0;
+            while (ratings[i] > ratings[i - 1]) {
+                peak++;
+                candy += peak;
+                i++;
+                if (i == n)
+                    return candy;
+            }
+            // For decreasing slope
+            int valley = 0;
+            while (i < n && ratings[i] < ratings[i - 1]) {
+                valley++;
+                candy += valley;
+                i++;
+            }
+            candy -= min(peak, valley); // Keep only the higher peak
+        }
+        return candy;
+    }
+};
+
+// Program for Shortest Job First (or SJF) CPU Scheduling				
+
+#include<bits/stdc++.h>
+float sjf(int n, vector<int> &arrivalTime, vector<int> &burstTime) {
+    vector<vector<int>> x;
+    for(int i = 0; i < n; i++){
+        x.push_back({arrivalTime[i], burstTime[i]});
+    }
+    sort(x.begin(), x.end());
+    priority_queue<pair<int, int>,vector<pair<int, int>>,greater<pair<int, int>>> pq;
+    int i = 0;
+    int curr = 0;
+    int wt = 0;
+    while(i < n){
+        if(pq.empty()){
+            curr = max(curr, x[i][0]);
+            pq.push({x[i][1], x[i][0]});
+            i++;
+        }
+        else if(x[i][0] <= curr){
+            pq.push({x[i][1], x[i][0]});
+            i++;
+        }
+        else{
+            auto j = pq.top();
+            pq.pop();
+            wt += curr - j.second;
+            curr += j.first;
+        }
+    }
+    while(!pq.empty()){
+        auto j = pq.top();
+        pq.pop();
+        wt += curr-j.second;
+        curr += j.first;
+    }
+    return  (1.0) * wt / n;
+}
+
+// Program for Least Recently Used (LRU Cache) Page Replacement Algorithm
+
+class Solution{
+    public:
+    int pageFaults(int N, int C, int pages[]){
+        unordered_set<int> st;
+        unordered_map<int, int> index;
+        int page_fault = 0;
+        for(int i = 0; i<N; i++){
+            if(st.size() < C){
+                if(st.find(pages[i]) == st.end()){
+                    st.insert(pages[i]);   
+                    page_fault++;
+                }
+                index[pages[i]] = i;
+            }
+            else{
+                if(st.find(pages[i]) == st.end()){
+                    int LRUIndx = INT_MAX, data;
+                    for(auto it = st.begin(); it != st.end(); it++){
+                        if(index[*it] < LRUIndx){
+                            LRUIndx = index[*it];       
+                            data = *it;
+                        }
+                    }
+                    st.erase(data);
+                    st.insert(pages[i]);   
+                    page_fault++;
+                }       
+                index[pages[i]] = i;
+            }
+        }   
+        return page_fault;
+    }
+};
+
+// Insert Interval
+
+class Solution {
+public:
+    vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+        int n = intervals.size();
+        int i = 0;
+        vector<vector<int>> ans;
+        while(i < n && intervals[i][1] < newInterval[0]){
+            ans.push_back(intervals[i]);
+            i++;
+        }
+        while(i < n && intervals[i][0] <= newInterval[1]){
+            newInterval[0] = min(intervals[i][0], newInterval[0]);
+            newInterval[1] = max(intervals[i][1], newInterval[1]);
+            i++;
+        }
+        ans.push_back(newInterval);
+        while(i < n){
+            ans.push_back(intervals[i]);
+            i++;
+        }
+        return ans;
+    }
+};
+
+// Merge Intervals		
+	
+class Solution {
+public:
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        int n = intervals.size();
+        vector<vector<int>> ans;
+        if(n == 0){
+            return ans;
+        }
+        sort(intervals.begin(), intervals.end());
+        ans.push_back(intervals[0]);
+        int j = 0;
+        for(int i = 1; i < n; i++){
+            if(ans[j][1] >= intervals[i][0]){
+                ans[j][1] = max(ans[j][1], intervals[i][1]);     
+            }
+            else{
+                j++;
+                ans.push_back(intervals[i]);
+            }
+        }
+        return ans;
+    }
+};
+
+// Non-overlapping Intervals
+
+class Solution {
+public:
+    int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        int n = intervals.size();
+        sort(intervals.begin(), intervals.end());
+        int j = 0;
+        int ans = 0;
+        for (int i = 1; i < n; i++) {
+            if (intervals[i][0] < intervals[j][1]) {
+                ans++;
+                if (intervals[i][1] <= intervals[j][1]) {
+                    j = i;
+                }
+            } 
+            else {
+                j = i;
+            }
+        }
+        return ans;
+    }
+};

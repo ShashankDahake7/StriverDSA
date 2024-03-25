@@ -1,0 +1,120 @@
+/* Step 14.1: Concepts */
+
+// Introduction to Binary Search Tree		
+
+bool isValidBST(vector<int> &order){
+    for(int i = 0; i < order.size() - 1; i++){
+        if(order[i + 1] <= order[i]){
+            return false;
+        }
+    }
+    return true;
+}
+
+// Search in a Binary Search Tree		
+	
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* searchBST(TreeNode* root, int val) {
+        if (root == NULL) {
+            return NULL;
+        }
+        if (root->val == val) {
+            return root;
+        }
+        if (root->val < val) {
+            return searchBST(root->right, val);
+        } else {
+            return searchBST(root->left, val);
+        }
+    }
+};
+
+// Find Min/Max in BST				
+
+/*
+ * class Node
+ * {
+ * public:
+ *     int data;
+ *     Node *left;
+ *     Node *right;
+ *     Node() : data(0), left(nullptr), right(nullptr){};
+ *     Node(int x) : data(x), left(nullptr), right(nullptr) {}
+ *     Node(int x, Node *left, Node *right) : data(x), left(left), right(right) {}
+ * };
+ */
+int minVal(Node* root){
+	if(root == NULL){
+		return -1;
+	}
+	Node* curr = root;
+	while(curr->left != NULL){
+		curr = curr->left;
+	}
+	return curr->data;
+}
+
+/* Step 14.2: Practice Problems */
+
+// Ceil in a Binary Search Tree		
+
+
+
+// Floor in a Binary Search Tree		
+
+
+
+// Insert a given Node in Binary Search Tree
+	
+
+
+// Delete a Node in Binary Search Tree		
+	
+
+
+// Find K-th smallest/largest element in BST
+	
+
+
+// Check if a tree is a BST or BT
+	
+
+
+// LCA in Binary Search Tree		
+	
+
+
+// Construct a BST from a preorder traversal	
+	
+
+
+// Inorder Successor/Predecessor in BST
+	
+
+
+// Merge 2 BST's		
+	
+
+
+// Two Sum In BST | Check if there exists a pair with Sum K		
+	
+
+
+// Recover BST | Correct BST with two nodes swapped
+	
+
+
+// Largest BST in Binary Tree

@@ -1,0 +1,342 @@
+/* Step 15.1: Learning */
+
+// Graph and Types		
+
+vector < vector < int >> printAdjacency(int n, int m, vector < vector < int >> & edges) {
+    vector<vector<int>> adj(n);
+    for(int j = 0; j < n; j++){
+        adj[j].push_back(j);
+    }
+    for(int i = 0; i < m; i++){
+        int u = edges[i][0];
+        int v = edges[i][1];
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    return adj;
+}
+
+// Graph Representation | C++		
+
+#include <iostream>
+using namespace std;
+int main(){
+    int n, m;
+    cin >> n >> m;
+    vector<int> adj[n+1];
+    for(int i = 0; i < m; i++){
+        int u, v;
+        // u —> v
+        cin >> u >> v;
+        adj[u].push_back(v);
+    }
+    return 0;
+}
+
+// Counting Graphs
+
+int countingGraphs(int N){
+    return pow(2, N * (N - 1) / 2);
+}
+
+// Connected Components | Logic Explanation
+	
+// Method-(DFS-BFS)
+class Solution {
+  public:
+     void bfs(vector<int> adj[],int vis[],int start){
+        queue<int> q;
+        q.push(start);
+        vis[start]=1;
+        while(!q.empty()){
+            int node=q.front();
+            q.pop();
+            for(int it:adj[node]){
+                if(!vis[it]){
+                    vis[it]=1;
+                    q.push(it);
+                }
+            }
+        }
+    }
+    void dfs(vector<int> adj[],int vis[],int start){
+        vis[start]=1;
+        for(auto it:adj[start]){
+            if(!vis[it]){
+                dfs(adj,vis,it);
+            }
+        }
+    }
+    int numProvinces(vector<vector<int>> adj, int V) {
+        vector<int> adj[V];
+        for(int i=0;i<V;i++){
+            for(int j=0;j<V;j++){
+                if(adj[i][j]==1 && i!=j){
+                    adj[i].push_back(j);
+                    adj[j].push_back(i);
+                }
+            }
+        }
+        int vis[V+1];
+        for(int i=0;i<V;i++){
+            vis[i] = 0;
+        }
+        int ans=0;
+        for(int i=0;i<V;i++){
+            if(vis[i]==0){
+                ans++;        
+                // bfs(adj,vis,i);
+                dfs(adj,vis,i);
+            }
+        }
+        return ans;
+    }
+};
+
+// BFS		
+	
+class Solution {
+  public:
+    vector<int> bfsOfGraph(int V, vector<int> adj[]) {
+        vector<int> ans;
+        vector<int> vis(V, 0);
+        queue<int> q;
+        q.push(0);
+        vis[0] = 1;
+        while(!q.empty()){
+            int f = q.front();
+            q.pop();
+            ans.push_back(f);
+            for(auto &it : adj[f]){
+                if(!vis[it]){
+                    q.push(it);
+                    vis[it]=1;
+                }
+            }
+        }
+        return ans;
+    }
+};
+
+// DFS		
+
+class Solution {
+  public:
+    // Function to return a list containing the DFS traversal of the graph.
+    void dfs(int i, vector<int>& vis, vector<int>& ans, vector<int> adj[]){
+        vis[i] = 1;
+        ans.push_back(i);
+        for(auto &it: adj[i]){
+            if(!vis[it]){
+                dfs(it, vis, ans, adj);
+            }
+        }
+    }
+    vector<int> dfsOfGraph(int V, vector<int> adj[]) {
+        vector<int> ans;
+        vector<int> vis(V, 0);
+        dfs(0, vis, ans, adj);
+        return ans;
+    }
+};
+
+/* Step 15.2: Problems on BFS/DFS */
+
+// Number of provinces
+
+
+
+// Connected Components Problem in Matrix			
+
+
+
+// Rotten Oranges		
+	
+
+
+// Flood fill		
+	
+
+
+// Cycle Detection in unirected Graph (BFS)
+
+
+
+// Cycle Detection in undirected Graph (DFS)
+
+
+
+// 0/1 Matrix (Bfs Problem)		
+	
+
+
+// Surrounded Regions (dfs)		
+	
+
+
+// Number of Enclaves [flood fill implementation-multisource)		
+	
+
+
+// Word ladder - 1		
+	
+
+
+// Word ladder - 2		
+	
+
+
+// Number of Distinct Islands [dfs multisource]
+
+
+
+// Bipartite Graph (DFS)		
+	
+
+
+// Cycle Detection in Directed Graph (DFS)
+
+
+
+/* Step 15.3: Topo Sort and Problems */
+
+// Topo Sort		
+
+
+
+// Kahn's Algorithm		
+
+
+
+// Cycle Detection in Directed Graph (BFS)
+
+
+
+// Course Schedule - I		
+	
+
+
+// Course Schedule - II		
+	
+
+
+// Find eventual safe states		
+	
+
+
+// Alien dictionary		
+	
+
+
+/* Step 15.4: Shortest Path Algorithms and Problems */
+
+// Shortest Path in UG with unit weights
+
+
+
+// Shortest Path in DAG		
+
+
+
+// Djisktra's Algorithm		
+
+
+
+// Why priority Queue is used in Djisktra Algorithm		
+
+
+
+// Shortest path in a binary maze		
+	
+
+
+// Path with minimum effort		
+	
+
+
+// Cheapest flights within k stops		
+	
+
+
+// Network Delay time				
+
+
+
+// Number of ways to arrive at destination		
+	
+
+
+// Minimum multiplications to reach end		
+
+
+
+// Bellman Ford Algorithm		
+
+
+
+// Floyd Warshal Algorithm		
+
+
+
+// Find the city with the smallest number of neighbours in a threshold distance		
+
+
+
+/* Step 15.5: MinimumSpanningTree/Disjoint Set and Problems */
+
+// Minimum Spanning Tree		
+
+
+
+// Prim's Algorithm		
+
+
+
+// Disjoint Set [Union by Rank]		
+
+
+
+// Disjoint Set [Union by Size]		
+
+
+
+// Kruskal's Algorithm		
+
+
+
+// Number of operations to make network connected		
+	
+
+
+// Most stones removed with same rows or columns
+
+
+
+// Accounts merge		
+	
+
+
+// Number of island II		
+	
+
+
+// Making a Large Island		
+	
+
+
+// Swim in rising water				
+
+
+
+/* Step 15.6: Other Algorithms */
+
+// Bridges in Graph		
+	
+
+
+// Articulation Point		
+
+
+
+// Kosaraju's Algorithm		
+

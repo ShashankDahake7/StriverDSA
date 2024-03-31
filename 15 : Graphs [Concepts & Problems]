@@ -597,15 +597,188 @@ public:
 
 // Number of Distinct Islands [dfs multisource]
 
+class Solution {
+public:
+    bool isvalid(int i, int j, int n, int m) {
+        return i >= 0 && i < n && j >= 0 && j < m;
+    }
+    vector<pair<int, int>> moves = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+    void dfs(int i, int j, vector<vector<int>>& grid, vector<vector<int>>& vis, vector<pair<int, int>>& ar, int x, int y) {
+        int n = grid.size();
+        int m = grid[0].size();
+        vis[i][j] = 1;
+        ar.push_back({i - x, j - y});
+        for (auto child : moves) {
+            int p = i + child.first;
+            int q = j + child.second;
+            if (!isvalid(p, q, n, m))
+                continue;
+            if (grid[p][q] == 0)
+                continue;
+            if (!vis[p][q]) {
+                dfs(p, q, grid, vis, ar, x, y);
+            }
+        }
+    }
+    int countDistinctIslands(vector<vector<int>>& grid) {
+        int n = grid.size();
+        int m = grid[0].size();
+        vector<vector<int>> vis(n, vector<int>(m, 0));
+        set<vector<pair<int, int>>> s;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (!vis[i][j] && grid[i][j] == 1) {
+                    vector<pair<int, int>> ar;
+                    dfs(i, j, grid, vis, ar, i, j);
+                    s.insert(ar);
+                }
+            }
+        }
+        return s.size();
+    }
+};
 
-
-// Bipartite Graph (DFS)		
+// Bipartite Graph
 	
+// BFS
+class Solution {
+public:
+    bool bfs(int node, vector<vector<int>>& graph, vector<int>& color, vector<int>& vis) {
+        queue<int> q;
+        q.push(node);
+        vis[node] = 1;
+        color[node] = 1;
+        while (!q.empty()) {
+            int curr = q.front();
+            q.pop();
+            for (int i = 0; i < graph[curr].size(); i++) {
+                int adjNode = graph[curr][i];
+                if (!vis[adjNode]) {
+                    if (color[curr] == color[adjNode]) {
+                        color[adjNode] = (-1 * color[curr]);
+                    }
+                    vis[adjNode] = 1;
+                    q.push(adjNode);
+                }
+                if (vis[adjNode] && color[adjNode] == color[curr])
+                    return false;
+                }
+        }
+        return true;
+    }
+    bool isBipartite(vector<vector<int>>& graph) {
+        int n = graph.size();
+        vector<int> color(n, -1);        
+        vector<int> vis(n, 0);
+        bool ans = true;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i]) {
+                bool temp = bfs(i, graph, color, vis);
+                ans = ans & temp;
+            }
+        }
+        return ans;
+    }
+};
 
+// DFS
+class Solution {
+public:
+    bool dfs(int node, int parent, vector<vector<int>>& graph, vector<int>& color) {
+        if (parent == -1 || color[parent] == 2) {
+            color[node] = 1;
+        } else {
+            color[node] = 2;
+        }
+        for (auto ngr : graph[node]) {
+            if (color[ngr] == -1) {
+                if (dfs(ngr, node, graph, color) == false)
+                    return false;
+            } else if (color[ngr] == color[node])
+                return false;
+        }
+        return true;
+    }
+    bool isBipartite(vector<vector<int>>& graph) {
+        int n = graph.size();
+        vector<int> color(n, -1);
+        for (int i = 0; i < n; i++) {
+            if (color[i] == -1 && dfs(i, -1, graph, color) == false)
+                return false;
+        }
+        return true;
+    }
+};
 
 // Cycle Detection in Directed Graph (DFS)
 
+// DFS
+#include <bits/stdc++.h>
+bool dfs(int node, vector<int> adj[], int vis[], int pathvis[]){
+    vis[node] = 1;
+    pathvis[node] = 1;
+    for (auto it : adj[node]){
+        if (!vis[it]){
+        if (dfs(it, adj, vis, pathvis) == true)
+            return true;
+        }
+        else if (pathvis[it]){
+        return true;
+        }
+    }
+    pathvis[node] = 0;
+    return false;
+}
+bool isCyclic(vector<vector<int>> &edges, int v, int e){
+    int n = v;
+    vector<int> adj[n];
+    for (auto i : edges)
+        adj[i[0]].push_back(i[1]);
+    int vis[n] = {0};
+    int pathvis[n] = {0};
+    for (int i = 0; i < n; i++){
+        if (!vis[i]){
+            if (dfs(i, adj, vis, pathvis) == true)
+                return true;
+            }
+    }
+    return false;
+}
 
+// BFS
+#include<queue>
+bool isCyclic(vector<vector<int>> &edges, int v, int e) {
+    vector<int> adj[v];
+    for (auto it : edges) {
+        int from = it[0];
+        int to = it[1];
+        adj[from].push_back(to);
+    }
+    int indegree[v] = {0};
+    for (int i = 0; i < v; i++) {
+        for (auto it : adj[i])
+        indegree[it]++;
+    }
+    queue<int> q;
+    for (int i = 0; i < v; i++) {
+        if (indegree[i] == 0)
+        q.push(i);
+    }
+    int cnt = 0;
+    while (!q.empty()) {
+        int node = q.front();
+        q.pop();
+        cnt++;
+        for (auto it : adj[node]) {
+        indegree[it]--;
+        if (indegree[it] == 0)
+            q.push(it);
+        }
+    }
+    if (cnt == v)
+        return false;
+    return true;
+}
 
 /* Step 15.3: Topo Sort and Problems */
 

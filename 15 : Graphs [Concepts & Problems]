@@ -1046,55 +1046,480 @@ public:
 
 // Shortest Path in UG with unit weights
 
-
+vector<int> shortestPath(int n, vector<vector<int>> &edges, int src) {
+    vector<int> adj[n];
+    for (int i = 0; i < edges.size(); i++) {
+        int u = edges[i][0];
+        int v = edges[i][1];
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    vector<int> distance(n, -1);
+    distance[src] = 0;
+    queue<int> q;
+    q.push(src);
+    while (!q.empty()) {
+        int node = q.front();
+        q.pop();
+        for (auto &child : adj[node]) {
+            if (distance[child] == -1) {
+                distance[child] = distance[node] + 1;
+                q.push(child);
+            }
+        }
+    }
+    return distance;
+}
 
 // Shortest Path in DAG		
 
-
+vector<int> shortestPathInDAG(int n, int m, vector<vector<int>> &edges){
+    vector<vector<pair<int,int>>> adj(n);
+    for(int i=0;i<m;i++){
+        int u=edges[i][0];
+        int v=edges[i][1];
+        int w=edges[i][2];
+        adj[u].push_back({v,w});
+    }
+    queue<pair<int,int>> q;
+    vector<int> distance(n,INT_MAX);
+    q.push({0,0});
+    distance[0]=0;
+    while(!q.empty()){
+        pair<int,int> front=q.front();
+        int node=front.first;
+        int dist=front.second;
+        q.pop();
+        for(auto i:adj[node]){
+            if(distance[i.first]>(i.second+dist)){
+                distance[i.first]=i.second+dist;
+                q.push({i.first,distance[i.first]});
+            }
+        }
+    }
+    for(int i=0;i<n;i++){
+        if(distance[i]==INT_MAX){
+            distance[i]=-1;
+        }
+    }
+    return distance;
+}
 
 // Djisktra's Algorithm		
 
-
+#include<bits/stdc++.h>
+vector<int> dijkstra(vector<vector<int>> &vec, int vertices, int edges, int source) {
+    unordered_map<int, list<pair<int, int> > > adj;
+    for(int i = 0; i < edges; i++){
+        int u = vec[i][0];
+        int v = vec[i][1];
+        int w = vec[i][2];
+        adj[u].push_back(make_pair(v,w));
+        adj[v].push_back(make_pair(u,w));
+    }
+    vector<int> dis(vertices);
+    for(int i = 0; i < vertices; i++)
+        dis[i] = INT_MAX;
+    set<pair<int, int> > st;
+    st.insert(make_pair(0, source));
+    dis[source] = 0;
+    while(!st.empty()){
+        auto top = *(st.begin());
+        int nodeDis = top.first;
+        int topnode = top.second;
+        st.erase(st.begin());        
+        for(auto neighbour : adj[topnode]){
+            if(nodeDis + neighbour.second < dis[neighbour.first]){
+                auto record = st.find(make_pair(dis[neighbour.first], neighbour.first));
+                if(record != st.end())
+                    st.erase(record);
+                dis[neighbour.first] = nodeDis + neighbour.second;
+                st.insert(make_pair(dis[neighbour.first], neighbour.first));
+            }
+        }
+    }
+    return dis;
+}
 
 // Why priority Queue is used in Djisktra Algorithm		
 
-
+vector<int> dijkstra(vector<vector<int>> &edge, int vertices, int edges, int source){
+    vector<vector<int>> adj[vertices];
+    for(auto it : edge){
+        int node = it[0];
+        int adjNode = it[1];
+        int len = it[2];
+        adj[node].push_back({adjNode,len});
+        adj[adjNode].push_back({node,len});
+    }
+    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>>pq;
+    vector<int>dist(vertices,1e9);
+    dist[source] = 0;
+    pq.push({0,source});
+    while(!pq.empty()){
+        int node = pq.top().second;
+        int len = pq.top().first;
+        pq.pop();
+        for(auto it : adj[node]){
+            int adjNode = it[0];
+            int adjDis = it[1];
+            if(len + adjDis < dist[adjNode]){
+                dist[adjNode] = len + adjDis;
+                pq.push({dist[adjNode],adjNode});
+            }
+        }
+    }
+    return dist;
+}
 
 // Shortest path in a binary maze		
 	
+class Solution {
+public:
+    int shortestPathBinaryMatrix(vector<vector<int>>& grid) {
+        queue<pair<int, pair<int, int>>> q; // Queue to store distance and coordinates
+        int n = grid.size();
+        int m = grid[0].size();
+        // Check if starting cell is blocked
+        if (grid[0][0] == 1)
+            return -1;
+        // Check if destination cell is blocked
+        if (grid[n - 1][m - 1] == 1)
+            return -1;
+        // If there is only one cell and it is reachable
+        if (n == 1 && grid[0][0] == 0)
+            return 1;
+        // Push the starting cell into the queue with distance 1
+        q.push({1, {0, 0}});
+        // Array to represent movements in row and column directions
+        int delRow[] = {-1, 0, 1, 0, 1, -1, -1, 1};
+        int delCol[] = {0, 1, 0, -1, 1, 1, -1, -1};
+        while (!q.empty()) {
+            int dis = q.front().first; // Distance of current cell from the starting cell
+            int row = q.front().second.first; // Row index of current cell
+            int col = q.front().second.second; // Column index of current cell
+            q.pop(); // Remove the current cell from the queue
+            // Check all eight neighboring cells
+            for (int i = 0; i < 8; i++) { // Loop through neighbors
+                int newRow = row + delRow[i]; // Calculate new row index
+                int newCol = col + delCol[i]; // Calculate new column index
+                // Check if the new cell is within the grid boundaries and is unblocked
+                if (newRow >= 0 && newRow < n && newCol >= 0 && newCol < m && grid[newRow][newCol] == 0) {
+                    // Mark the cell as visited (-1) to avoid revisiting
+                    grid[newRow][newCol] = -1;
+                    // If the new cell is the destination, return the distance + 1
+                    if (newRow == n - 1 && newCol == m - 1) {
+                        return dis + 1;
+                    }
+                    // Push the new cell into the queue with distance incremented by 1
+                    q.push({dis + 1, {newRow, newCol}});
+                }
+            }
+        }
+        // If destination cell is unreachable or there is no path, return -1
+        return -1;
+    }
+};
 
-
-// Path with minimum effort		
+// Path with minimum effort	
 	
-
+class Solution {
+public:
+    int minimumEffortPath(vector<vector<int>>& heights) {
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+        int n = heights.size();
+        int m = heights[0].size();
+        vector<vector<int>> dist(n, vector<int>(m, 1e9));
+        dist[0][0] = 0;
+        pq.push({0, {0, 0}});
+        int delR[] = {-1, 0, 1, 0};
+        int delC[] = {0, 1, 0, -1};
+        while (!pq.empty()) {
+            auto it = pq.top();
+            pq.pop();
+            int difference = it.first;
+            int r = it.second.first;
+            int c = it.second.second;
+            if (r == n - 1 && c == m - 1)
+                return difference;
+            for (int i = 0; i < 4; i++) {
+                int nr = r + delR[i];
+                int nc = c + delC[i];
+                if (nr >= 0 && nr < n && nc >= 0 && nc < m) {
+                    int newEffort;
+                    newEffort = max((abs(heights[r][c] - heights[nr][nc])), difference);
+                    if (newEffort < dist[nr][nc]) {
+                        dist[nr][nc] = newEffort;
+                        pq.push({newEffort, {nr, nc}});
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+};
 
 // Cheapest flights within k stops		
 	
-
+class Solution {
+public:
+    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) {
+        vector<int> distance(n, INT_MAX);
+        unordered_map<int, vector<pair<int, int>>> adj;
+        for (vector<int>& a : flights) {
+            int u = a[0];
+            int v = a[1];
+            int cost = a[2];
+            adj[u].push_back({v, cost});
+        }
+        queue<pair<int, int>> q;
+        q.push({src, 0});
+        int steps = 0;
+        while (!q.empty() && steps <= k) {
+            int size = q.size();
+            while (size--) {
+                int u = q.front().first;
+                int d = q.front().second;
+                q.pop();
+                for (pair<int, int>& p : adj[u]) {
+                    int v = p.first;
+                    int cost = p.second;
+                    if (distance[v] > d + cost) {
+                        distance[v] = d + cost;
+                        q.push({v, d + cost});
+                    }
+                }
+            }
+            steps++;
+        }
+        return distance[dst] == INT_MAX ? -1 : distance[dst];
+    }
+};
 
 // Network Delay time				
 
-
+class Solution {
+public:
+    int networkDelayTime(vector<vector<int>>& times, int n, int k) {
+        vector<pair<int, int>> adj[n + 1];
+        for (auto it : times) {
+            int u = it[0];  // source node
+            int v = it[1];  // destination node
+            int wt = it[2]; // weight or time taken to travel from u to v
+            adj[u].push_back({v, wt});
+        }
+        // Create a priority queue for Dijkstra's algorithm
+        // Pair (time, node) is used where 'time' represents time taken to reach
+        // 'node' and 'node' represents the node number
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        // Push the source node 'k' with time 0 to the priority queue
+        pq.push({0, k});
+        // Initialize an array to keep track of minimum distances from the source node 'k' to all other nodes
+        vector<int> dist(n + 1, INT_MAX);
+        dist[k] = 0; // Distance from 'k' to itself is 0
+        while (!pq.empty()) {
+            int time = pq.top().first;  // Time taken to reach the current node
+            int node = pq.top().second; // Current node
+            pq.pop();
+            // Iterate over all adjacent nodes of the current node
+            for (auto it : adj[node]) {
+                int neighbourNode = it.first; // Neighbouring node
+                int wt = it.second; // Weight of the edge between 'node' and 'neighbourNode'
+                // If the total time taken to reach 'neighbourNode' through
+                // 'node' is less than the current recorded distance to
+                // 'neighbourNode', update the distance
+                if (time + wt < dist[neighbourNode]) {
+                    dist[neighbourNode] = time + wt;
+                    // Push the updated distance and the neighbouring node to the priority queue
+                    pq.push({dist[neighbourNode], neighbourNode});
+                }
+            }
+        }
+        // Find the maximum distance in 'dist' array
+        int mx = *max_element(dist.begin() + 1, dist.end());
+        // If mx is still INT_MAX, it means some nodes are not reachable from
+        // the source 'k', so return -1, otherwise return the maximum distance
+        return mx == INT_MAX ? -1 : mx;
+    }
+};
 
 // Number of ways to arrive at destination		
 	
-
+#define ll long long
+class Solution {
+public:
+    int M = 1e9 + 7;
+    int countPaths(int n, vector<vector<int>>& roads) {
+        ll src = 0;
+        // create an adjancy list
+        vector<pair<ll, ll>> adj[n];
+        for (auto it : roads) {
+            int u = it[0];
+            int v = it[1];
+            int wt = it[2];
+            adj[u].push_back({v, wt});
+            adj[v].push_back({u, wt});
+        }
+        // time is very --> so we use the  priority queue..
+        priority_queue<pair<ll, ll>, vector<pair<ll, ll>>, greater<pair<ll, ll>>> pq;
+        // push the things--> {dis ,node}
+        pq.push({0, 0});
+        // make the distance vector
+        vector<ll> dist(n, LLONG_MAX);
+        dist[src] = 0;
+        // make the ways vector
+        vector<ll> ways(n, 0);
+        ways[src] = 1;
+        while (!pq.empty()) {
+            ll dis = pq.top().first;
+            ll curr_node = pq.top().second;
+            pq.pop();
+            for (auto it : adj[curr_node]) {
+                ll neighnode = it.first;
+                ll wt = it.second;
+                if (dis + wt < dist[neighnode]) {
+                    dist[neighnode] = dis + wt;
+                    pq.push({dist[neighnode], neighnode});
+                    ways[neighnode] = ways[curr_node];
+                }
+                else if (dis + wt == dist[neighnode]) {
+                    ways[neighnode] = (ways[neighnode] + ways[curr_node]) % M;
+                }
+            }
+        }
+        return ways[n - 1] % M;
+    }
+};
 
 // Minimum multiplications to reach end		
 
-
+int minimumOperations(int n, int start, int end, vector<int> &a){
+    vector<bool> visited(1000,false);
+    queue<pair<int,int>> q;
+    q.push({0,start});
+    visited[start] = true;
+    while(!q.empty()){
+        int node = q.front().second;
+        int dist = q.front().first;
+        q.pop();
+        if(node == end){
+            return dist;
+        }
+        for(auto i: a){
+            int val = (i*node)%1000;
+            if(visited[val]==false){
+              visited[val] = true;
+              q.push({dist+1,val});
+            }
+        }
+    }
+    return -1;
+}
 
 // Bellman Ford Algorithm		
 
+#include <bits/stdc++.h> 
+int bellmonFord(int n, int m, int src, int dest, vector<vector<int>> &edges) {
+    vector<int> dist(n+1, 1e9);
+    dist[src] = 0;
+    for (int i=1; i<=n; i++){
+        for (int j=0; j<m; j++){
+            int u = edges[j][0];
+            int v = edges[j][1];
+            int wt = edges[j][2];
+            if (dist[u] != 1e9 && ((dist[u]+wt) < dist[v])){
+                dist[v] = dist[u]+wt;
+            }
+        }
+    }
+    return dist[dest];
+
+    // if -ve cycle is present
+    // bool flag = 0;
+    // for (int j=0; j<m; j++){
+    //     int u = edges[j][0];
+    //     int v = edges[j][1];
+    //     int wt = edges[j][2];
+    //     if (dist[u] != 1e9 && ((dist[u]+wt) < dist[v])){
+    //         bool flag = 1;
+    //     }
+    // }
+    // if (flag == 0){
+    //     return dist[dest];
+    // }
+    // return -1;
+}
 
 
 // Floyd Warshal Algorithm		
 
-
+int floydWarshall(int n, int m, int src, int dest, vector<vector<int>> &edges) {
+    vector<vector<int>> matrix(n + 1, vector<int>(n + 1, 1e9));
+    for (auto i : edges) {
+        matrix[i[0]][i[1]] = i[2];
+    }
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (i == j)
+                matrix[i][j] = 0;
+        }
+    }
+    for (int k = 1; k <= n; k++) {
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (matrix[i][k] != 1e9 && matrix[k][j] != 1e9)
+                    matrix[i][j] = min(matrix[i][j], matrix[i][k] + matrix[k][j]);
+            }
+        }
+    }
+    return matrix[src][dest];
+}
 
 // Find the city with the smallest number of neighbours in a threshold distance		
 
-
+class Solution {
+public:
+    int findTheCity(int n, vector<vector<int>>& edges, int distanceThreshold) {
+        // Initialising distance array
+        vector<vector<int>> dist(n, vector<int>(n, 1e9));
+        for (int i = 0; i < n; i++) {
+            dist[i][i] = 0;
+        }
+        // Marking its weight from one city to its neighbour city
+        for (auto it : edges) {
+            int from = it[0];
+            int to = it[1];
+            int weight = it[2];
+            dist[from][to] = weight;
+            dist[to][from] = weight;
+        }
+        // Implementing Floyd Warshall Algorithm
+        for (int thr = 0; thr < n; thr++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (dist[i][j] > dist[i][thr] + dist[thr][j]) {
+                        dist[i][j] = dist[i][thr] + dist[thr][j];
+                    }
+                }
+            }
+        }
+        int mincnt = n, city = -1;
+        // Finding the no of cities can be reached from each city in the threshold distance
+        for (int i = 0; i < n; i++) {
+            int cnt = 0;
+            for (int j = 0; j < n; j++) {
+                if (dist[i][j] <= distanceThreshold) {
+                    cnt++;
+                }
+            }
+            if (mincnt >= cnt) {
+                mincnt = cnt;
+                city = i;
+            }
+        }
+        return city;
+    }
+};
 
 /* Step 15.5: MinimumSpanningTree/Disjoint Set and Problems */
 

@@ -712,7 +712,6 @@ public:
 
 // Cycle Detection in Directed Graph (DFS)
 
-// DFS
 #include <bits/stdc++.h>
 bool dfs(int node, vector<int> adj[], int vis[], int pathvis[]){
     vis[node] = 1;
@@ -745,7 +744,72 @@ bool isCyclic(vector<vector<int>> &edges, int v, int e){
     return false;
 }
 
-// BFS
+/* Step 15.3: Topo Sort and Problems */
+
+// Topo Sort		
+
+#include <bits/stdc++.h>
+void dfs(int node, vector<int> adj[], int vis[], stack<int>& st){
+    vis[node] = 1;
+    for(auto it : adj[node]){
+        if(!vis[it]){
+            dfs(it, adj, vis, st);
+        }
+    }
+    st.push(node);
+}
+vector<int> topologicalSort(vector<vector<int>> &graph, int edges, int nodes) {
+    vector<int> adj[nodes];
+    for(auto it : graph){
+        adj[it[0]].push_back(it[1]);
+    }
+    int vis[nodes] = {0};
+    stack<int> st;
+    for(int i = 0; i < nodes; i++){
+        if(!vis[i]){
+            dfs(i, adj, vis, st);
+        }
+    }
+    vector<int> ans;
+    for(int i = 0; i < nodes; i++){
+        ans.push_back(st.top());
+        st.pop();
+    }
+    return ans;
+}
+
+// Kahn's Algorithm		
+
+#include <vector>
+#include <queue>
+vector<int> topologicalSort(vector<vector<int>> &graph, int edges, int nodes) {
+    vector<int> indegree(nodes, 0);
+    vector<vector<int>> adj(nodes);
+    for(auto it : graph){
+        adj[it[0]].push_back(it[1]);
+        indegree[it[1]]++;
+    }
+    queue<int> q;
+    for(int i = 0; i < nodes; i++){
+        if(indegree[i] == 0) 
+            q.push(i);
+    }
+    vector<int> topo;
+    while(!q.empty()){
+        int node = q.front();
+        q.pop();
+        topo.push_back(node);
+        for(auto it : adj[node]){
+            indegree[it]--;
+            if(indegree[it] == 0) 
+                q.push(it);
+        }
+    }
+    return topo;
+}
+
+// Cycle Detection in Directed Graph (BFS)
+
 #include<queue>
 bool isCyclic(vector<vector<int>> &edges, int v, int e) {
     vector<int> adj[v];
@@ -780,35 +844,203 @@ bool isCyclic(vector<vector<int>> &edges, int v, int e) {
     return true;
 }
 
-/* Step 15.3: Topo Sort and Problems */
-
-// Topo Sort		
-
-
-
-// Kahn's Algorithm		
-
-
-
-// Cycle Detection in Directed Graph (BFS)
-
-
-
 // Course Schedule - I		
 	
-
+class Solution {
+public:
+    bool iscycle(vector<int> adj[], vector<int>& vis, int id) {
+        if (vis[id] == 1) {
+            return true;
+        }
+        if (vis[id] == 0) {
+            vis[id] = 1; // mark the current node as visited(in process)
+            // recursively check for cycles in the adjacent nodes
+            for (auto edge : adj[id]) {
+                if (iscycle(adj, vis, edge)) {
+                    return true;
+                }
+            }
+        }
+        vis[id] = 2; // mark the current node as visited(processed)
+        return false;
+    }
+    bool canFinish(int n, vector<vector<int>>& pre) {
+        vector<int> adj[n];
+        for (auto edge : pre) {
+            adj[edge[1]].push_back(edge[0]);
+        }
+        vector<int> vis(n, 0);
+        for (int i = 0; i < n; i++) {
+            if (iscycle(adj, vis, i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
 
 // Course Schedule - II		
 	
-
+class Solution {
+public:
+    vector<int> findOrder(int numCourses, vector<vector<int>>& pre) {
+        // created the adj matrix
+        vector<vector<int>> adj_matrix(numCourses, vector<int>(numCourses, 0));
+        // bi-->ai
+        for (int i = 0; i < pre.size(); i++) {
+            adj_matrix[pre[i][1]][pre[i][0]] = 1;
+        }
+        // we have prepared the adj matrix all we have to do is now find the toplogical sorting of the graph
+        // if there exist any
+        stack<int> topo_ordering;
+        vector<int> indegree(numCourses, 0);
+        // find all the nodes indegree or in other words number of dependencies they have
+        for (int i = 0; i < numCourses; i++) {
+            for (int j = 0; j < numCourses; j++) {
+                // i--j means i must be come before j then j has a dependency
+                if (adj_matrix[i][j])
+                    indegree[j]++;
+            }
+        }
+        // now if there are any nodes with indegree 0 they are free from dependencies they can come in any order
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0)
+                topo_ordering.push(i);
+        }
+        vector<int> ans;
+        // say if there are no such nodes dependency free then there is no ordering
+        while (!topo_ordering.empty() ) {
+            int temp = topo_ordering.top();
+            topo_ordering.pop();
+            ans.push_back(temp);
+            for (int i = 0; i < numCourses; i++) {
+                if (adj_matrix[temp][i]) {
+                    indegree[i]--;
+                    if (indegree[i] == 0) {
+                        topo_ordering.push(i);
+                    }
+                }
+            }
+        }
+        if (ans.size() != numCourses)
+            return {};
+        return ans;
+    }
+};
 
 // Find eventual safe states		
 	
+// BFS
+class Solution {
+public:
+    vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
+        int V = graph.size();
+        vector<int> res;
+        vector<int> indeg(V, 0);
+        vector<vector<int>> adj(V, vector<int>());
+        for (int i = 0; i < V; i++) {
+            for (auto e : graph[i]) {
+                adj[e].push_back(i);
+                indeg[i]++;
+            }
+        }
+        queue<int> q;
+        for (int i = 0; i < V; i++) {
+            if (indeg[i] == 0)
+                q.push(i);
+        }
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+            res.push_back(node);
+            for (auto i : adj[node]) {
+                indeg[i]--;
+                if (indeg[i] == 0)
+                    q.push(i);
+            }
+        }
+        sort(res.begin(), res.end());
+        return res;
+    }
+};
 
+// DFS
+class Solution {
+public:
+    bool detectCycle(int v, vector<vector<int>>& graph, vector<int>& vis, vector<int>& pathVis) {
+        vis[v] = 1;
+        pathVis[v] = 1;
+        for (auto& nb : graph[v]) {
+            if (vis[nb] == 0) {
+                if (detectCycle(nb, graph, vis, pathVis))
+                    return true;
+            } else {
+                if (pathVis[nb] == 1) {
+                    return true;
+                }
+            }
+        }
+        pathVis[v] = 0;
+        return false;
+    }
+    vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
+        int v = graph.size();
+        vector<int> ans;
+        vector<int> vis(v, 0);
+        vector<int> pathVis(v, 0);
+        for (int i = 0; i < v; i++) {
+            if (!detectCycle(i, graph, vis, pathVis)) {
+                ans.push_back(i);
+            }
+        }
+        return ans;
+    }
+};
 
 // Alien dictionary		
 	
-
+class Solution{
+public:
+    void addEdge(vector<int> adj[], string s, string t) {
+        int i = 0, j = 0;
+        while (i < s.length() && j < t.length() && s[i] == t[j]) {
+            i++;
+            j++;
+        }
+        if (i < s.length() && j < t.length()) {
+            adj[s[i] - 'a'].push_back(t[j] - 'a');
+        }
+    }
+    void topologicalSortUtil(int v, vector<int> adj[], vector<bool>& visited, stack<int>& s) {
+        visited[v] = true;
+        for (int i = 0; i < adj[v].size(); i++) {
+            int u = adj[v][i];
+            if (!visited[u]) {
+                topologicalSortUtil(u, adj, visited, s);
+            }
+        }
+        s.push(v);
+    }
+    string findOrder(string dict[], int N, int K) {
+        vector<int> adj[K];
+        for (int i = 0; i < N - 1; i++) {
+            addEdge(adj, dict[i], dict[i + 1]);
+        }
+        vector<bool> visited(K, false);
+        stack<int> s;
+        for (int i = 0; i < K; i++) {
+            if (!visited[i]) {
+                topologicalSortUtil(i, adj, visited, s);
+            }
+        }
+        string ans = "";
+        while (!s.empty()) {
+            ans += (char)(s.top() + 'a');
+            s.pop();
+        }
+        return ans;
+    }
+};
 
 /* Step 15.4: Shortest Path Algorithms and Problems */
 

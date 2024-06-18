@@ -1578,57 +1578,891 @@ public:
 
 // Minimum Spanning Tree		
 
-
+A spanning tree is a tree in which we have N nodes(i.e. All the nodes present in the original graph) and N-1 edges and all nodes are reachable from each other.
+Among all possible spanning trees of a graph, the minimum spanning tree is the one for which the sum of all the edge weights is the minimum.
 
 // Prim's Algorithm		
 
-
+class Solution{
+public:
+    int spanningTree(int V, vector<vector<int>> adj[]){
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({0, 0});
+        vector<int> vis(V, 0);
+        int sum = 0;
+        while(!pq.empty()){
+            int wt = pq.top().first;
+            int node = pq.top().second;
+            pq.pop();
+            if(vis[node] == 1){
+                continue;
+            }
+            vis[node] = 1;
+            sum += wt;
+            for(auto i : adj[node]){
+                int adjNode = i[0];
+                int adjWt = i[1];
+                if(!vis[adjNode]){
+                    pq.push({adjWt, adjNode});
+                }
+            }
+        }
+        return sum;
+    }
+};
 
 // Disjoint Set [Union by Rank]		
 
-
+int find(int parent[],int X){
+	if(parent[X] == X){
+        	return X;
+        }
+	else{
+          int result = find(parent,parent[X]);
+          parent[X] = result;
+          return result;
+        } 
+}
+void unionSet(int parent[],int X,int Z){
+        int x_parent = find(parent,X);
+        int z_parent = find(parent,Z);
+        if(x_parent == z_parent){
+        	return;
+        }
+	else{
+             parent[x_parent] = z_parent;
+        }
+}
 
 // Disjoint Set [Union by Size]		
 
+#include <bits/stdc++.h>
+using namespace std;
+class DisjointSet {
+    vector<int> rank, parent, size;
+public:
+    DisjointSet(int n) {
+        rank.resize(n + 1, 0);
+        parent.resize(n + 1);
+        size.resize(n + 1);
+        for (int i = 0; i <= n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+    }
 
+    int findUPar(int node) {
+        if (node == parent[node])
+            return node;
+        return parent[node] = findUPar(parent[node]);
+    }
+
+    void unionByRank(int u, int v) {
+        int ulp_u = findUPar(u);
+        int ulp_v = findUPar(v);
+        if (ulp_u == ulp_v) return;
+        if (rank[ulp_u] < rank[ulp_v]) {
+            parent[ulp_u] = ulp_v;
+        }
+        else if (rank[ulp_v] < rank[ulp_u]) {
+            parent[ulp_v] = ulp_u;
+        }
+        else {
+            parent[ulp_v] = ulp_u;
+            rank[ulp_u]++;
+        }
+    }
+
+    void unionBySize(int u, int v) {
+        int ulp_u = findUPar(u);
+        int ulp_v = findUPar(v);
+        if (ulp_u == ulp_v) return;
+        if (size[ulp_u] < size[ulp_v]) {
+            parent[ulp_u] = ulp_v;
+            size[ulp_v] += size[ulp_u];
+        }
+        else {
+            parent[ulp_v] = ulp_u;
+            size[ulp_u] += size[ulp_v];
+        }
+    }
+};
+int main() {
+    DisjointSet ds(7);
+    ds.unionBySize(1, 2);
+    ds.unionBySize(2, 3);
+    ds.unionBySize(4, 5);
+    ds.unionBySize(6, 7);
+    ds.unionBySize(5, 6);
+    // if 3 and 7 same or not
+    if (ds.findUPar(3) == ds.findUPar(7)) {
+        cout << "Same\n";
+    }
+    else cout << "Not same\n";
+
+    ds.unionBySize(3, 7);
+
+    if (ds.findUPar(3) == ds.findUPar(7)) {
+        cout << "Same\n";
+    }
+    else cout << "Not same\n";
+    return 0;
+}
 
 // Kruskal's Algorithm		
 
-
+class Solution{
+public:
+    class DisjointSet{
+        vector<int> parent, size;
+        public:
+        DisjointSet(int n){
+            parent.resize(n+1);
+            for(int i=0; i<n+1; i++)
+                parent[i] = i;
+            size.resize(n+1, 1);
+        }
+        int findparent(int node){  
+            if(node == parent[node])
+                return node;
+            // Path compression
+            return parent[node] = findparent(parent[node]);
+        }
+        void Union(int u, int v){
+            int ulp_u = findparent(u);
+            int ulp_v = findparent(v);
+            if(ulp_u == ulp_v)
+                return;
+            else if(size[ulp_u] > size[ulp_v]){
+                parent[ulp_v] = ulp_u;
+                size[ulp_v] += size[ulp_u];
+            }
+            else{
+                parent[ulp_u] = ulp_v;
+                size[ulp_u] += size[ulp_v];
+            }
+        }
+    };
+    int spanningTree(int V, vector<vector<int>> adj[]){
+        int cost = 0;
+        // Step 1: Create a datastructure to store {w, u, v}
+        vector<pair<int, pair<int, int>>> edges;
+        for(int u=0; u<V; u++){
+            for(int j=0; j<adj[u].size(); j++){
+                int v = adj[u][j][0];
+                int w = adj[u][j][1];
+                edges.push_back({w, {u, v}});
+            }
+        }
+        // Step 2: Sort the datastructure
+        sort(edges.begin(), edges.end());
+        // Step 3: take one by one edge from datastructure and form spanning tree
+        DisjointSet ds(V);
+        for(int i=0; i<edges.size(); i++){
+            int u = edges[i].second.first;
+            int v = edges[i].second.second;
+            int w = edges[i].first;
+            if(ds.findparent(u) != ds.findparent(v)){
+                cost += w;
+                ds.Union(u, v);
+            }
+        }
+        return cost;
+    }
+};
 
 // Number of operations to make network connected		
 	
+// Method-1
+class Solution {
+public:
+    void dfs(vector<vector<int>>&adj, vector<bool>&visited, int currNode)
+    { 
+        visited[currNode] = true;
+        for (int adjNode : adj[currNode])
+        {
+            if (visited[adjNode]) continue;
+            dfs(adj, visited, adjNode);
+        }
+    }
+    int makeConnected(int n, vector<vector<int>>& connections) 
+    {
+        int currWireCount = connections.size();
+        int requiredWireCount = n - 1;
+        if (currWireCount < requiredWireCount) return -1;
+        vector<vector<int>>adj(n);
+        for (vector<int>connection : connections)
+        {
+            adj[connection[0]].push_back(connection[1]);
+            adj[connection[1]].push_back(connection[0]);
+        }
+        vector<bool>visited(n, false);
+        int componentCount = 0;
+        for (int node = 0; node < n; node++)
+        {
+            if (visited[node]) continue;
+            dfs(adj, visited, node);
+            componentCount++;
+        }
+        return componentCount - 1;
+    }
+};
 
+// Method-2
+class Solution {
+public:
+    // Find the parent of a node using path compression.
+    int find(vector<int>& parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+    }
+    int makeConnected(int n, vector<vector<int>>& connections) {
+        // If the number of connections is less than n - 1, 
+        // it's impossible to connect all computers.
+        if (connections.size() < n - 1) {
+            return -1;
+        }
+        // Initialize parent array to keep track of the parent of each node.
+        vector<int> parent(n);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        // Initialize the count of unconnected nodes to n.
+        int count = n;
+        // Iterate over the connections and connect the nodes using union-find algorithm.
+        for (int i = 0; i < connections.size(); i++) {
+            int u = connections[i][0], v = connections[i][1];
+            int pu = find(parent, u), pv = find(parent, v);
+            if (pu != pv) {
+                parent[pu] = pv;
+                count--;
+            }
+        }
+        // Return the number of times we need to extract and place a cable to connect all computers.
+        return count - 1;
+    }
+};
 
 // Most stones removed with same rows or columns
 
+// Method-1
+class Solution {
+public:
+    bool isValid(vector<int>& pos1, vector<int>& pos2) {
+        if (pos1[0] == pos2[0])
+            return true;
+        if (pos1[1] == pos2[1])
+            return true;
+        return false;
+    }
+    int findParent(vector<int>& parent, int node) {
+        while (parent[node] != node) {
+            node = parent[node];
+        }
+        return node;
+    }
+    void merge(vector<int>& parent, int& componentCount, int node1, int node2) {
+        int parent1 = findParent(parent, node1);
+        int parent2 = findParent(parent, node2);
+        if (parent1 != parent2) {
+            componentCount--;
+            parent[parent1] = parent2;
+        }
+    }
+    int removeStones(vector<vector<int>>& stones) {
+        int n = stones.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; i++)
+            parent[i] = i;
+        int componentCount = n;
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+                if (isValid(stones[i], stones[j]))
+                    merge(parent, componentCount, i, j);
+            }
+        }
+        return (n - componentCount);
+    }
+};
 
+// Method-2
+class Solution {
+public:
+    bool isValid(vector<int>& pos1, vector<int>& pos2) {
+        if (pos1[0] == pos2[0])
+            return true;
+        if (pos1[1] == pos2[1])
+            return true;
+        return false;
+    }
+    void dfs(vector<vector<int>>& stones, vector<bool>& visited, int currIdx) {
+        visited[currIdx] = true;
+        for (int i = 0; i < stones.size(); i++) {
+            if (visited[i])
+                continue;
+            if (isValid(stones[i], stones[currIdx]))
+                dfs(stones, visited, i);
+        }
+    }
+    int removeStones(vector<vector<int>>& stones) {
+        int n = stones.size();
+        vector<bool> visited(n, false);
+        int componentCount = 0;
+        for (int i = 0; i < n; i++) {
+            if (visited[i])
+                continue;
+            dfs(stones, visited, i);
+            componentCount++;
+        }
+        return (n - componentCount);
+    }
+};
 
 // Accounts merge		
 	
+class DisjointSet {
+    vector<int> rank, parent, size;
+public:
+    DisjointSet(int n) {
+        rank.resize(n + 1, 0);   // Initialize rank array with 0
+        parent.resize(n + 1, 0); // Initialize parent array with 0
+        size.resize(n + 1, 0);   // Initialize size array with 0
+        for (int i = 0; i < n; i++) {
+            parent[i] = i; // Each node is its own parent initially
+            size[i] = 1;   // Initial size of each component is 1
+        }
+    }
 
+    int findUPar(int node) {
+        // Find the ultimate parent of the node with path compression
+        if (node == parent[node])
+            return node;
+        return parent[node] = findUPar(parent[node]);
+    }
 
-// Number of island II		
-	
+    void unionByRank(int u, int v) {
+        // Union by rank logic
+        int ulp_u = findUPar(u);
+        int ulp_v = findUPar(v);
+        if (ulp_u == ulp_v)
+            return; // If they have the same ultimate parent, no union is needed
 
+        // Union by comparing ranks
+        if (rank[ulp_u] < rank[ulp_v]) {
+            parent[ulp_u] = ulp_v;
+        } else if (rank[ulp_v] < rank[ulp_u]) {
+            parent[ulp_v] = ulp_u;
+        } else {
+            parent[ulp_v] = ulp_u;
+            rank[ulp_u]++;
+        }
+    }
+
+    void unionBySize(int u, int v) {
+        // Union by size logic
+        int ulp_u = findUPar(u);
+        int ulp_v = findUPar(v);
+        if (ulp_u == ulp_v)
+            return; // If they have the same ultimate parent, no union is needed
+
+        // Union by comparing sizes
+        if (size[ulp_u] < size[ulp_v]) {
+            parent[ulp_u] = ulp_v;
+            size[ulp_v] += size[ulp_u];
+        } else {
+            parent[ulp_v] = ulp_u;
+            size[ulp_u] += size[ulp_v];
+        }
+    }
+};
+
+class Solution {
+public:
+    vector<vector<string>> accountsMerge(vector<vector<string>>& details) {
+        int n = details.size();
+        DisjointSet ds(n);
+        sort(details.begin(), details.end());
+
+        // Step 1: Map each email to the corresponding account index
+        unordered_map<string, int> mp;
+        for (int i = 0; i < n; i++) {
+            for (int j = 1; j < details[i].size(); j++) {
+                string mail = details[i][j];
+                if (mp.find(mail) == mp.end()) {
+                    // If the email is not yet in the map, add it with the
+                    // current index
+                    mp[mail] = i;
+                } else {
+                    // If the email is already in the map, union the current
+                    // index with the stored index
+                    ds.unionBySize(i, mp[mail]);
+                }
+            }
+        }
+
+        // Step 2: Aggregate emails under the ultimate parent
+        vector<string> mergelist[n];
+        for (auto it : mp) {
+            int idx = it.second;
+            string mail = it.first;
+            int ult_parent = ds.findUPar(idx);
+            mergelist[ult_parent].push_back(mail);
+        }
+
+        // Step 3: Form the result
+        vector<vector<string>> ans;
+        for (int i = 0; i < n; i++) {
+            if (mergelist[i].empty())
+                continue;
+            sort(mergelist[i].begin(), mergelist[i].end());
+            vector<string> tmp;
+            tmp.push_back(details[i][0]); // Add the account name
+            for (int j = 0; j < mergelist[i].size(); j++) {
+                tmp.push_back(mergelist[i][j]); // Add the emails
+            }
+            ans.push_back(tmp);
+        }
+        sort(ans.begin(), ans.end());
+        return ans;
+    }
+};
+
+// Number of island
+
+class Solution {
+public:
+    void solve(vector<vector<char>> &grid, int i, int j, int m, int n) {
+        if (i < 0 || i >= m || j < 0 || j >= n || grid[i][j] != '1') {
+            return;
+        }
+        grid[i][j] = 'x';
+        solve(grid, i + 1, j, m, n);
+        solve(grid, i - 1, j, m, n);
+        solve(grid, i, j + 1, m, n);
+        solve(grid, i, j - 1, m, n);
+    }
+    int numIslands(vector<vector<char>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+        int count = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == '1') {
+                    solve(grid, i, j, m, n);
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+};
+
+// Number of island II
+
+class DisjointSet {
+    vector<int> rank, parent, size;
+public:
+    DisjointSet(int n) {
+        rank.resize(n + 1, 0);
+        parent.resize(n + 1);
+        size.resize(n + 1);
+        for (int i = 0; i <= n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+    }
+
+    int findUPar(int node) {
+        if (node == parent[node])
+            return node;
+        return parent[node] = findUPar(parent[node]);
+    }
+
+    void unionByRank(int u, int v) {
+        int ulp_u = findUPar(u);
+        int ulp_v = findUPar(v);
+        if (ulp_u == ulp_v) return;
+        if (rank[ulp_u] < rank[ulp_v]) {
+            parent[ulp_u] = ulp_v;
+        }
+        else if (rank[ulp_v] < rank[ulp_u]) {
+            parent[ulp_v] = ulp_u;
+        }
+        else {
+            parent[ulp_v] = ulp_u;
+            rank[ulp_u]++;
+        }
+    }
+
+    void unionBySize(int u, int v) {
+        int ulp_u = findUPar(u);
+        int ulp_v = findUPar(v);
+        if (ulp_u == ulp_v) return;
+        if (size[ulp_u] < size[ulp_v]) {
+            parent[ulp_u] = ulp_v;
+            size[ulp_v] += size[ulp_u];
+        }
+        else {
+            parent[ulp_v] = ulp_u;
+            size[ulp_u] += size[ulp_v];
+        }
+    }
+};
+
+class Solution {
+private:
+    bool isValid(int adjr, int adjc, int n, int m) {
+        return adjr >= 0 && adjr < n && adjc >= 0 && adjc < m;
+    }
+public:
+    vector<int> numOfIslands(int n, int m, vector<vector<int>> &operators) {
+        DisjointSet ds(n * m);
+        int vis[n][m];
+        memset(vis, 0, sizeof vis);
+        int cnt = 0;
+        vector<int> ans;
+        for (auto it : operators) {
+            int row = it[0];
+            int col = it[1];
+            if (vis[row][col] == 1) {
+                ans.push_back(cnt);
+                continue;
+            }
+            vis[row][col] = 1;
+            cnt++;
+            // row - 1, col
+            // row , col + 1
+            // row + 1, col
+            // row, col - 1;
+            int dr[] = { -1, 0, 1, 0};
+            int dc[] = {0, 1, 0, -1};
+            for (int ind = 0; ind < 4; ind++) {
+                int adjr = row + dr[ind];
+                int adjc = col + dc[ind];
+                if (isValid(adjr, adjc, n, m)) {
+                    if (vis[adjr][adjc] == 1) {
+                        int nodeNo = row * m + col;
+                        int adjNodeNo = adjr * m + adjc;
+                        if (ds.findUPar(nodeNo) != ds.findUPar(adjNodeNo)) {
+                            cnt--;
+                            ds.unionBySize(nodeNo, adjNodeNo);
+                        }
+                    }
+                }
+            }
+            ans.push_back(cnt);
+        }
+        return ans;
+    }
+};
 
 // Making a Large Island		
 	
-
+class DisjointSet {
+public:
+    vector<int> rank, parent, size;
+    DisjointSet(int n) {
+        rank.resize(n + 1, 0);
+        parent.resize(n + 1);
+        size.resize(n + 1);
+        for (int i = 0; i <= n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+    }
+    int findUPar(int node) {
+        if (node == parent[node])
+            return node;
+        return parent[node] = findUPar(parent[node]);
+    }
+    void unionBySize(int u, int v) {
+        int ulp_u = findUPar(u);
+        int ulp_v = findUPar(v);
+        if (ulp_u == ulp_v)
+            return;
+        if (size[ulp_u] < size[ulp_v]) {
+            parent[ulp_u] = ulp_v;
+            size[ulp_v] += size[ulp_u];
+        } else {
+            parent[ulp_v] = ulp_u;
+            size[ulp_u] += size[ulp_v];
+        }
+    }
+};
+class Solution {
+public:
+    int largestIsland(vector<vector<int>>& grid) {
+        int n = grid.size();
+        DisjointSet ds(n * n);
+        vector<int> dr = {-1, 0, 1, 0};
+        vector<int> dc = {0, 1, 0, -1};
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    for (int k = 0; k < 4; k++) {
+                        int nr = i + dr[k];
+                        int nc = j + dc[k];
+                        if (nr >= 0 && nr < n && nc >= 0 && nc < n &&
+                            grid[nr][nc] == 1) {
+                            int nodeno = n * i + j;
+                            int adjno = n * nr + nc;
+                            ds.unionBySize(adjno, nodeno);
+                        }
+                    }
+                }
+            }
+        }
+        int ans = 1;
+        for (int i = 0; i < n * n; i++) {
+            ans = max(ans, ds.size[i]);
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    unordered_set<int> st;
+                    for (int k = 0; k < 4; k++) {
+                        int nr = i + dr[k];
+                        int nc = j + dc[k];
+                        if (nr >= 0 && nr < n && nc >= 0 && nc < n &&
+                            grid[nr][nc] == 1) {
+                            int adjno = n * nr + nc;
+                            st.insert(ds.findUPar(adjno));
+                        }
+                    }
+                    int temps = 1;
+                    for (auto it : st) {
+                        temps += ds.size[it];
+                    }
+                    ans = max(ans, temps);
+                }
+            }
+        }
+        return ans;
+    }
+};
 
 // Swim in rising water				
 
+// Method-1
+class Solution {
+public:
+    int swimInWater(vector<vector<int>>& grid) {
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        vector<vector<int>> directions = {{0,1}, {0,-1}, {1,0}, {-1,0}};
+        int n = grid.size();
+        vector<vector<bool>> visited(n, vector<bool>(n, false));
+        pq.push({grid[0][0], 0, 0}); // Push the starting cell with its elevation
+        while (!pq.empty()) {
+            vector<int> poll = pq.top();
+            pq.pop();
+            int elevation = poll[0], x = poll[1], y = poll[2];
+            if (visited[x][y])
+                continue;
+            if (x == n-1 && y == n-1)
+                return elevation;
+            visited[x][y] = true;
+            for (auto dir : directions) {
+                int X = x + dir[0], Y = y + dir[1];
+                if (X >= 0 && Y >= 0 && X < n && Y < n && !visited[X][Y])
+                    pq.push({max(elevation, grid[X][Y]), X, Y});
+            }
+        }
+        return 0;
+    }
+};
 
+// Method-2
+class Solution {
+    int n;
+    bool canReach(int row, int col, vector<vector<int>>& grid, int dr[], int dc[], int depth, vector<vector<bool>>& visited) {
+        if (row == n - 1 && col == n - 1)
+            return true;
+        visited[row][col] = 1;
+        for (int i = 0; i < 4; i++) {
+            int nr = row + dr[i];
+            int nc = col + dc[i];
+            if (nr >= 0 && nr < n && nc >= 0 && nc < n && !visited[nr][nc] &&
+                grid[nr][nc] <= depth) {
+                if (canReach(nr, nc, grid, dr, dc, depth, visited)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+public:
+    int swimInWater(vector<vector<int>>& grid) {
+        int low = 0, high = 0;
+        n = grid.size();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                high = max(high, grid[i][j]);
+            }
+        }
+        int dr[4] = {-1, 1, 0, 0};
+        int dc[4] = {0, 0, -1, 1};
+        int res = 0;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            vector<vector<bool>> visited(n, vector<bool>(n, 0));
+            if (grid[0][0] <= mid &&
+                canReach(0, 0, grid, dr, dc, mid, visited)) {
+                res = mid;
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return res;
+    }
+};
 
 /* Step 15.6: Other Algorithms */
 
 // Bridges in Graph		
 	
-
+class Solution {
+public:
+    void find_criticalConn(int& timer, int src, int perent, unordered_map<int, list<int>>& adjList,
+                           unordered_map<int, bool>& visited, vector<vector<int>>& ans, vector<int>& tin,
+                           vector<int>& low) {
+        visited[src] = true;
+        timer++;
+        low[src] = timer;
+        tin[src] = timer;
+        for (auto nbr : adjList[src]) {
+            if (nbr == perent)
+                continue;
+            if (!visited[nbr]) {
+                find_criticalConn(timer, nbr, src, adjList, visited, ans, tin, low);
+                low[src] = min(low[src], low[nbr]);
+                if (low[nbr] > tin[src]) {
+                    ans.push_back({nbr, src});
+                }
+            } else
+                low[src] = min(low[src], low[nbr]);
+        }
+    }
+    vector<vector<int>> criticalConnections(int n, vector<vector<int>>& connections) {
+        int timer = 1;
+        vector<int> tin(n);
+        vector<int> low(n);
+        vector<vector<int>> ans;
+        unordered_map<int, bool> visited;
+        unordered_map<int, list<int>> adjList;
+        for (int i = 0; i < connections.size(); i++) {
+            int u = connections[i][0];
+            int v = connections[i][1];
+            adjList[u].push_back(v);
+            adjList[v].push_back(u);
+        }
+        find_criticalConn(timer, 0, -1, adjList, visited, ans, tin, low);
+        return ans;
+    }
+};
 
 // Articulation Point		
 
-
+class Solution {
+public:
+    void dfs(int node,int &parent,vector<int> &disc,vector<int> &low,vector<int> adj[],unordered_map<int,bool> &vis,vector<int> &ap,int &timer){
+        vis[node]=true;
+        disc[node]=low[node]=timer++;
+        int child=0;
+        // processing the neighbours    
+        for(auto neighbour:adj[node]){
+            if(neighbour==parent){
+                continue;
+            }
+            if(!vis[neighbour]){
+                dfs(neighbour,node,disc,low,adj,vis,ap,timer);
+                low[node]=min(low[node],low[neighbour]);
+                // to check if articulation point
+                if(low[neighbour]>=disc[node] && parent!=-1){
+                   ap[node]=1;
+                }
+                child++;
+            }
+            else{
+                low[node]=min(low[node],disc[neighbour]);
+            }
+        }
+        if(parent == -1 && child > 1){
+            ap[node] = 1;
+        }
+    }
+    vector<int> articulationPoints(int V, vector<int>adj[]) {
+        vector<int> disc(V,-1);
+        vector<int> low(V,-1);
+        int parent = -1;
+        unordered_map<int,bool> vis;
+        vector<int> ap(V,0);
+        int timer = 0;
+        for(int i = 0; i < V; i++){
+            if(!vis[i]){
+                dfs(i, parent, disc, low, adj, vis, ap, timer);
+            }
+        }
+        vector<int> ans;
+        for(int i = 0; i < V; i++){
+            if(ap[i] == 1){
+                ans.push_back(i);
+            }
+        }
+        if(ans.size() == 0){
+            return {-1};
+        }
+        sort(ans.begin(), ans.end());
+        return ans;
+    }
+};
 
 // Kosaraju's Algorithm		
 
+class Solution
+{
+	public:
+	//Function to find number of strongly connected components in the graph.
+	void dfs(int node,vector<int> &vis,vector<vector<int>>& adj,stack<int> &st){
+	    vis[node]=1;
+	    for(auto it:adj[node]){
+	        if(!vis[it])dfs(it,vis,adj,st);
+	    }
+	    st.push(node);
+	}
+	void dfs2(int node,vector<int> &vis,vector<int> adj[]){
+	    vis[node]=1;
+	    for(auto it:adj[node]){
+	        if(!vis[it])dfs2(it,vis,adj);
+	    }
+	}
+    int kosaraju(int V, vector<vector<int>>& adj)
+    {
+        vector<int> vis(V,0);
+        stack<int> st;
+        for(int i=0;i<V;i++){
+            if(!vis[i]){
+                dfs(i,vis,adj,st);
+            }
+        }
+        vector<int> adjT[V];
+        for(int i=0;i<V;i++){
+            vis[i]=0;
+            for(auto it:adj[i]){
+                adjT[it].push_back(i);
+            }
+        }
+        int scc=0;
+        while(!st.empty()){
+            int node=st.top();
+            st.pop();
+            if(!vis[node]){
+                dfs2(node,vis,adjT);
+                scc++;
+            }
+        }
+        return scc;
+        
+    }
+};

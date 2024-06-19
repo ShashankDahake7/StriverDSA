@@ -1,0 +1,1995 @@
+/* 1: Introduction to DP */
+
+// Dynamic Programming Introduction
+
+class Solution {
+    // memoization  
+    long long int mod= 1e9+7;
+    long long int tdown(int n, vector<long long int>& dp){
+        if(n <= 1){
+            return n;
+        }
+        if(dp[n] != -1) return dp[n];
+        return dp[n] = (tdown(n - 1, dp) + tdown(n - 2, dp)) % mod;
+    }
+ public:
+    long long int topDown(int n) {
+        vector<long long int> dp(n + 1, -1);
+        return tdown(n, dp);
+        //tc: O(n),sc: O(n) + O(n) (stack,array(dp)).
+    }
+    // most optimized code
+    long long int bottomUp(int n) {
+        // base case
+        if(n <= 1) 
+            return n;
+        int cur, prev = 1, prev2 = 0;
+        for(int i = 2; i <= n; i++){
+            cur = (prev + prev2) % mod;
+            prev2 = prev;
+            prev = cur;
+        }
+        return cur % mod;
+        //tc: O(n),sc: O(1).
+    }
+};
+
+/* 2: 1D DP */
+
+// Climbing Stars
+
+// Method-1
+class Solution {
+public:
+    int climbStairs(int n, unordered_map<int, int>& memo) {
+        if (n == 0 || n == 1) {
+            return 1;
+        }
+        if (memo.find(n) == memo.end()) {
+            memo[n] = climbStairs(n-1, memo) + climbStairs(n-2, memo);
+        }
+        return memo[n];
+    }
+    int climbStairs(int n) {
+        unordered_map<int, int> memo;
+        return climbStairs(n, memo);
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int climbStairs(int n) {
+        // Base case: when n is 0 or 1, there's only one way to climb the stairs
+        if (n == 0 || n == 1) {
+            cout << "Number of ways to climb " << n << " stairs: " << 1 << endl;
+            return 1;
+        }
+        // Initializing variables to track previous and current steps
+        int prev = 1, curr = 1;
+        // Iterating from 2 to n, as we already know the number of ways for n = 0 and n = 1
+        for (int i = 2; i <= n; i++) {
+            // Storing the current value of curr for later use
+            int temp = curr;
+            // Current number of ways to climb n stairs is the sum of ways to climb (n-1) and (n-2) stairs
+            curr = prev + curr;
+            // Updating prev for the next iteration
+            prev = temp;
+            // Printing current number of ways to climb i stairs
+            cout << "Number of ways to climb " << i << " stairs: " << curr << endl;
+        }
+        // Returning the number of ways to climb n stairs
+        return curr;
+    }
+};
+
+// Frog Jump(DP-3)
+
+// Method-1
+class Solution {
+  public:
+    int solve(vector<int>& dp, vector<int>& height, int i){
+        if(i < 1){
+            return 0;
+        }
+        if(dp[i] != -1){
+            return dp[i];
+        }
+        int right = INT_MAX;
+        int left = solve(dp, height, i - 1) + abs(height[i] - height[i - 1]);
+        if(i > 1){
+            right = solve(dp, height, i - 2) + abs(height[i] - height[i - 2]);
+        }
+        dp[i] = min(left, right);
+        return dp[i];
+    }
+    int minimumEnergy(vector<int>& height, int n) {
+        vector<int> dp(n + 1, -1);
+        return solve(dp, height, n - 1);
+    }
+};
+
+// Method-2
+class Solution {
+  public:
+     int minimumEnergy(vector<int>& height, int n) {
+        int prev = 0;
+        int prev2 = 0;
+        for(int i=1;i<n;i++){
+            int fs = prev + abs(height[i] -height[i-1] );
+            int ss = INT_MAX;
+            if(i>1){
+                ss = prev2 + abs(height[i] -height[i-2] );
+            }
+            int curr = min(fs,ss);
+            prev2 = prev;
+            prev = curr;
+        }
+        return prev;
+    }
+};
+
+// Frog Jump with k distances(DP-4)
+
+// Method-1
+class Solution {
+  public:
+    int solve(int n, int k, vector<int>& height, vector<int>& dp){
+        if(n == 0){
+            return 0;
+        }
+        if(dp[n] != -1){
+            return dp[n];
+        }
+        int mini = INT_MAX;
+        for(int i = 1; i <=k; i++){
+            if(n - i >= 0){
+                int jump = solve(n - i, k, height, dp) + abs(height[n] - height[n - i]);
+                mini = min(mini, jump);
+            }
+        }
+        return dp[n] = mini;
+    }
+    int minimizeCost(vector<int>& height, int n, int k) {
+        vector<int> dp(n + 1, -1);
+        return solve(n - 1, k, height, dp);
+    }
+};
+
+// Method-2
+class Solution {
+  public:
+    int minimizeCost(vector<int>& height, int n, int k) {
+        vector<int>t(n+1,0);
+        for(int i=1;i<=n;i++){
+            int mini=INT_MAX;
+            for(int j=1;j<=k;j++){
+                if(i-j>=0){
+                     int jump=abs(height[i]-height[i-j])+t[i-j];
+                     mini=min(mini,jump);
+                }
+            }
+        t[i]=mini;
+        }
+        return t[n-1];
+    }
+};
+
+// Maximum sum of non-adjacent elements (DP 5)
+
+// method-1
+class Solution {
+private:
+    int solve(int i, vector<int>& nums, vector<int>& dp) {
+        if (i == 0) {
+            return nums[0];
+        }
+        if (i < 0) {
+            return 0;
+        }
+        if (dp[i] != -1) {
+            return dp[i];
+        }
+        int pick = nums[i] + solve(i - 2, nums, dp);
+        int notPick = 0 + solve(i - 1, nums, dp);
+        return dp[i] = max(pick, notPick);
+    }
+public:
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 1) {
+            return nums[0];
+        }
+        vector<int> dp(n, -1);
+        solve(n - 1, nums, dp);
+        return dp[n - 1];
+    }
+};
+
+// Method-2
+class Solution{
+public:
+    int rob(vector<int> &nums){
+        int n = nums.size();
+        int prev2 = 0, prev = nums[0];
+        for (int i = 1; i < n; i++){
+            int pick = nums[i] + prev2;
+            int notPick = 0 + prev;
+            int curr = max(pick, notPick);
+            prev2 = prev;
+            prev = curr;
+        }
+        return prev;
+    }
+};
+
+// House Robber (DP 6)
+
+// Method-1
+class Solution {
+public:
+    int solve(int i, int n, vector<int>& nums, vector<int>& dp) {
+        if (i > n) {
+            return 0;
+        }
+        if (dp[i] != -1) {
+            return dp[i];
+        }
+        int pick = nums[i] + solve(i + 2, n, nums, dp);
+        int notPick = solve(i + 1, n, nums, dp);
+        return dp[i] = max(pick, notPick);
+    }
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 1) {
+            return nums[0];
+        }
+        if (n == 2) {
+            return max(nums[0], nums[1]);
+        }
+        vector<int> dp1(n, -1);
+        int index1 = solve(0, n - 2, nums, dp1);
+        vector<int> dp2(n, -1);
+        int index2 = solve(1, n - 1, nums, dp2);
+        return max(index1, index2);
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int solve(int i, int n, vector<int>& nums) {
+        int prevPrev = 0, prev = 0;
+        for(int k = i; k <= n; k++){
+            int pick = nums[k] + prevPrev;
+            int notPick = prev;
+            int ans = max(pick, notPick);
+            prevPrev = prev;
+            prev = ans;
+        }
+        return prev;
+    }
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 1) {
+            return nums[0];
+        }
+        if (n == 2) {
+            return max(nums[0], nums[1]);
+        }
+        int index1 = solve(0, n - 2, nums);
+        int indexn = solve(1, n - 1, nums);
+        return max(index1, indexn);
+    }
+};
+
+/* 3: 2D/3D DP and DP on Grids */
+
+// Ninja's Training (DP 7)
+
+// Method-1
+class Solution {
+  public:
+     int solve(vector<vector<int>>& points, vector<vector<int>>&dp, int n, int i){
+        if(n==0) return points[0][i];
+        if(dp[n][i] != -1) return dp[n][i];
+        for(int j=0;j<3;j++){
+            if(i!=j)
+                dp[n][i] = max(dp[n][i],solve(points,dp,n-1,j)+points[n][i]);
+        }
+        return dp[n][i];
+    }
+    int maximumPoints(vector<vector<int>>& points, int n) {
+        vector<vector<int>> dp(n+1, vector<int>(3,-1));
+        return max(solve(points,dp,n-1,0),max(solve(points,dp,n-1,1),solve(points,dp,n-1,2)));
+    }
+};
+
+// Method-2
+class Solution {
+  public:
+    int maximumPoints(vector<vector<int>>& points, int n) {
+        vector<vector<int>>dp(n+2,vector<int>(4,0));
+        dp[1][1]=points[0][0];
+        dp[1][2]=points[0][1];
+        dp[1][3]=points[0][2];
+        int i=2;
+        while(i<=n){
+            dp[i][1]=points[i-1][0]+max(dp[i-1][2],dp[i-1][3]);
+            dp[i][2]=points[i-1][1]+max(dp[i-1][1],dp[i-1][3]);
+            dp[i][3]=points[i-1][2]+max(dp[i-1][2],dp[i-1][1]);
+            i++;
+        }
+        return max({dp[n][1],dp[n][2],dp[n][3]});
+    }
+};
+
+// Grid Unique Paths : DP on Grids (DP8)
+
+// Method-1
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        // Create a memoization table to store computed results
+        vector<vector<int>> memo(m, vector<int>(n, -1));
+        // Call the recursive function to compute unique paths
+        return uniquePathsRecursive(0, 0, m, n, memo);
+    }
+    int uniquePathsRecursive(int x, int y, int m, int n, vector<vector<int>>& memo) {
+        // If we reach the destination (bottom-right corner), return 1
+        if (x == m - 1 && y == n - 1) {
+            return 1;
+        }
+        // If we have already computed the result for this cell, return it from the memo table
+        if (memo[x][y] != -1) {
+            return memo[x][y];
+        }
+        // Calculate the number of unique paths by moving right and down
+        int rightPaths = 0;
+        int downPaths = 0;
+        // Check if it's valid to move right
+        if (x < m - 1) {
+            rightPaths = uniquePathsRecursive(x + 1, y, m, n, memo);
+        }
+        // Check if it's valid to move down
+        if (y < n - 1) {
+            downPaths = uniquePathsRecursive(x, y + 1, m, n, memo);
+        }
+        // Store the result in the memo table and return it
+        memo[x][y] = rightPaths + downPaths;
+        return memo[x][y];
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        // Initialize the rightmost column and bottom row to 1 because there is
+        // only one way to reach each cell in those rows/columns.
+        for (int i = 0; i < m; i++) {
+            dp[i][n - 1] = 1;
+        }
+        for (int j = 0; j < n; j++) {
+            dp[m - 1][j] = 1;
+        }
+        // Fill in the dp table bottom-up
+        for (int i = m - 2; i >= 0; i--) {
+            for (int j = n - 2; j >= 0; j--) {
+                dp[i][j] = dp[i + 1][j] + dp[i][j + 1];
+            }
+        }
+        return dp[0][0];
+    }
+};
+
+// Method-3
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        if (m <= 0 || n <= 0)
+            return 0;
+        long long res = 1;
+        for (int i = n; i < m + n - 1; i++) {
+            res = res * i / (i - n + 1);
+        }
+        return (int)res;
+    }
+};
+
+// Grid Unique Paths 2 (DP 9)
+
+// Method-1
+class Solution {
+public:
+    int solve(int i, int j, int m, int n, vector<vector<int>>& obstacleGrid, vector<vector<int>>& dp) {
+        if (i < 0 || i >= m || j < 0 || j >= n || obstacleGrid[i][j] == 1) {
+            return 0;
+        }
+        if (i == m - 1 && j == n - 1) {
+            return 1;
+        }
+        if (dp[i][j] != -1) {
+            return dp[i][j];
+        }
+        int right = solve(i, j + 1, m, n, obstacleGrid, dp);
+        int down = solve(i + 1, j, m, n, obstacleGrid, dp);
+        return dp[i][j] = right + down;
+    }
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        int m = obstacleGrid.size(), n = obstacleGrid[0].size();
+        vector<vector<int>> dp(m, vector<int>(n, -1));
+        if (obstacleGrid[m - 1][n - 1] == 1) {
+            return 0;
+        }        
+        return solve(0, 0, m, n, obstacleGrid, dp);
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        int m = obstacleGrid.size(), n = obstacleGrid[0].size();
+        if (obstacleGrid[0][0] == 1 || obstacleGrid[m - 1][n - 1] == 1)
+            return 0;
+        vector<int> dp(n);
+        dp[0] = 1;
+        for (int i = 1; i < n; i++) {
+            dp[i] = (obstacleGrid[0][i] ^ 1) & dp[i - 1];
+        }
+        for (int i = 1; i < m; i++) {
+            int prev = 0;
+            for (int j = 0; j < n; j++) {
+                if (obstacleGrid[i][j])
+                    dp[j] = 0;
+                else
+                    dp[j] += prev;
+                prev = dp[j];
+            }
+        }
+        return dp[n - 1];
+    }
+};
+
+// Method-3
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        int m = obstacleGrid.size(), n = obstacleGrid[0].size();
+        if (obstacleGrid[0][0] == 1 || obstacleGrid[m - 1][n - 1] == 1)
+            return 0;
+        vector<int> dp(n);
+        dp[0] = 1;
+        for (int i = 1; i < n; i++) {
+            dp[i] = (obstacleGrid[0][i] ^ 1) & dp[i - 1];
+        }
+        for (int i = 1; i < m; i++) {
+            int prev = 0;
+            for (int j = 0; j < n; j++) {
+                if (obstacleGrid[i][j])
+                    dp[j] = 0;
+                else
+                    dp[j] += prev;
+                prev = dp[j];
+            }
+        }
+        return dp[n - 1];
+    }
+};
+
+// Minimum path sum in Grid (DP 10)
+
+// Method-1
+class Solution {
+public:
+    int solve(int i, int j, int m, int n, vector<vector<int>>& grid, vector<vector<int>>& dp) {
+        if (i == m - 1 && j == n - 1) {
+            return dp[i][j] = grid[i][j];
+        }
+        if (dp[i][j] != -1) {
+            return dp[i][j];
+        }
+        // Right
+        if (i == m - 1) {
+            return dp[i][j] = grid[i][j] + solve(i, j + 1, m, n, grid, dp);
+        }
+        // down
+        else if (j == n - 1) {
+            return dp[i][j] = grid[i][j] + solve(i + 1, j, m, n, grid, dp);
+        }
+        return dp[i][j] = grid[i][j] + min(solve(i, j + 1, m, n, grid, dp), solve(i + 1, j, m, n, grid, dp));
+    }
+    int minPathSum(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dp(m, vector<int>(n, -1));
+        return solve(0, 0, m, n, grid, dp);
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dp(m, vector<int>(n, 0));        
+        // Initialize the first cell of dp table
+        dp[0][0] = grid[0][0];
+        // Initialize the first column of dp table
+        for (int i = 1; i < m; ++i) {
+            dp[i][0] = dp[i - 1][0] + grid[i][0];
+        }
+        // Initialize the first row of dp table
+        for (int j = 1; j < n; ++j) {
+            dp[0][j] = dp[0][j - 1] + grid[0][j];
+        }
+        // Fill the rest of the dp table
+        for (int i = 1; i < m; ++i) {
+            for (int j = 1; j < n; ++j) {
+                dp[i][j] = grid[i][j] + min(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+        // Return the value in the bottom-right corner of dp table
+        return dp[m - 1][n - 1];
+    }
+};
+
+// Minimum path sum in Triangular Grid (DP 11)
+
+// Method-1
+class Solution {
+public:
+    int solve(vector<vector<int>>& triangle, vector<vector<int>>& memo, int s, int i) {
+        if (s == triangle.size() - 1) {
+            return triangle[s][i];
+        }
+        if (memo[s][i] != -1) {
+            return memo[s][i];
+        }
+        int a = triangle[s][i] + solve(triangle, memo, s + 1, i);
+        int b = INT_MAX;
+        if (i < s + 1) {
+            b = triangle[s][i] + solve(triangle, memo, s + 1, i + 1);
+        }
+        memo[s][i] = min(a, b);
+        return memo[s][i];
+    }
+    int minimumTotal(vector<vector<int>>& triangle) {
+        int n = triangle.size();
+        vector<vector<int>> memo(n, vector<int>(n, -1));
+        return solve(triangle, memo, 0, 0);
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int minimumTotal(vector<vector<int>>& triangle) {
+        int n = triangle.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                dp[i][j] = triangle[i][j];
+            }
+        }
+        for (int i = n - 2; i >= 0; i--) {
+            for (int j = 0; j <= i; j++) {
+                dp[i][j] = dp[i][j] + min(dp[i + 1][j], dp[i + 1][j + 1]);
+            }
+        }
+        return dp[0][0];
+    }
+};
+
+// Minimum/Maximum Falling Path Sum (DP-12)
+
+// Method-1
+class Solution {
+public:
+    int minFallingPathSum(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        int m = matrix[0].size();
+        vector<int> prev(m, 0), cur(m, 0);
+        for (int j = 0; j < m; j++) {
+            prev[j] = matrix[0][j];
+        }
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                int up = matrix[i][j] + prev[j];
+                int leftDiagonal = matrix[i][j];
+                if (j - 1 >= 0) leftDiagonal += prev[j - 1];
+                else leftDiagonal += 1e9;
+                int rightDiagonal = matrix[i][j];
+                if (j + 1 < m) rightDiagonal += prev[j + 1];
+                else rightDiagonal += 1e9;
+                cur[j] = min(up, min(leftDiagonal, rightDiagonal));
+            }
+            prev = cur;
+        }
+        int mini = INT_MAX;
+        for (int j = 0; j < m; j++) {
+            mini = min(mini, prev[j]);
+        }
+        return mini;
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int minFallingPathSum(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        int m = matrix[0].size();
+        vector<int> prev(m, 0), cur(m, 0);
+        for (int j = 0; j < m; j++) {
+            prev[j] = matrix[0][j];
+        }
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                int up = matrix[i][j] + prev[j];
+                int leftDiagonal = matrix[i][j];
+                if (j - 1 >= 0) {
+                    leftDiagonal += prev[j - 1];
+                }
+                else {
+                    leftDiagonal += 1e9;
+                }
+                int rightDiagonal = matrix[i][j];
+                if (j + 1 < m) {
+                    rightDiagonal += prev[j + 1];
+                }
+                else {
+                    rightDiagonal += 1e9;
+                }
+                cur[j] = min(up, min(leftDiagonal, rightDiagonal));
+            }
+            prev = cur;
+        }
+        int mini = INT_MAX;
+        for (int j = 0; j < m; j++) {
+            mini = min(mini, prev[j]);
+        }
+        return mini;
+    }
+};
+
+// 3-d DP : Ninja and his friends (DP-13)
+
+// Method-1
+class Solution{
+    public:
+    int f(int i, int j1, int j2, int n, int m, vector<vector<int>>& grid, vector<vector<vector<int>>>& dp) {
+        if (j1 < 0 || j2 < 0 || j1 >= m || j2 >= m) return -1e8;
+        if (i == n - 1) {
+            if (j1 == j2) return grid[i][j1];
+            else return grid[i][j1] + grid[i][j2];
+        }
+        if (dp[i][j1][j2] != -1) return dp[i][j1][j2];
+        int maxi = -1e8;
+        for (int dj1 = -1; dj1 <= 1; dj1++) {
+            for (int dj2 = -1; dj2 <= 1; dj2++) {
+                int value = 0;
+                if (j1 == j2) value = grid[i][j1];
+                else value = grid[i][j1] + grid[i][j2];
+                value += f(i + 1, j1 + dj1, j2 + dj2, n, m, grid, dp);
+                maxi = max(maxi, value);
+            }
+        }
+        return dp[i][j1][j2] = maxi;
+    }
+    
+    int solve(int n, int m, vector<vector<int>>& grid) {
+        vector<vector<vector<int>>> dp(n, vector<vector<int>>(m, vector<int>(m, -1)));
+        return f(0, 0, m - 1, n, m, grid, dp);
+    }
+};
+
+// Method-2
+class Solution{
+    public:
+    int solve(int n, int m, vector<vector<int>>& grid) {
+        vector<vector<vector<int>>> dp(n, vector<vector<int>>(m, vector<int>(m, -1e8)));
+    
+        // Base case initialization
+        for (int j1 = 0; j1 < m; ++j1) {
+            for (int j2 = 0; j2 < m; ++j2) {
+                if (j1 == j2) {
+                    dp[n - 1][j1][j2] = grid[n - 1][j1];
+                } else {
+                    dp[n - 1][j1][j2] = grid[n - 1][j1] + grid[n - 1][j2];
+                }
+            }
+        }
+    
+        // Filling the DP table
+        for (int i = n - 2; i >= 0; --i) {
+            for (int j1 = 0; j1 < m; ++j1) {
+                for (int j2 = 0; j2 < m; ++j2) {
+                    int maxi = -1e8;
+                    for (int dj1 = -1; dj1 <= 1; ++dj1) {
+                        for (int dj2 = -1; dj2 <= 1; ++dj2) {
+                            int new_j1 = j1 + dj1;
+                            int new_j2 = j2 + dj2;
+                            if (new_j1 >= 0 && new_j1 < m && new_j2 >= 0 && new_j2 < m) {
+                                int value = 0;
+                                if (j1 == j2) {
+                                    value = grid[i][j1];
+                                } else {
+                                    value = grid[i][j1] + grid[i][j2];
+                                }
+                                value += dp[i + 1][new_j1][new_j2];
+                                maxi = max(maxi, value);
+                            }
+                        }
+                    }
+                    dp[i][j1][j2] = maxi;
+                }
+            }
+        }
+    
+        return dp[0][0][m - 1];
+    }
+};
+
+/* 4: DP on Subsequences */
+
+// Subset sum equal to target (DP- 14)
+
+// Method-1
+class Solution{   
+public:
+    int count(int ind,vector<int>arr,int sum,vector<int> &dp)
+    {
+        if(ind==0) return arr[ind]==sum;
+        if(sum<0) return 0;
+        if(sum==0) return 1;
+        if(dp[sum]!=-1) return dp[sum];
+        return dp[sum]=count(ind-1,arr,sum-arr[ind],dp)||count(ind-1,arr,sum,dp);
+    }
+    bool isSubsetSum(vector<int>arr, int sum){
+        vector<int>dp(sum+1,-1);
+        int n=arr.size();
+        return count(n-1,arr,sum,dp);
+    }
+};
+
+// Method-2
+class Solution{   
+public:
+    bool isSubsetSum(vector<int>arr, int sum){
+        int n=arr.size();
+        vector<vector<bool>> t(n+1,vector<bool>(sum+1,false));
+        for(int i=0;i<n+1;i++){
+            t[i][0]=true;
+        }
+        for(int i=1;i<n+1;i++){
+            for(int j=1;j<sum+1;j++){
+                if(arr[i-1]<=j){
+                    t[i][j] = t[i-1][j-arr[i-1]] || t[i-1][j];
+                }
+                else{
+                    t[i][j] = t[i-1][j];
+                }
+            }
+        }
+        return t[n][sum];
+    }
+};
+
+// Partition Equal Subset Sum (DP- 15)
+
+// Method-1
+class Solution {
+public:
+    int dp[201][20001];
+    bool solve(vector<int> &nums, int n, int sum)
+    {
+        if (n <= 0 || sum <= 0)
+            return sum == 0;
+        if (dp[n][sum] != -1)
+            return dp[n][sum];   
+        if (nums[n-1] > sum)
+            return dp[n][sum] = solve(nums, n-1, sum);
+        else
+            return dp[n][sum] = solve(nums, n-1, sum) || solve(nums, n-1, sum-nums[n-1]);
+    }
+    bool canPartition(vector<int>& nums) 
+    {
+        int sum = 0;
+        memset(dp, -1, sizeof(dp));
+        for(int i = 0; i < nums.size(); i++)
+            sum += nums[i];
+        if (sum % 2 != 0) 
+            return false;
+        return solve(nums, nums.size(), sum/2);
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int subsetSum(vector<int> arr, int n, int total)
+    {
+        int t[n+1][total+1];
+        for(int i = 0; i < n+1; i++)
+        {
+            for(int j = 0; j < total+1; j++)
+            {
+                if(i == 0)
+                    t[i][j] = false;
+                if(j == 0)
+                    t[i][j] = true;
+            }
+        }   
+        for(int i = 1; i < n+1; i++)
+        {
+            for(int j = 1; j < total+1; j++)
+            {
+                if(arr[i-1] <= j)
+                    t[i][j] = t[i-1][j - arr[i-1]] || t[i-1][j];
+                else
+                    t[i][j] = t[i-1][j];
+            }
+        }
+        return t[n][total];
+    }
+    bool canPartition(vector<int>& nums) 
+    {    
+        int sum = 0;
+        for(int i = 0; i < nums.size(); i++)
+            sum += nums[i];
+        if(sum % 2 != 0)
+            return false;
+        return subsetSum(nums, nums.size(), sum/2);  
+    }
+};
+
+// Partition Set Into 2 Subsets With Min Absolute Sum Diff (DP- 16)
+
+class Solution {
+public:
+    void subset(int idx, vector<vector<int>>& ans, int siz, int sum,
+                vector<int>& nums) {
+        if (idx >= nums.size()) {
+            if (siz > 0)
+                ans[siz].push_back(sum);
+            return;
+        }
+        subset(idx + 1, ans, siz + 1, sum + nums[idx], nums);
+        subset(idx + 1, ans, siz, sum, nums);
+    }
+    int minimumDifference(vector<int>& nums) {
+        int n = nums.size() / 2;
+        vector<vector<int>> left(n + 1), right(n + 1);
+        vector<int> v1, v2;
+        for (int i = 0; i < n; i++)
+            v1.push_back(nums[i]);
+        for (int i = n; i < 2 * n; i++)
+            v2.push_back(nums[i]);
+
+        subset(0, left, 0, 0, v1);
+        subset(0, right, 0, 0, v2);
+
+        for (int i = 0; i < right.size(); i++) {
+            sort(right[i].begin(), right[i].end());
+        }
+        int ans = 1e9;
+        int sum = 0;
+        for (auto& i : nums)
+            sum += i;
+        ans = min(abs(sum - 2 * left[n][0]), abs(sum - 2 * right[n][0]));
+        for (int i = 1; i <= n; i++) {
+            int rsiz = n - i;
+            vector<int> tmp = right[rsiz];
+            for (auto& j : left[i]) {
+                int b = (sum - 2 * j) / 2;
+                auto it = lower_bound(tmp.begin(), tmp.end(), b);
+                if (it != tmp.end()) {
+                    ans = min(ans, abs(sum - 2 * (j + (*it))));
+                }
+                if (it != tmp.begin()) {
+                    it--;
+                    ans = min(ans, abs(sum - 2 * (j + (*it))));
+                }
+            }
+        }
+        return ans;
+    }
+};
+
+// Count Subsets with Sum K (DP - 17)
+
+// Method-1
+class Solution{
+public:
+    int mod = 1e9 + 7;
+    int f(int ind, int sum, int arr[], vector<vector<int>> &dp){
+        if(ind==0){
+            if(sum==0 && arr[0]==0) return 2;
+            if(arr[0]==sum || sum==0) return 1;
+            return 0;
+        }
+        if(dp[ind][sum] != -1) return dp[ind][sum];
+        int notPick = f(ind-1,sum,arr,dp);
+        int pick = 0;
+        if(sum >= arr[ind]){
+            pick = f(ind-1,sum-arr[ind],arr,dp);
+        }
+        return dp[ind][sum] = (pick + notPick)%mod;
+    }
+    int perfectSum(int arr[], int n, int sum){
+        vector<vector<int>> v(n,vector<int>(sum+1,-1));
+        return f(n-1,sum,arr,v);
+    }
+};
+
+// Method-2
+class Solution{
+public:
+    int MOD = 1e9 + 7;
+    int perfectSum(int arr[], int n, int k){
+        vector<vector<int>> dp(n + 1, vector<int>(k + 1, 0));
+        // when no element is selecte then sum is always = 0  
+        dp[0][0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= k; j++) {
+                dp[i][j] = dp[i - 1][j];
+                if (j >= arr[i - 1]) {
+                    dp[i][j] = (dp[i][j] + dp[i - 1][j - arr[i - 1]]) % MOD;
+                }
+            }
+        }
+        return dp[n][k];
+    }
+};
+
+// Method-3
+class Solution{
+public:
+    int perfectSum(int arr[], int n, int sum){
+        vector<int>prev(sum+1, 0), cur(sum+1, 0); 
+        for(int i=0; i<n; i++){
+            cur[0]=1;
+        }
+        prev[0]=1;
+        for(int i=1; i<=n; i++){
+            for(int j=0; j<=sum; j++){
+                int notpick = prev[j];
+                int pick=0;
+                if(arr[i-1]<=j)
+                pick=prev[j-arr[i-1]];
+                cur[j] = (pick+notpick)%mod;
+            }
+            prev = cur;
+        }
+        return prev[sum];
+    }
+};
+
+// Count Partitions with Given Difference (DP - 18)
+
+// Method-1
+class Solution {
+ public:
+    const int MOD = 1e9 + 7; 
+    int countSubset(vector<int>& arr, int n, int sum) {
+        vector<vector<int>> dp(n + 1, vector<int>(sum + 1, 0));
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = 1;  
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= sum; j++) {
+                if (arr[i - 1] <= j) {
+                    dp[i][j] = (dp[i - 1][j - arr[i - 1]] + dp[i - 1][j]) % MOD;
+                } 
+                else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[n][sum];
+    }
+    int countPartitions(int n, int d, vector<int>& arr) {
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += arr[i];
+        }   
+        if ((sum + d) % 2 != 0) {
+            return 0;
+        }
+        int target = (sum + d) / 2;
+        return countSubset(arr, n, target);
+    }
+};
+
+// Method-2
+class Solution {
+ public:
+    int mod = 1e9+7;
+    int countPartitions(int n, int d, vector<int>& arr) {
+        int sum = 0;
+        for(int i=0;i<n;i++){
+            sum+=arr[i];
+        }
+        if (sum < d || (sum - d) % 2) {
+            return 0;
+        }
+        int k = (sum-d)/2;
+        vector<int> dp(k+1,0);
+        dp[0]=1;
+        for(int i=0;i<n;i++){
+            for(int j=k;j>=0;j--){
+                if(j-arr[i]>=0 && dp[j-arr[i]]){
+                    dp[j] = (dp[j]+dp[j-arr[i]])%mod;
+                }
+            }
+        }
+        return dp[k];
+    }
+};
+
+// 0/1 Knapsack (DP - 19)
+
+// Method-1
+class Solution{
+    public:
+    int find(int w, int wt[], int val[], int indx,vector<vector<int>>&memo){
+        if(indx==0){
+            if(w>=wt[0])return val[indx];
+            return 0;
+        }
+        if(memo[indx][w]!=-1)
+        {
+            return memo[indx][w];
+        }
+        int take=0;
+        if(wt[indx]<=w){
+            take=val[indx]+find(w-wt[indx],wt,val,indx-1,memo);
+        }
+        int notake=find(w,wt,val,indx-1,memo);
+        memo[indx][w] =max(take,notake);
+        return memo[indx][w];
+    }
+    int knapSack(int W, int wt[], int val[], int n){
+       vector<vector<int>>memo(n,vector<int>(W+1,-1));
+       return find(W,wt,val,n-1,memo);
+    }
+};
+
+// Method-2
+
+class Solution
+{
+    public:
+    int knapSack(int W, int wt[], int val[], int n) 
+    { 
+        vector<vector<int>> dp(n+1,vector<int>(W+1,0));
+        for(int i = 1;i<=n;i++){
+            for(int j = 1;j<=W;j++){
+                if(wt[i-1]<=j){
+                    dp[i][j] = max(val[i-1]+dp[i-1][j-wt[i-1]],dp[i-1][j]);
+                }
+                else{
+                    dp[i][j] = dp[i-1][j];
+                }
+            }
+        }
+       return dp[n][W];
+    }
+};
+
+// Minimum Coins (DP - 20)
+
+// Method-1
+class Solution {
+public:
+    int dp[12 + 1][10000 + 1];
+
+    int findLowestCoins(vector<int>& coins, int cur, int amount) {
+        if (cur == coins.size() || amount <= 0)
+            return (amount == 0) ? 0 : INT_MAX - 1;
+
+        if (dp[cur][amount] != -1)
+            return dp[cur][amount];
+
+        int res = -1;
+        if (coins[cur] > amount) {
+            int doNotTakeCoin = 0 + findLowestCoins(coins, cur + 1, amount - 0);
+            dp[cur][amount] = res = doNotTakeCoin;
+        } else {
+            int takeCoin =
+                1 + findLowestCoins(coins, cur + 0, amount - coins[cur]);
+            int doNotTakeCoin = 0 + findLowestCoins(coins, cur + 1, amount - 0);
+            dp[cur][amount] = res = min(takeCoin, doNotTakeCoin);
+        }
+        return dp[cur][amount] = res;
+    }
+
+    int coinChange(vector<int>& coins, int amount) {
+        memset(dp, -1, sizeof(dp));
+        int res = findLowestCoins(coins, 0, amount);
+        return (res == INT_MAX - 1) ? -1 : res;
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        if (amount == 0)
+            return 0;
+        int n = coins.size();
+        vector<int> dp(amount + 1);
+        dp[0] = 0;
+        for (int i = 1; i <= amount; i++) {
+            dp[i] = INT_MAX - 1;
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= amount; j++) {
+                if (j >= coins[i - 1])
+                    dp[j] = min(1 + dp[j - coins[i - 1]], dp[j]);
+                else
+                    dp[j] = dp[j];
+            }
+        }
+        int res = dp[amount];
+        if (res == INT_MAX - 1)
+            return -1;
+        else
+            return res;
+    }
+};
+
+// Method-3
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        int n = coins.size();
+        // vector<vector<int>>dp(n,vector<int>(amount+1,0));
+        vector<int> prev(amount + 1, 0), curr(amount + 1, 0);
+        for (int i = 0; i <= amount; i++) {
+            if (i % coins[0] == 0)
+                prev[i] = i / coins[0];
+            else
+                prev[i] = 1e9;
+        }
+        for (int i = 1; i < n; i++) {
+            for (int t = 0; t <= amount; t++) {
+                int nottake = 0 + prev[t];
+                int take = 1e9;
+                if (coins[i] <= t) {
+                    take = 1 + curr[t - coins[i]];
+                }
+                curr[t] = min(take, nottake);
+            }
+            prev = curr;
+        }
+        if (prev[amount] >= 1e9)
+            return -1;
+        return prev[amount];
+    }
+};
+
+// Target Sum (DP - 21)
+
+// Method-1
+class Solution {
+public:
+    int f(int index, int target, vector<int>& nums, vector<vector<int>>& dp) {
+        if (index == 0) {
+            if (target == 0 && nums[index] == 0)
+                return 2;
+            if (nums[index] == target || target == 0)
+                return 1;
+            return 0;
+        }
+        if (dp[index][target] != -1)
+            return dp[index][target];
+        int Pick = 0;
+        if (nums[index] <= target)
+            Pick = f(index - 1, target - nums[index], nums, dp);
+        int notPick = f(index - 1, target, nums, dp);
+        return dp[index][target] = Pick + notPick;
+    }
+    int findTargetSumWays(vector<int>& nums, int target) {
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        int k = (sum - target);
+        if (k < 0 || k % 2 != 0) {
+            return 0;
+        }
+        int n = nums.size();
+        vector<vector<int>> dp(n, vector<int>(k + 1, -1));
+        return f(n - 1, k / 2, nums, dp);
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int findTargetSumWays(vector<int>& nums, int target) {
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        int k = (sum - target);
+        if (k < 0 || k % 2 != 0) {
+            return 0;
+        }
+        k = k / 2;
+        int n = nums.size();
+        vector<int> prev(k + 1, 0), curr(k + 1, 0);
+        if (nums[0] == 0)
+            prev[0] = 2;
+        else
+            prev[0] = 1;
+        if (nums[0] != 0 && nums[0] <= k)
+            prev[nums[0]] = 1;
+        for (int index = 1; index < n; index++) {
+            for (int target = 0; target <= k; target++) {
+                int Pick = 0;
+                if (nums[index] <= target)
+                    Pick = prev[target - nums[index]];
+                int notPick = prev[target];
+                curr[target] = Pick + notPick;
+            }
+            prev = curr;
+        }
+        return prev[k];
+    }
+};
+
+// Coin Change 2 (DP - 22)
+
+// Method-1
+class Solution {
+    int solve(int index, vector<int>& coins, int amount,
+              vector<vector<int>>& dp) {
+        if (index == 0) {
+            if (amount % coins[0] == 0)
+                return 1;
+            else
+                return 0;
+        }
+        if (dp[index][amount] != -1)
+            return dp[index][amount];
+        int nottake = solve(index - 1, coins, amount, dp);
+        int take = 0;
+        if (coins[index] <= amount) {
+            take = solve(index, coins, amount - coins[index], dp);
+        }
+        return dp[index][amount] = nottake + take;
+    }
+
+public:
+    int change(int amount, vector<int>& coins) {
+        int n = coins.size();
+        vector<vector<int>> dp(n, vector<int>(amount + 1, -1));
+        return solve(n - 1, coins, amount, dp);
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int change(int amount, vector<int>& coins) {
+        int n = coins.size();
+        vector<vector<int>> dp(n, vector<int>(amount + 1, 0));
+        for (int i = 0; i <= amount; i++) {
+            if (i % coins[0] == 0)
+                dp[0][i] = 1;
+        }
+        for (int i = 1; i < n; i++) {
+            for (int am = 0; am <= amount; am++) {
+                int nottake = dp[i - 1][am];
+                int take = 0;
+                if (coins[i] <= am) {
+                    take = dp[i][am - coins[i]];
+                }
+                dp[i][am] = take + nottake;
+            }
+        }
+        return dp[n - 1][amount];
+    }
+};
+
+// Method-3
+class Solution {
+public:
+    int change(int amount, vector<int>& coins) {
+        int n = coins.size();
+        // vector<vector<int>>dp(n,vector<int>(amount+1,0));
+        vector<int> prev(amount + 1, 0), curr(amount + 1, 0);
+        for (int i = 0; i <= amount; i++) {
+            if (i % coins[0] == 0)
+                prev[i] = 1;
+        }
+        for (int i = 1; i < n; i++) {
+            for (int am = 0; am <= amount; am++) {
+                int nottake = prev[am];
+                int take = 0;
+                if (coins[i] <= am) {
+                    take = curr[am - coins[i]];
+                }
+                curr[am] = take + nottake;
+            }
+            prev = curr;
+        }
+        return prev[amount];
+    }
+};
+
+// Unbounded Knapsack (DP - 23)
+
+// Method-1
+class Solution{
+public:
+    int solve(int ind,int W, int wt[], int val[], vector<vector<int>>& dp) {
+        if(ind==0) {
+            return ((int)W/wt[0])*val[0];
+        }
+        if(dp[ind][W]!=-1) return dp[ind][W];
+        int notTake = solve(ind-1,W,wt,val,dp);
+        int take = -1e9;
+        if(wt[ind]<=W) {
+            take = val[ind] + solve(ind,W-wt[ind],wt,val,dp);
+        }
+        return dp[ind][W] = max(take,notTake);
+    }
+    int knapSack(int N, int W, int val[], int wt[]){
+        vector<vector<int>>dp(N,vector<int>(W+1,-1));
+        return solve(N-1,W,wt,val,dp);
+    }
+};
+
+// Method-2
+class Solution{
+public:
+    int knapSack(int n, int w, int val[], int wt[]){
+        int t[n+1][w+1];
+        for(int i = 0 ; i < n+1 ; i++){
+            for(int j = 0 ; j < w+1 ; j++){
+                if(i == 0 || j == 0){
+                    t[i][j] = 0;
+                }
+            }
+        }
+        for(int i = 1 ; i < n+1 ; i++){
+            for(int j = 1 ; j < w+1 ; j++){
+                if(wt[i-1] <= j){
+                    t[i][j] = max(val[i-1] + t[i][j - wt[i-1]] , t[i-1][j]);
+                }
+                else{
+                    t[i][j] = t[i-1][j];
+                }
+            }
+        }
+        return t[n][w];
+    }
+};
+
+// Rod Cutting Problem | (DP - 24)
+
+// Method-1
+class Solution{
+    int t[1002][1002];
+public:
+    int helper(int price[], int length[], int n, int i){
+        if(n == 0 || i == 0) return 0; //Base case is there is no rod or there is not price then profit will be 0
+        if(t[n][i] != -1) return t[n][i]; //Checking our cache for sub-problem
+        if(length[n-1] <= i){
+            //We can cut in current size or we cant cut in current size, Multiple sizes are allowed
+            return t[n][i] = max(price[n-1]+helper(price, length, n, i-length[n-1]), helper(price, length, n-1, i));
+        }
+        //we cant cut in current size coz we dont hv enough size of rod
+        else return t[n][i] = helper(price, length, n-1, i);
+    }
+    int cutRod(int price[], int n) {
+        memset(t, -1, sizeof(t));
+        //Creating a length array for simplicity of our approach
+        int length[n];
+        for(int i=0;i<n;i++) length[i] = i+1;
+        return helper(price, length, n, n);
+    }
+};
+
+// Method-2
+class Solution{
+  public:
+    int cutRod(int price[], int n) {
+        int len[n];
+        for(int i=0;i<n;i++) len[i] = i + 1;
+        
+        int t[n+1][n+1];
+        
+        for(int i=0;i<n+1;i++){
+            t[i][0] = 0;
+            t[0][i] = 0;
+        }
+        
+        for(int i=1;i<n+1;i++){
+            for(int j=1;j<n+1;j++){
+                if(len[i-1] <= j){
+                    t[i][j] = max(price[i-1]+t[i][j-len[i-1]], t[i-1][j]);
+                }
+                else{
+                    t[i][j] = t[i-1][j];
+                }
+            }
+        }
+        return t[n][n];
+    }
+};
+
+// Method-3
+class Solution{
+  public:
+    int cutRod(int price[], int n) {
+        vector<int> dp(n+1, 0);
+        for(int i = 1; i<=n; i++)
+            for(int idx = 0; idx<i; idx++)
+                dp[i] = max(dp[i], dp[idx] + price[i-idx-1]);
+        return dp[n];
+    }
+};
+
+/* 5: DP on Strings */
+
+// Longest Common Subsequence | (DP - 25)
+
+// Method-1
+class Solution {
+public:
+    int helper(string text1, string text2, int m, int n, vector<vector<int>>&dp){
+        if(m==0 || n==0) return 0;
+        else if(dp[m-1][n-1]!=-1) return dp[m-1][n-1];
+        else if(text1[m-1]==text2[n-1])
+                return dp[m-1][n-1]=1+helper(text1, text2, m-1, n-1, dp);
+        else return dp[m-1][n-1]=max(helper(text1, text2, m, n-1, dp), helper(text1, text2, m-1, n, dp));     
+    }
+    int longestCommonSubsequence(string text1, string text2) {
+        int m= text1.size();
+        int n=text2.size();
+        vector<vector<int>>dp(m, vector<int>(n, -1));
+        return helper(text1, text2, m, n, dp);
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int longestCommonSubsequence(string text1, string text2) {
+        int m= text1.size();
+        int n=text2.size();
+        vector<vector<int>>dp(m+1, vector<int>(n+1));
+        for(int i=0;i<=n;i++){
+            dp[0][i]=0;
+        }
+        for(int i=0;i<=m;i++){
+            dp[i][0]=0;
+        }
+        for(int i=1;i<=m;i++){
+            for(int j=1;j<=n;j++){
+                if(text1[i-1]==text2[j-1]){
+                    dp[i][j]=1+dp[i-1][j-1];
+                }
+                else{
+                    dp[i][j]=max(dp[i][j-1], dp[i-1][j]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+};
+
+// Method-3
+class Solution {
+public:
+     int longestCommonSubsequence(string text1, string text2) {
+         int m= text1.size();
+         int n=text2.size();
+         vector<int>prev(n+1, 0);
+         vector<int>curr(n+1, 0);
+         for(int i=1;i<=m;i++){
+             for(int j=1;j<=n;j++){
+                 if(text1[i-1]==text2[j-1]){
+                     curr[j]=1+prev[j-1];
+                 }
+                 else{
+                     curr[j]=max(curr[j-1], prev[j]);
+                 }
+             }
+             prev=curr;
+         }
+         return prev[n];
+     }
+};
+
+// Method-4
+class Solution {
+public:
+    int longestCommonSubsequence(string text1, string text2) {
+        int m= text1.size();
+        int n=text2.size();
+        vector<int>prev(n+1, 0);
+        int temp=0, diag=0;
+        for(int i=1;i<=m;i++){
+            diag=0;
+            for(int j=1;j<=n;j++){
+                temp=prev[j];
+                if(text1[i-1]==text2[j-1]){
+                    prev[j]=1+diag;
+                }
+                else{
+                    prev[j]=max(prev[j], prev[j-1]);
+                }
+                diag=temp;
+            }
+        }
+        return prev[n];
+    }
+};
+
+// Print Longest Common Subsequence | (DP - 26)
+
+class Solution{
+	int dp[101][101];
+	int lcs_len = 0;
+	vector<string> res;
+	private:
+		int lcs(string s, string t, int pos1, int pos2){
+			// base condition 
+			if(pos1 == s.size() or pos2 == t.size())
+				return 0;
+			int &ans  = dp[pos1][pos2];
+			// if lcs has been computed
+			if(ans != -1)
+				return ans;
+			// if characters are same return previous + 1 else 
+			// max of two sequences after removing i'th and j'th 
+			// char one by one 
+			if(s[pos1] == t[pos2])
+				return ans = 1 + lcs(s, t, pos1 + 1, pos2 + 1);
+			return ans = max(lcs(s, t, pos1 + 1, pos2), lcs(s, t, pos1, pos2 + 1));
+		}
+	private:
+		void helper(string s, string t, string cur, int pos1, int pos2, int cur_lcs){
+			// if currlcs is equal to lcslen then store it 
+			if(cur_lcs == lcs_len){
+				res.push_back(cur);
+				return ;
+			}
+			// if we are done with all the characters of both string 
+			if(pos1 == s.size() or pos2 == t.size())
+				return ;
+		    // here we have to print all sub-sequences lexicographically, 
+    		// that's why we start from 'a'to'z' if this character is 
+    		// present in both of them then append it in cur and same 
+    		// remaining part 
+			for(char ch = 'a'; ch <= 'z'; ch++){
+				// f is a flag to tell that we have printed all the subsequences corresponding to current character
+				bool f = false;
+				for(int i = pos1; i < s.size(); i++){
+					if(s[i] == ch){
+						for(int j = pos2; j < t.size(); j++){
+		                // if ch is present in both of them and remaining length is equal to remaining lcs length then add ch in sub-sequenece 
+							if(t[j] == ch and lcs(s, t, i, j) == lcs_len - cur_lcs){
+								string new_cur = cur + ch;
+								helper(s, t, new_cur, i + 1, j + 1, cur_lcs + 1);
+								f = true;
+								break;
+							}
+						}
+					}
+					// If we found LCS beginning with current character
+					if(f)
+						break;
+				}
+			}
+		}
+	public:
+		vector<string> all_longest_common_subsequences(string s, string t){
+			memset(dp, -1, sizeof(dp));
+			lcs_len = lcs(s, t, 0, 0);
+			helper(s, t, "", 0, 0, 0);
+			return res;
+		}
+};
+
+// Longest Common Substring | (DP - 27)
+
+// Method-1
+
+class Solution{
+    public:
+    int longestCommonSubstr (string S1, string S2, int n, int m)
+    {
+        int count=0;
+        int i=0;
+        int j=0;
+        string temp;
+        int ans=0;
+        while(i<m && j<m)
+        {
+            temp+=S2[j];
+            if(S1.find(temp)!= string::npos)
+            {
+                count++;
+                ans=max(count,ans);
+                j++;
+            }
+            else
+            {
+                count=0;
+                i++;
+                j=i;
+                temp="";
+            }
+            
+        }
+        return ans;
+    }
+};
+
+// Method-2
+
+class Solution{
+    public:
+     int longestCommonSubstr (string S1, string S2, int n, int m)
+    {
+       int dp[n+1][m+1];
+       int ans=0;
+       for(int i=0;i<n+1;i++)
+       {
+           for(int j=0;j<m+1;j++)
+           {
+               if(i==0 || j==0)
+               dp[i][j]=0;
+           }
+       }
+       for(int i=1;i<n+1;i++)
+       {
+           for(int j=1;j<m+1;j++)
+           {
+               if(S1[i-1] == S2[j-1])
+               {
+                   dp[i][j]=1+dp[i-1][j-1];
+                   ans=max(ans,dp[i][j]);
+               }
+               else
+               dp[i][j]=0;
+           }
+       }
+       return ans;
+    }
+};
+
+// Longest Palindromic Subsequence | (DP-28)
+
+// Method-1
+class Solution {
+public:
+    int solve(string& s, vector<vector<int>>&dp, int start, int end)
+    {
+        if (start == end) return 1;
+        if (start > end) return 0;
+        if (dp[start][end] != -1) return dp[start][end];
+        
+        if (s[start] == s[end]) return (2 + solve(s, dp, start + 1, end - 1)); //directly return 
+        
+        int leaveLeft = solve(s, dp, start + 1, end);
+        int leaveRight = solve(s, dp, start, end - 1);
+        return dp[start][end] = max(leaveLeft, leaveRight); //store the ans
+    }
+    int longestPalindromeSubseq(string s) 
+    {
+        int n = s.size();
+        vector<vector<int>>dp(n, vector<int>(n, -1));
+        int ans = solve(s, dp, 0, n - 1);
+        return ans;
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int longestPalindromeSubseq(string s) {
+        int n = s.size();
+        vector<vector<int>>dp(n, vector<int>(n, 0));
+        // for n length string we need LPS for string with length (n - 1) or (n - 2)
+        // We need to already have LPS for smaller lengths before moving to greater lengths
+        // so we need to go bottom up 
+        // Calculating LPS for all strings of length = 1 to length = n
+        for (int len = 1; len <= n; len++){
+            for (int start = 0; start <= (n - len); start++){
+                int end = start + len - 1; // [start, end] denotes the string under consideration
+                if (len == 1) { 
+                    dp[start][end] = 1; continue; 
+                }
+                if (s[start] == s[end]) 
+                    dp[start][end] = 2 + dp[start + 1][end - 1];
+                else 
+                    dp[start][end] = max(dp[start + 1][end], dp[start][end - 1]); 
+            }
+        }
+        return dp[0][n - 1];
+    }
+};
+
+// Minimum insertions to make string palindrome | DP-29
+
+
+
+// Minimum Insertions/Deletions to Convert String | (DP- 30)
+
+
+
+// Shortest Common Supersequence | (DP - 31)
+
+
+
+// Distinct Subsequences| (DP-32)
+
+
+
+// Edit Distance | (DP-33)
+
+// Method-1
+class Solution {
+public:
+    int count(string word1, string word2, int m, int n, vector<vector<int>>&dp){
+        if(m==0) return n;
+        if(n==0) return m;
+        if(dp[m][n]!=-1) return dp[m][n];
+        if(word1[m-1]==word2[n-1]) return count(word1, word2, m-1, n-1, dp);
+        else{
+            //perform operations on word2
+            int del= count(word1, word2, m, n-1, dp);
+            int insert= count(word1, word2, m-1, n, dp);
+            int replace= count(word1, word2, m-1, n-1, dp);
+            int res=min(del, insert);
+            res=min(res, replace);
+            return dp[m][n]= 1+res;
+        }
+    }
+    int minDistance(string word1, string word2) {
+        int m=word1.size();
+        int n=word2.size();
+        vector<vector<int>>dp(m+1, vector<int>(n+1, -1));
+        return count(word1, word2, m, n, dp);
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int minDistance(string word1, string word2) {
+        int m=word1.size();
+        int n=word2.size();
+        vector<vector<int>>dp(m+1, vector<int>(n+1));
+        for(int i=0;i<=n;i++){
+            dp[0][i]=i;
+        }
+        for(int i=0;i<=m;i++){
+            dp[i][0]=i;
+        }
+        for(int i=1;i<=m;i++){
+            for(int j=1;j<=n;j++){
+                if(word1[i-1]==word2[j-1]) dp[i][j]=dp[i-1][j-1];
+                else{
+                    dp[i][j]=min(dp[i][j-1], dp[i-1][j]);
+                    dp[i][j]=1+min(dp[i][j], dp[i-1][j-1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+};
+
+// Method-3
+class Solution {
+public:
+    int minDistance(string word1, string word2) {
+        int m=word1.size();
+        int n=word2.size();
+        vector<int>curr(n+1), prev(n+1);
+        for(int i=0;i<=n;i++){
+            prev[i]=i;
+        }
+        for(int i=1;i<=m;i++){
+            curr[0]=i;
+            for(int j=1;j<=n;j++){
+                if(word1[i-1]==word2[j-1]) curr[j]=prev[j-1];
+                else{
+                    curr[j]=min(curr[j-1], prev[j]);
+                    curr[j]=1+min(curr[j], prev[j-1]);
+                }
+            }
+            prev=curr;
+        }
+        return prev[n];
+    }
+};
+
+
+// Wildcard Matching | (DP-34)
+
+// Method-1
+class Solution {
+public:
+    int f(int i,int j, string &s,string &p,vector<vector<int>> &dp){
+        if(dp[i][j]!=-1) return dp[i][j];
+        if(i==0 && j==0) return dp[i][j]=1;
+        if(j==0 && i>0) return dp[i][j]=0;
+        if(i==0 && j>0){
+            while(j>0){
+                if(p[j-1]=='*') j--;
+                else return dp[i][j]=0;
+            }
+            return dp[i][j]=1;
+        }
+        if(s[i-1]==p[j-1] || p[j-1]=='?') 
+            return dp[i][j]=f(i-1,j-1,s,p,dp);
+        if(p[j-1]=='*'){
+            return dp[i][j] = f(i-1,j,s,p,dp) || f(i,j-1,s,p,dp) ? 1:0;
+            //Two cases
+            //Consider * as len=0
+            //Give one charcter to * and remain at *
+            //at next step it will again be decided from both these cases
+        }
+        return dp[i][j]=0;
+        
+    }
+    bool isMatch(string s, string p) {
+        int n=s.length(),m=p.length();
+        vector<vector<int>> dp(n+1,vector<int>(m+1,-1));
+        return f(n,m,s,p,dp);
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        int n=s.length(),m=p.length();
+        vector<vector<bool>> dp(n+1,vector<bool>(m+1));
+        dp[0][0]=true;
+        for(int i=1;i<=n;i++) 
+            dp[i][0]=false;
+        bool flag=true;
+        for(int i=1;i<=m;i++){
+            if(p[i-1]!='*')
+                flag=false;
+            dp[0][i]=flag;
+        }
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=m;j++){
+                if(s[i-1]==p[j-1] || p[j-1]=='?')
+                    dp[i][j]=dp[i-1][j-1];
+                else if(p[j-1]=='*')
+                    dp[i][j] = dp[i-1][j] || dp[i][j-1];
+                else dp[i][j]=false;
+            }
+        }
+        return dp[n][m];
+    }
+};
+
+// Method-3
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        int n=s.length(),m=p.length();
+        vector<bool> prev(m+1);
+        //Initially prev is for n=0
+        prev[0]=true;
+        bool flag=true;
+        for(int i=1;i<=m;i++){
+            if(p[i-1]!='*')
+                flag=false;
+            prev[i]=flag;
+        }
+        vector<bool> curr(m+1);
+        for(int i=1;i<=n;i++){
+            curr[0]=false;
+            for(int j=1;j<=m;j++){
+                if(s[i-1]==p[j-1] || p[j-1]=='?')
+                    curr[j]=prev[j-1];
+                else if(p[j-1]=='*')
+                    curr[j] = prev[j] || curr[j-1];
+                else curr[j]=false;
+            }
+            prev=curr;
+        }
+        return prev[m];
+    }
+};
+
+/* 6: DP on Stocks */
+
+// Best Time to Buy and Sell Stock |(DP-35)
+
+
+
+// Buy and Sell Stock - II|(DP-36)
+
+
+
+// Buy and Sell Stocks III|(DP-37)
+
+
+
+// Buy and Stock Sell IV |(DP-38)
+
+
+
+// Buy and Sell Stocks With Cooldown|(DP-39)
+
+
+
+// Buy and Sell Stocks With Transaction Fee|(DP-40)
+
+
+
+/* 7: DP on LIS */
+
+// Longest Increasing Subsequence |(DP-41)
+
+
+
+// Printing Longest Increasing Subsequence|(DP-42)
+
+
+
+// Longest Increasing Subsequence |(DP-43)
+
+
+
+// Largest Divisible Subset|(DP-44)
+
+
+
+// Longest String Chain|(DP-45)
+
+
+
+// Longest Bitonic Subsequence |(DP-46)
+
+
+
+// Number of Longest Increasing Subsequences|(DP-47)
+
+
+/* 8: MCM DP | Partition DP */
+
+// Matrix Chain Multiplication|(DP-48)
+
+
+
+// Matrix Chain Multiplication | Bottom-Up|(DP-49)
+
+
+
+// Minimum Cost to Cut the Stick|(DP-50)
+
+
+
+// Burst Balloons|(DP-51)
+
+
+
+// Evaluate Boolean Expression to True|(DP-52)
+
+
+
+// Palindrome Partitioning - II|(DP-53)
+
+
+
+// Partition Array for Maximum Sum|(DP-54)
+
+
+/* 9: DP on Squares */
+
+// Maximum Rectangle Area with all 1's|(DP-55)
+
+
+
+// Count Square Submatrices with All Ones|(DP-56)

@@ -1715,19 +1715,279 @@ public:
 
 // Minimum insertions to make string palindrome | DP-29
 
+// Method-1
+class Solution {
+private:
+    int solveMemoization(string& s, string& t, int p1, int p2, vector<vector<int>>& dp) {
+        if (p1 < 0 || p2 < 0)
+            return 0;
+        if (dp[p1][p2] != -1)
+            return dp[p1][p2];
+        int ans = 0;
+        if (s[p1] == t[p2])
+            ans = 1 + solveMemoization(s, t, p1 - 1, p2 - 1, dp);
+        else
+            ans = max(solveMemoization(s, t, p1 - 1, p2, dp), solveMemoization(s, t, p1, p2 - 1, dp));
+        dp[p1][p2] = ans;
+        return dp[p1][p2];
+    }
 
+public:
+    int minInsertions(string s) {
+        int n = s.size();
+        string t = s;
+        reverse(t.begin(), t.end());
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1, -1));
+        int longestPalindrome = solveMemoization(s, t, n - 1, n - 1, dp);
+        return n - longestPalindrome;
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int minInsertions(string s) {
+        int n = s.length();
+        vector<int> dp(n, 0);
+        for (int i = n - 2; i >= 0; i--) {
+            int prev = 0;
+            for (int j = i + 1; j < n; j++) {
+                int temp = dp[j];
+                if (s[i] == s[j]) {
+                    dp[j] = prev;
+                } else {
+                    dp[j] = min(dp[j], dp[j-1]) + 1;
+                }
+                prev = temp;
+            }
+        }
+        return dp[n-1];        
+    }
+};
+
+// Method-3
+class Solution {
+public:
+    int minInsertions(string s) {
+        // n-len(l c palindromic subseq).
+        int n = s.size();
+        string s1 = s;
+        reverse(s.begin(), s.end());
+        string s2 = s;
+        vector<int> prev(n + 1, 0), curr(n + 1, 0);
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (s1[i - 1] == s2[j - 1]) {
+                    curr[j] = prev[j - 1] + 1;
+                } else {
+                    curr[j] = max(curr[j - 1], prev[j]);
+                }
+            }
+            prev = curr;
+        }
+        int palin = prev[n];
+        int ans = n - palin;
+        return ans;
+    }
+};
 
 // Minimum Insertions/Deletions to Convert String | (DP- 30)
 
-
+class Solution {
+public:
+    int lcs(string s1, string s2) {
+        int m = s1.length();
+        int n = s2.length();
+        int dp[m + 1][n + 1];
+        for (int i = 0; i <= m; i++) {
+            for (int j = 0; j <= n; j++) {
+                if (i == 0 || j == 0){
+                    dp[i][j] = 0;
+                } else if (s1[i - 1] == s2[j - 1]) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+    int minDistance(string word1, string word2) {
+        int a = lcs(word1, word2);
+        int m = word1.size(), n = word2.size();
+        int dels = (m - a) + (n - a);
+        return dels;
+    }
+};
 
 // Shortest Common Supersequence | (DP - 31)
 
+// Method-1
+class Solution {
+public:
+    int dp[1001][1001];
+    int solve(string& a, string& b, int n, int m) {
+        if (n == 0 || m == 0) {
+            return 0;
+        }
+        if (dp[n][m] != -1) {
+            return dp[n][m];
+        }
+        if (a[n - 1] == b[m - 1]) {
+            return dp[n][m] = 1 + solve(a, b, n - 1, m - 1);
+        }
+        return dp[n][m] = max(solve(a, b, n - 1, m), solve(a, b, n, m - 1));
+    }
+    string shortestCommonSupersequence(string a, string b) {
+        memset(dp, -1, sizeof(dp));
+        int n = a.length();
+        int m = b.length();
+        int size = solve(a, b, n, m);
+        string ans = "";
+        int i = n, j = m;
+        while (i > 0 && j > 0) {
+            if (a[i - 1] == b[j - 1]) {
+                ans += a[i - 1];
+                i--, j--;
+            } else if (dp[i][j - 1] > dp[i - 1][j]) {
+                ans += b[j - 1];
+                j--;
+            } else {
+                ans += a[i - 1];
+                i--;
+            }
+        }
+        while (i > 0) {
+            ans += a[i - 1];
+            i--;
+        }
+        while (j > 0) {
+            ans += b[j - 1];
+            j--;
+        }
+        reverse(ans.begin(), ans.end());
+        return ans;
+    }
+};
 
+// Method-2
+class Solution {
+public:
+    string shortestCommonSupersequence(string a, string b) {
+        int n = a.length();
+        int m = b.length();
+        int dp[n + 1][m + 1];
+        for (int i = 0; i < n + 1; i++) {
+            for (int j = 0; j < m + 1; j++) {
+                if (i == 0 || j == 0) {
+                    dp[i][j] = 0;
+                }
+            }
+        }
+        for (int i = 1; i < n + 1; i++) {
+            for (int j = 1; j < m + 1; j++) {
+                if (a[i - 1] == b[j - 1]) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        string ans = "";
+        int i = n, j = m;
+        while (i > 0 && j > 0) {
+            if (a[i - 1] == b[j - 1]) {
+                ans += a[i - 1];
+                i--, j--;
+            } else {
+
+                if (dp[i][j - 1] > dp[i - 1][j]) {
+                    ans += b[j - 1];
+                    j--;
+                } else {
+                    ans += a[i - 1];
+                    i--;
+                }
+            }
+        }
+        while (i > 0) {
+            ans += a[i - 1];
+            i--;
+        }
+        while (j > 0) {
+            ans += b[j - 1];
+            j--;
+        }
+        reverse(ans.begin(), ans.end());
+        return ans;
+    }
+};
 
 // Distinct Subsequences| (DP-32)
 
+// Method-1
+class Solution {
+    int solve(int i, int j, string& s, string& t, vector<vector<int>>& dp) {
+        if (j == 0)
+            return 1;
+        if (i == 0)
+            return 0;
+        if (dp[i][j] != -1)
+            return dp[i][j];
+        if (s[i - 1] == t[j - 1]) {
+            return dp[i][j] = solve(i - 1, j - 1, s, t, dp) + solve(i - 1, j, s, t, dp);
+        }
+        return dp[i][j] = solve(i - 1, j, s, t, dp);
+    }
+public:
+    int numDistinct(string s, string t) {
+        int n = s.size();
+        int m = t.size();
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, -1));
+        return solve(n, m, s, t, dp);
+    }
+};
 
+// Method-2
+class Solution {
+public:
+    int numDistinct(string s, string t) {
+        int n = s.size();
+        int m = t.size();
+        vector<vector<double>> dp(n + 1, vector<double>(m + 1, 0));
+        for (int i = 0; i <= n; i++)
+            dp[i][0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (s[i - 1] == t[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return (int)dp[n][m];
+    }
+};
+
+// Method-3
+class Solution {
+public:
+    int numDistinct(string s, string t) {
+        int n = s.size();
+        int m = t.size();
+        vector<double> prev(m + 1, 0);
+        prev[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = m; j >= 1; j--) {
+                if (s[i - 1] == t[j - 1]) {
+                    prev[j] = prev[j - 1] + prev[j];
+                }
+            }
+        }
+        return (int)prev[m];
+    }
+};
 
 // Edit Distance | (DP-33)
 
@@ -1906,27 +2166,385 @@ public:
 
 // Best Time to Buy and Sell Stock |(DP-35)
 
-
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        int minimum = prices[0];
+        int maximumProfit = 0;
+        for (int i = 0; i < n; i++) {
+            minimum = min(minimum, prices[i]);
+            int profit = prices[i] - minimum;
+            maximumProfit = max(maximumProfit, profit);
+        }
+        return maximumProfit;
+    }
+};
 
 // Buy and Sell Stock - II|(DP-36)
 
+// Method-1
+class Solution {
+public:
+    int solveMem(vector<int>& prices, int index, int buy, vector<vector<int>>& dp) {
+        if (index == prices.size())
+            return 0;
+        if (dp[index][buy] != -1)
+            return dp[index][buy];
+        int profit = 0;
+        if (buy) {
+            int buykaro = (-prices[index]) + solveMem(prices, index + 1, 0, dp);
+            int skipkaro = 0 + solveMem(prices, index + 1, 1, dp);
+            profit = max(buykaro, skipkaro);
+        } else {
+            int sellkaro = (prices[index]) + solveMem(prices, index + 1, 1, dp);
+            int skipkaro = 0 + solveMem(prices, index + 1, 0, dp);
+            profit = max(sellkaro, skipkaro);
+        }
+        return dp[index][buy] = profit;
+    }
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        vector<vector<int>> dp(n, vector<int>(2, -1));
+        return solveMem(prices, 0, 1, dp);
+    }
+};
 
+// Method-2
+class Solution {
+public:
+    int solveTab(vector<int>& prices) {
+        int n = prices.size();
+        vector<vector<int>> dp(n + 1, vector<int>(2, 0));
+        for (int index = n - 1; index >= 0; index--) {
+            for (int buy = 0; buy <= 1; buy++) {
+                int profit = 0;
+                if (buy) {
+                    int buykaro = (-prices[index]) + dp[index + 1][0];
+                    int skipkaro = 0 + dp[index + 1][1];
+                    profit = max(buykaro, skipkaro);
+                } else {
+                    int sellkaro = (prices[index]) + dp[index + 1][1];
+                    int skipkaro = 0 + dp[index + 1][0];
+                    profit = max(sellkaro, skipkaro);
+                }
+                dp[index][buy] = profit;
+            }
+        }
+        return dp[0][1];
+    }
+    int maxProfit(vector<int>& prices) { 
+        return solveTab(prices);
+    }
+};
+
+// Method-3
+class Solution {
+public:
+    int solveOpt(vector<int>& prices) {
+        int n = prices.size();
+        vector<int> curr(2, 0);
+        vector<int> next(2, 0);
+        for (int index = n - 1; index >= 0; index--) {
+            for (int buy = 0; buy <= 1; buy++) {
+                int profit = 0;
+                if (buy) {
+                    int buykaro = (-prices[index]) + next[0];
+                    int skipkaro = 0 + next[1];
+                    profit = max(buykaro, skipkaro);
+                } else {
+                    int sellkaro = (prices[index]) + next[1];
+                    int skipkaro = 0 + next[0];
+                    profit = max(sellkaro, skipkaro);
+                }
+                curr[buy] = profit;
+            }
+            next = curr;
+        }
+        return next[1];
+    }
+    int maxProfit(vector<int>& prices) { 
+        return solveOpt(prices); 
+    }
+};
 
 // Buy and Sell Stocks III|(DP-37)
 
+// Method-1
+class Solution {
+public:
+    int solveMem(vector<int>& prices, int index, bool buy, int limit, vector<vector<vector<int>>> &dp){
+        if(index >= prices.size()) return 0;
+        if(dp[index][buy][limit] != -1){
+            return dp[index][buy][limit];
+        }
+        int profit = 0;
+        if(buy && limit < 2){
+            int choose = -prices[index] + solveMem(prices, index+1, 0, limit+1, dp);
+            int skip = 0 + solveMem(prices, index+1, 1, limit, dp);
+            profit = max(choose, skip);
+        }
+        else if(buy == 0){
+            int choose = prices[index] + solveMem(prices, index+1, 1, limit, dp);
+            int skip = 0 + solveMem(prices, index+1, 0, limit, dp);
+            profit = max(choose, skip);
+        }
+        return dp[index][buy][limit] = profit;
+    }
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        int index = 0;
+        bool buy = 1;
+        int limit = 0;
+        vector<vector<vector<int>>> dp(n, vector<vector<int>>(2, vector<int>(3, -1)));
+        return solveMem(prices, index, buy, limit, dp);
+    }
+};
 
+// Method-2
+
+class Solution {
+public:
+    int solveTab(vector<int>& prices){
+        int n = prices.size();
+        vector<vector<vector<int>>> dp(n+1, vector<vector<int>>(2, vector<int>(3, 0)));
+        for(int index = n-1; index >= 0; index--){
+            for(int buy = 0; buy <= 1; buy++){
+                for(int limit = 2; limit >= 0; limit--){
+                    int profit = 0;
+                    if(buy && limit < 2){
+                        int choose = -prices[index] + dp[index+1][0][limit+1];
+                        int skip = 0 + dp[index+1][1][limit];
+                        profit = max(choose, skip);
+                    }
+                    else if(buy == 0){
+                        int choose = prices[index] + dp[index+1][1][limit];
+                        int skip = 0 + dp[index+1][0][limit];
+                        profit = max(choose, skip);
+                    }
+                    dp[index][buy][limit] = profit;
+                }
+            }
+        }
+        return dp[0][1][0];
+    }
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        int index = 0;
+        bool buy = 1;
+        int limit = 0;
+        return solveTab(prices);
+    }
+};
+
+// Method-3
+class Solution {
+public:
+    int solveSO(vector<int> &prices){
+        int n = prices.size();
+        vector<vector<int>> curr(2, vector<int>(3, 0));
+        vector<vector<int>> next(2, vector<int>(3, 0));
+        for(int index = n-1; index >= 0; index--){
+            for(int buy = 0; buy <= 1; buy++){
+                for(int limit = 2; limit >= 0; limit--){
+                    int profit = 0;
+                    if(buy && limit < 2){
+                        int choose = -prices[index] + next[0][limit+1];
+                        int skip = 0 + next[1][limit];
+                        profit = max(choose, skip);
+                    }
+                    else if(buy == 0){
+                        int choose = prices[index] + next[1][limit];
+                        int skip = 0 + next[0][limit];
+                        profit = max(choose, skip);
+                    }
+                    curr[buy][limit] = profit;
+                }
+            }
+            next = curr;
+        }
+        return curr[1][0];
+    }
+    int maxProfit(vector<int>& prices) {
+        return solveSO(prices);
+    }
+};
 
 // Buy and Stock Sell IV |(DP-38)
 
+// Method-1
+class Solution {
+    int dfs(int i, int t, int k, int n, vector<int> & p, vector<vector<int>> &dp) {
+        if(i == n || t == 2 * k) return 0;
+        if(dp[i][t] != -1) return dp[i][t];
 
+        if(t % 2 == 0) {
+            return dp[i][t] = max(-p[i] + dfs(i + 1, t + 1, k, n, p, dp), 0 + dfs(i + 1, t, k, n, p, dp));
+        }
+        return dp[i][t] = max(p[i] + dfs(i + 1, t + 1, k, n, p, dp), 0 + dfs(i + 1, t, k, n, p, dp));
+    }
+public:
+    int maxProfit(int k, vector<int>& prices) {
+        int n = prices.size();
+        vector<vector<int>> dp(n, vector<int>(2 * k, -1));
+        
+        return dfs(0, 0, k, n, prices, dp);
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int maxProfit(int k, vector<int>& p) {
+        int n = p.size();
+        vector<vector<int>> dp(n + 1, vector<int>(2 * k + 1));
+        for(int i=n-1; i>=0; i--) {
+            for(int t=0; t<2 * k; t++) {
+                if(t % 2 == 0) {
+                    dp[i][t] = max(-p[i] + dp[i + 1][t + 1], 0 + dp[i + 1][t]);
+                }
+                else dp[i][t] = max(p[i] + dp[i + 1][t + 1], 0 + dp[i + 1][t]);
+            }
+        }
+        return dp[0][0];
+    }
+};
+
+// Method-3
+class Solution {
+public:
+    int maxProfit(int k, vector<int>& p) {
+        int n = p.size();
+        vector<int> dp(2 * k + 1), temp(2 * k + 1);
+        for(int i=n-1; i>=0; i--) {
+            for(int t=0; t<2 * k; t++) {
+                if(t % 2 == 0) {
+                    temp[t] = max(-p[i] + dp[t + 1], 0 + dp[t]);
+                }
+                else temp[t] = max(p[i] + dp[t + 1], 0 + dp[t]);
+            }
+            dp = temp;
+        }
+        return dp[0];
+    }
+};
 
 // Buy and Sell Stocks With Cooldown|(DP-39)
 
+// Method-1
+class Solution {
+public:
+    int solve(int day, int n, int buy, vector<int>& prices, vector<vector<int>>& dp) {
+        if (day >= n) {
+            return 0;
+        }
+        if (dp[day][buy] != -1) {
+            return dp[day][buy];
+        }
+        int profit = 0;
+        // BUYING
+        if (buy) {
+            int taken = solve(day + 1, n, 0, prices, dp) - prices[day]; // sell
+            int notTaken = solve(day + 1, n, 1, prices, dp); // buy
+            profit = max(taken, notTaken);
+        }
+        // SELLING
+        else {
+            int sell = prices[day] + solve(day + 2, n, 1, prices, dp); // buy
+            int notSell = solve(day + 1, n, 0, prices, dp); // sell
+            profit = max(sell, notSell);
+        }
+        return dp[day][buy] = profit;
+    }
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        int buy = 1;
+        vector<vector<int>> dp(n, vector<int>(2, -1));
+        return solve(0, n, buy, prices, dp);
+    }
+};
 
+// Method-2
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        if(n < 2){
+            return 0;
+        }
+        vector<int> dp(n, 0);
+        dp[0] = 0;
+        dp[1] = max(prices[1] - prices[0], 0);
+        for(int i = 2; i < n; i++){
+            dp[i] = dp[i - 1];
+            for(int j = 0; j <= i - 1; j++){
+                int todayProfit = prices[i] - prices[j];
+                int prevProfit = (j >= 2) ? dp[j - 2] : 0;
+                dp[i] = max(dp[i], todayProfit + prevProfit);
+            }
+        }
+        return dp[n - 1];
+    }
+};
 
 // Buy and Sell Stocks With Transaction Fee|(DP-40)
 
+// Method-1
+class Solution {
+    int dfs(int i, int buy, int n, vector<int> &p, vector<vector<int>> &dp, int fee) {
+        if(i == n) return 0;
+        if(dp[i][buy] != -1) return dp[i][buy];
+        if(buy) {
+            return dp[i][buy] = max(-p[i] + dfs(i + 1, 0, n, p, dp, fee), dfs(i + 1, 1, n, p, dp, fee));
+        }
+        return dp[i][buy] = max(p[i] - fee + dfs(i + 1, 1, n, p, dp, fee), dfs(i + 1, 0, n, p, dp, fee));
+    }
+public:
+    int maxProfit(vector<int>& p, int fee) {
+        int n = p.size(), cnt = 0;
+        vector<vector<int>> dp(n, vector<int>(2, -1));
+        return dfs(0, 1, n, p, dp, fee);
+    }
+};
 
+// Method-2
+
+class Solution {
+public:
+    int maxProfit(vector<int>& p, int fee) {
+        int n = p.size();
+        vector<vector<int>> dp(n + 1, vector<int>(2));
+        
+        for(int i=n-1; i>=0; i--) {
+            for(int buy=0; buy<=1; buy++) {
+                if(buy) {
+                    dp[i][buy] = max(-p[i] + dp[i + 1][0], dp[i + 1][1]);
+                }
+                else dp[i][buy] = max(p[i] - fee + dp[i + 1][1], dp[i + 1][0]);
+            }
+        }
+        return dp[0][1];
+    }
+};
+
+// Method-3
+class Solution {
+public:
+    int maxProfit(vector<int>& p, int fee) {
+        int n = p.size();
+        vector<int> dp(2), temp(2);
+        for(int i=n-1; i>=0; i--) {
+            for(int buy=0; buy<=1; buy++) {
+                if(buy) {
+                    temp[buy] = max(-p[i] + dp[0], dp[1]);
+                }
+                else temp[buy] = max(p[i] - fee + dp[1], dp[0]);
+            }
+            dp = temp;
+        }
+        return dp[1];
+    }
+};
 
 /* 7: DP on LIS */
 

@@ -2550,64 +2550,740 @@ public:
 
 // Longest Increasing Subsequence |(DP-41)
 
+// Method-1
+class Solution {
+public:
+     vector<int> dp;
+     int lengthOfLIS(vector<int>& nums) {
+         dp.resize(size(nums)+1, -1);
+         return solve(nums, 0, -1);
+     }
+     int solve(vector<int>& nums, int i, int prev_i) {
+         if(i >= size(nums)) return 0;
+         if(dp[prev_i+1] != -1) return dp[prev_i+1];
+         int take = 0, dontTake = solve(nums, i + 1, prev_i);
+         if(prev_i == -1 || nums[i] > nums[prev_i])
+             take = 1 + solve(nums, i + 1, i);
+         return dp[prev_i+1] = max(take, dontTake);
+     }
+};
 
+// Method-2
+class Solution {
+public:
+     int lengthOfLIS(vector<int>& nums) {
+         int ans = 1, n = size(nums);
+         vector<int> dp(n, 1);
+         for(int i = 0; i < n; i++) 
+             for(int j = 0; j < i; j++) 
+                 if(nums[i] > nums[j]) 
+ 			dp[i] = max(dp[i], dp[j] + 1), ans = max(ans, dp[i]);
+         return ans;
+     }
+ };
+
+// Method-3
+class Solution {
+public:
+     int lengthOfLIS(vector<int>& A) {
+         int len = 0;
+         for(auto cur : A) 
+             if(len == 0 || A[len-1] < cur) A[len++] = cur;             // extend
+             else *lower_bound(begin(A), begin(A) + len, cur) = cur;    // replace
+         return len;
+     }
+};
 
 // Printing Longest Increasing Subsequence|(DP-42)
 
+class Solution {
+public:
+    vector<int> longestIncreasingSubsequence(int n, vector<int>& arr) {
+        vector<int> ans;
+        vector<int> dp(n, 1);
+        vector<int> hash(n);
 
+        for (int i = 0; i < n; i++) {
+            hash[i] = i;
+            for (int prev_index = 0; prev_index < i; prev_index++) {
+                if (arr[i] > arr[prev_index] && 1 + dp[prev_index] > dp[i]) {
+                    dp[i] = 1 + dp[prev_index];
+                    hash[i] = prev_index;
+                }
+            }
+        }
+
+        int max = -1, index = -1;
+        for (int i = 0; i < n; i++) {
+            if (max < dp[i]) {
+                max = dp[i];
+                index = i;
+            }
+        }
+
+        ans.push_back(arr[index]);
+        while (index != hash[index]) {
+            index = hash[index];
+            ans.push_back(arr[index]);
+        }
+
+        reverse(ans.begin(), ans.end());
+        return ans;
+    }
+};
 
 // Longest Increasing Subsequence |(DP-43)
 
-
+int longestSubsequence(int n, int a[]){
+        vector<int>dp;
+        dp.push_back(a[0]);
+        for(int i=1;i<n;i++){
+            if(a[i]>dp.back()){
+                dp.push_back(a[i]);
+            }
+            else{
+                int ind=lower_bound(dp.begin(), dp.end(), a[i])-dp.begin();
+                dp[ind]=a[i];
+            }
+        }
+        return dp.size();
+}
 
 // Largest Divisible Subset|(DP-44)
 
+// Method-1
+class Solution {
+public:
+    vector<int> largestDivisibleSubset(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        int maxi = 0;
+        vector<int> dp(n, 1);
+        vector<int> temp(n, -1);
+        vector<int> ans;
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++)
+                if (nums[i] % nums[j] == 0 and dp[i] < dp[j] + 1)
+                    dp[i] = dp[j] + 1, temp[i] = j;
+            if (dp[i] > dp[maxi])
+                maxi = i;
+        }
+        for (int i = maxi; i >= 0; i = temp[i])
+            ans.push_back(nums[i]);
+        return ans;
+    }
+};
 
+// Method-2
+class Solution {
+public:
+    vector<int> ans;
+    void solve(vector<int>& nums, int i, vector<int>& temp, vector<int>& dp) {
+        if (i == nums.size()) {
+            if (temp.size() > ans.size())
+                ans = temp;
+            return;
+        }
+        if (temp.empty()) {
+            temp.push_back(nums[i]);
+            solve(nums, i + 1, temp, dp);
+            temp.pop_back();
+        } else if ((int)temp.size() > dp[i] && nums[i] % temp.back() == 0) {
+            dp[i] = temp.size();
+            temp.push_back(nums[i]);
+            solve(nums, i + 1, temp, dp);
+            temp.pop_back();
+        }
+        solve(nums, i + 1, temp, dp);
+    }
+    vector<int> largestDivisibleSubset(vector<int>& nums) {
+        vector<int> temp;
+        vector<int> dp(nums.size() + 1, -1);
+        sort(nums.begin(), nums.end());
+        solve(nums, 0, temp, dp);
+        return ans;
+    }
+};
 
 // Longest String Chain|(DP-45)
 
+class Solution {
+public:
+    int longestStrChain(vector<string>& words) {
+        int ans = 0;
+        unordered_map<string, int> dp;
 
+        sort(words.begin(), words.end(), sortByLength);
+        for (string word : words) {
+            for (int i = 0; i < word.length(); i++) {
+                string predecessor = word.substr(0, i) + word.substr(i + 1);
+                dp[word] = max(dp[word], dp[predecessor] + 1);
+            }
+            ans = max(ans, dp[word]);
+        }
+        return ans;
+    }
+    static bool sortByLength(string& s1, string& s2) {
+        return s1.length() < s2.length();
+    }
+};
 
 // Longest Bitonic Subsequence |(DP-46)
 
-
+class Solution {
+  public:
+    int LongestBitonicSequence(int n, vector<int> &nums) {
+        vector<int>dp1(n,1);
+        vector<int>dp2(n,1);
+        for(int i=0;i<n;i++){
+            for(int j=0;j<i;j++){
+                if(nums[j]<nums[i]&&dp1[i]<dp1[j]+1)
+                dp1[i]=1+dp1[j];
+            }
+        }
+        for(int i=n-1;i>=0;i--){
+            for(int j=n-1;j>i;j--){
+                if(nums[j]<nums[i]&&dp2[i]<dp2[j]+1)
+                dp2[i]=1+dp2[j];
+            }
+        }
+        int ans=0;
+        for(int i=1;i<n-1;i++){
+            if(dp1[i]>1&&dp2[i]>1)
+            ans=max(ans,dp1[i]+dp2[i]-1);
+        }
+        return ans;
+    }
+};
 
 // Number of Longest Increasing Subsequences|(DP-47)
 
+class Solution {
+public:
+    int findNumberOfLIS(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 0)
+            return 0;
+
+        vector<int> dp(n, 1), count(n, 1);
+        int maxLength = 1;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    if (dp[i] < dp[j] + 1) {
+                        dp[i] = dp[j] + 1;
+                        count[i] = count[j];
+                    } else if (dp[i] == dp[j] + 1) {
+                        count[i] += count[j];
+                    }
+                }
+            }
+            maxLength = max(maxLength, dp[i]);
+        }
+
+        int numberOfLIS = 0;
+        for (int i = 0; i < n; i++) {
+            if (dp[i] == maxLength) {
+                numberOfLIS += count[i];
+            }
+        }
+
+        return numberOfLIS;
+    }
+};
 
 /* 8: MCM DP | Partition DP */
 
 // Matrix Chain Multiplication|(DP-48)
 
-
+class Solution{
+public:
+    int t[501][501];
+    int matrixMultiplication(int N, int arr[])
+    {
+        memset(t,-1,sizeof(t));
+        // code here
+        int i=1;int j=N-1;
+        return sol(arr,i,j);
+    }
+    int sol(int arr[],int i,int j){
+        
+        int mn=INT_MAX;
+        //base condition
+        if(i>=j) return 0;
+        
+        //if matrix element is changed from -1 to any other  
+        if(t[i][j]!=-1)
+            return t[i][j];
+        
+        //main code
+        for(int k=i;k<j;k++)
+        {
+            int temp= sol(arr,i,k)+sol(arr,k+1,j)+ arr[i-1]*arr[k]*arr[j];
+            
+            if(temp<mn)
+                mn=temp;
+        }
+        return t[i][j]=mn;
+    }
+};
 
 // Matrix Chain Multiplication | Bottom-Up|(DP-49)
 
-
+class Solution{
+public:
+    int matrixMultiplication(int n, int arr[]){
+        vector<vector<int>> dp(n,vector<int> (n,0));
+        int i=0,j=1;
+        while(j < n && i < n){
+            dp[i][j] = 0;
+            i++;
+            j++;
+        }
+        for(int gap = 2; gap < n; gap++){
+            int i = 0, j = gap;
+            while(j < n && i < n){
+                int store = INT_MAX;
+                for(int k = i + 1; k < j; k++){
+                  int val = dp[i][k] + dp[k][j];
+                  val += arr[i] * arr[k] * arr[j];
+                  store = min(store, val);
+                }
+                dp[i][j] = store;
+                i++;
+                j++;
+            }
+        }
+        return dp[0][n - 1];
+    }
+};
 
 // Minimum Cost to Cut the Stick|(DP-50)
 
+// Method-1
+class Solution
+{
+public:
+    int f(int i, int j, vector<int> &cuts, vector<vector<int>> &dp){
+        if (i > j)
+            return 0;
+        if (dp[i][j] != -1)
+            return dp[i][j];
+        int mini = 1e9;
+        for (int ind = i; ind <= j; ind++){
+            int cost = cuts[j + 1] - cuts[i - 1] + f(i, ind - 1, cuts, dp) + f(ind + 1, j, cuts, dp);
+            mini = min(mini, cost);
+        }
+        return dp[i][j] = mini;
+    }
+    int minCost(int n, vector<int> &cuts){
+        cuts.insert(cuts.begin(), 0);
+        cuts.insert(cuts.end(), n);
+        sort(cuts.begin(), cuts.end());
+        int m = cuts.size();
+        vector<vector<int>> dp(m + 1, vector<int>(m + 1, -1));
+        return f(1, cuts.size() - 2, cuts, dp);
+    }
+};
 
+// Method-2
+class Solution
+{
+public:
+    int minCost(int n, vector<int> &cuts){
+        cuts.insert(cuts.begin(), 0);
+        cuts.insert(cuts.end(), n);
+        sort(cuts.begin(), cuts.end());
+        int m = cuts.size();
+        vector<vector<int>> dp(m, vector<int>(m, 0));
+        for (int i = m - 1; i >= 1; i--){
+            for (int j = i; j <= m - 2; j++){
+                int mini = 1e9;
+                for (int ind = i; ind <= j; ind++){
+                    int cost = cuts[j + 1] - cuts[i - 1] + dp[i][ind - 1] + dp[ind + 1][j];
+                    mini = min(mini, cost);
+                }
+                dp[i][j] = mini;
+            }
+        }
+        return dp[1][cuts.size() - 2];
+    }
+};
 
 // Burst Balloons|(DP-51)
 
+// Method-1
+class Solution {
+public:
+    int dp[400][400];
+    int f(int i, int j, vector<int>& v) {
+        if (i > j)
+            return 0;
+        if (dp[i][j] != -1)
+            return dp[i][j];
+        int ans = -1;
+        for (int k = i; k <= j; k++) {
+            ans = max(ans, v[i - 1] * v[k] * v[j + 1] + f(i, k - 1, v) + f(k + 1, j, v));
+        }
+        return dp[i][j] = ans;
+    }
+    int maxCoins(vector<int>& nums) {
+        int n = nums.size();
+        nums.insert(nums.begin(), 1);
+        nums.push_back(1);
+        memset(dp, -1, sizeof dp);
+        return f(1, n, nums);
+    }
+};
 
+// Method-2
+class Solution {
+public:
+    int dp[400][400];
+    int maxCoins(vector<int>& nums) {
+        int n = nums.size();
+        nums.insert(nums.begin(), 1);
+        nums.push_back(1);
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+                if(i > j)
+			dp[i][j] = 0;
+            }
+        }
+        for(int i = n; i >= 1; i--){
+            for(int j = i; j <= n; j++){
+                int ans = -1;
+                for(int k = i; k <= j; k++){
+                    ans=max(ans,nums[i - 1] * nums[k] * nums[j + 1] + dp[i][k - 1] + dp[k + 1][j]);
+                }
+                dp[i][j] = ans;
+            }
+        }
+        return dp[1][n];
+    }
+};
 
 // Evaluate Boolean Expression to True|(DP-52)
 
-
+class Solution {
+public:
+    char solver(vector<char> values, char op) {
+        switch(op) {
+            case '&' : {
+                if(count(values.begin(), values.end(), 'f'))
+                    return 'f';
+                break;
+            } 
+            case '|' : {
+                if(count(values.begin(), values.end(), 't'))
+                    return 't';
+                return 'f';
+            }
+            case '!' : {
+                return values[0] == 't' ? 'f' : 't';
+            }
+        }
+        return 't';
+    }
+    char helper(int &index, string &exp) {
+        char op = exp[index++];
+        index++; // (
+        vector<char> vals;
+        while(index < exp.length() && exp[index] != ')') {
+            if(exp[index] == 't')
+                vals.push_back('t'), index++;
+            else if(exp[index] == 'f')
+                vals.push_back('f'), index++;
+            else if(exp[index] == ',')
+                index++;
+            else
+                vals.push_back(helper(index, exp));
+        }
+        index++; // )
+        return solver(vals, op);
+    }
+    bool parseBoolExpr(string expression) {
+        int index = 0;
+        return helper(index, expression) == 't';
+    }
+};
 
 // Palindrome Partitioning - II|(DP-53)
 
+// Method-1
+class Solution {
+public:
+    int dp[2001][2001];
+    bool isPalindrome(string s, int i, int j) {
+        while (i < j) {
+            if (s[i] != s[j]) {
+                return false;
+            } else {
+                i++;
+                j--;
+            }
+        }
+        return true;
+    }
+    int solve(string s, int i, int j) {
+        if (i >= j) {
+            return 0;
+        }
+        if (dp[i][j] != -1) {
+            return dp[i][j];
+        }
+        if (isPalindrome(s, i, j)) {
+            return 0;
+        }
+        int ans = INT_MAX;
+        for (int k = i; k < j; k++) {
+            int temp = 1 + solve(s, i, k) + solve(s, k + 1, j);
+            dp[i][j] = ans = min(ans, temp);
+        }
+        return dp[i][j];
+    }
+    int minCut(string s) {
+        int n = s.length();
+        memset(dp, -1, sizeof(dp));
+        int ans = solve(s, 0, n - 1);
+        return ans;
+    }
+};
 
+// Method-2
+class Solution {
+public:
+    int dp[2001];
+    bool isPalindrome(const std::string& s, int i, int j) {
+        while (i < j) {
+            if (s[i] != s[j]) {
+                return false;
+            } else {
+                i++;
+                j--;
+            }
+        }
+        return true;
+    }
+
+    int minCut(const std::string& s) {
+        int n = s.length();
+        std::vector<std::vector<bool>> isPal(n, std::vector<bool>(n, false));
+
+        for (int i = 0; i < n; i++) {
+            isPal[i][i] = true;
+        }
+
+        for (int len = 2; len <= n; len++) {
+            for (int i = 0; i <= n - len; i++) {
+                int j = i + len - 1;
+                if (s[i] == s[j] && (len == 2 || isPal[i + 1][j - 1])) {
+                    isPal[i][j] = true;
+                }
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            dp[i] = i; // Maximum possible cuts for the substring s[0:i]
+        }
+
+        for (int i = 1; i < n; i++) {
+            if (isPal[0][i]) {
+                dp[i] = 0;
+            } else {
+                for (int j = 0; j < i; j++) {
+                    if (isPal[j + 1][i]) {
+                        dp[i] = min(dp[i], dp[j] + 1);
+                    }
+                }
+            }
+        }
+        return dp[n - 1];
+    }
+};
 
 // Partition Array for Maximum Sum|(DP-54)
 
+// Method-1
+class Solution {
+public:
+    vector<int> dp;
+    int solve(vector<int>& arr, int k, int ind) {
+        int n = arr.size(), mx = 0, ans = 0;
+        if (ind >= n) {
+            return 0;
+        }
+        if (dp[ind] != -1) {
+            return dp[ind];
+        }
+        for (int i = ind; i < min(ind + k, n); i++) {
+            mx = max(mx, arr[i]);
+            ans = max(ans, (i - ind + 1) * mx + solve(arr, k, i + 1));
+        }
+        dp[ind] = ans;
+        return ans;
+    }
+    int maxSumAfterPartitioning(vector<int>& arr, int k) {
+        dp.resize(arr.size(), -1);
+        return solve(arr, k, 0);
+    }
+};
+
+// Method-2
+class Solution {
+public:
+    int bottomup(int i, vector<int>& arr, int k) {
+        // base case
+        vector<int> dp(arr.size() + 1, 0);
+        dp[0] = 0;
+        for (int i = arr.size() - 1; i >= 0; i--) {
+            int currAns = 0;
+            int maxEle = arr[i];
+            int count = 0;
+            for (int j = i; j < arr.size() && count < k; j++) {
+                maxEle = max(maxEle, arr[j]);
+                count++;
+                int sum = maxEle * count;
+                currAns = max(currAns, sum + dp[j + 1]);
+            }
+            dp[i] = currAns;
+        }
+        return dp[0];
+    }
+    int maxSumAfterPartitioning(vector<int>& arr, int k) {
+        int n = arr.size();
+        return bottomup(0, arr, k);
+    }
+};
 
 /* 9: DP on Squares */
 
 // Maximum Rectangle Area with all 1's|(DP-55)
 
-
+class Solution {
+public:
+    vector<int> nextSmallerElement(vector<int> arr, int n) {
+        stack<int> s;
+        vector<int> ans(n);
+        for (int i = n - 1; i >= 0; i--) {
+            while (!s.empty() && arr[s.top()] >= arr[i]) {
+                s.pop();
+            }
+            if (s.empty()) {
+                ans[i] = n;
+            } else {
+                ans[i] = s.top();
+            }
+            s.push(i);
+        }
+        return ans;
+    }
+    vector<int> prevSmallerElement(vector<int> arr, int n) {
+        stack<int> s;
+        vector<int> ans(n);
+        for (int i = 0; i < n; i++) {
+            while (!s.empty() && arr[s.top()] >= arr[i]) {
+                s.pop();
+            }
+            if (s.empty()) {
+                ans[i] = -1;
+            } else {
+                ans[i] = s.top();
+            }
+            s.push(i);
+        }
+        return ans;
+    }
+    int largestRectangleArea(vector<int>& heights) {
+        int n = heights.size();
+        vector<int> next(n);
+        next = nextSmallerElement(heights, n);
+        vector<int> prev(n);
+        prev = prevSmallerElement(heights, n);
+        int area = INT_MIN;
+        for (int i = 0; i < n; i++) {
+            int l = heights[i];
+            int b = next[i] - prev[i] - 1;
+            int newArea = l * b;
+            area = max(area, newArea);
+        }
+        return area;
+    }
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if (matrix.empty() || matrix[0].empty()) {
+            return 0;
+        }
+        int rows = matrix.size();
+        int cols = matrix[0].size();
+        vector<int> heights(cols, 0);
+        int maxArea = 0;
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                heights[j] = (matrix[i][j] == '1') ? heights[j] + 1 : 0;
+            }
+            maxArea = max(maxArea, largestRectangleArea(heights));
+        }
+        return maxArea;
+    }
+};
 
 // Count Square Submatrices with All Ones|(DP-56)
+
+class Solution {
+public:
+    vector<int> prevSmaller(vector<int>& heights, int n) {
+        stack<int> st;
+        st.push(-1);
+        vector<int> ans(n);
+        for (int i = 0; i < n; ++i) {
+            int curr = heights[i];
+            while (st.top() != -1 && heights[st.top()] >= curr) {
+                st.pop();
+            }
+            ans[i] = st.top();
+            st.push(i);
+        }
+        return ans;
+    }
+    int solve(vector<int>& heights) {
+        int r = 0;
+        int n = heights.size();
+        vector<int> prev = prevSmaller(heights, n);
+        for (int i = 0; i < n; i++) {
+            bool is_sq = true;
+            for (int h = 0; h < heights[i]; h++) {
+                if (h > i) {
+                    break;
+                }
+                for (int x = i; x >= i - h; x--) {
+                    if (heights[x] < h + 1) {
+                        is_sq = false;
+                        break;
+                    }
+                }
+                if (!is_sq) {
+                    break;
+                }
+                r += 1;
+            }
+        }
+        return r;
+    }
+    int countSquares(vector<vector<int>>& matrix) {
+        int row = matrix.size();
+        int col = matrix[0].size();
+        vector<int> heights(col, 0);
+        int maxi = 0;
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (matrix[i][j] == 1)
+                    heights[j]++;
+                else
+                    heights[j] = 0;
+            }
+            maxi += solve(heights);
+        }
+        return maxi;
+    }
+};

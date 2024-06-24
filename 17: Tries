@@ -1,0 +1,537 @@
+/* 1: Theory */
+
+// Implement TRIE | INSERT | SEARCH | STARTSWITH
+
+class TrieNode {
+public:
+    // Array to store links to child nodes
+    TrieNode* children[26];
+    // Flag to indicate if the node represents the end of a word
+    bool isWord;
+    TrieNode() {
+        // Initialize all children as NULL
+        for (int i = 0; i < 26; i++) {
+            children[i] = NULL;
+        }
+        // Initialize isWord flag as false
+        isWord = false;
+    }
+};
+
+class Trie {
+public:
+    Trie() {
+        // Initialize the Trie with an empty root node
+        root = new TrieNode();
+    }
+    void insert(string word) {
+        TrieNode* node = root;
+        int curr = 0;
+        for (int i = 0; i < word.size(); i++) {
+            // Calculate the index of the character in the children array
+            curr = word[i] - 'a';
+            // Create a new node if the child does not exist
+            if (node->children[curr] == NULL) {
+                node->children[curr] = new TrieNode();
+            }
+            // Move to the child node
+            node = node->children[curr];
+        }
+        // Mark the last node as the end of the inserted word
+        node->isWord = true;
+    }
+    bool search(string word) {
+        TrieNode* node = root;
+        int curr = 0;
+        for (int i = 0; i < word.size(); i++) {
+            // Calculate the index of the character in the children array
+            curr = word[i] - 'a';
+            // Return false if any character is missing in the trie
+            if (node->children[curr] == NULL) {
+                return false;
+            }
+            // Move to the child node
+            node = node->children[curr];
+        }
+        // Return true if the last node represents the end of a word
+        return node->isWord;
+    }
+    bool startsWith(string prefix) {
+        TrieNode* node = root;
+        int curr = 0;
+        for (int i = 0; i < prefix.size(); i++) {
+            // Calculate the index of the character in the children array
+            curr = prefix[i] - 'a';
+            // Return false if any character is missing in the trie
+            if (node->children[curr] == NULL) {
+                return false;
+            }
+            // Move to the child node
+            node = node->children[curr];
+        }
+        // Return true if the prefix exists in the trie
+        return true;
+    }
+private:
+    // Pointer to the root node of the trie
+    TrieNode* root;
+};
+
+/* 2: Problems */
+
+// Implement Trie - 2 (Prefix Tree)
+
+class TrieNode{
+public:
+    char data;
+    TrieNode *children[26];
+    int count;
+    int prefix;
+    bool isTerminal;
+    TrieNode(char value){
+        this->data = value;
+        for (int i = 0; i < 26; i++){
+        this->children[i] = NULL;
+        }
+        count = 0;
+        prefix = 0;
+        isTerminal = false;
+    }
+};
+class Trie {
+public:
+    TrieNode *root;
+    Trie() { 
+        root = new TrieNode('\0'); 
+    }
+    void InsertElement(TrieNode *root, string word){
+        if (word.length() == 0){
+            root->isTerminal = true;
+            root->count++;
+            return;
+        }
+        int index = word[0] - 'a';
+        TrieNode *child;
+        if (root->children[index] != NULL){
+            child = root->children[index];
+        }
+        else{
+            child = new TrieNode(word[0]);
+            root->children[index] = child;
+        }
+        InsertElement(child, word.substr(1));
+        child->prefix++;
+    }
+    void insert(string &word) {
+        InsertElement(root, word);
+        return;
+    }
+    int CountingOfWord(TrieNode *root, string word){
+        if (word.length() == 0){
+            if (root->isTerminal == true){
+                return root->count;
+            }
+            else{
+                return 0;
+            }
+        }
+        int index = word[0] - 'a';
+        TrieNode *child;
+        if (root->children[index] != NULL){
+            child = root->children[index];
+        }
+        else{
+            return 0;
+        }
+        return CountingOfWord(child, word.substr(1));
+    }
+    int countWordsEqualTo(string &word) { 
+        return CountingOfWord(root, word); 
+    }
+    int CountingPrefix(TrieNode *root, string word){
+        if (word.length() == 0){
+            return root->prefix;
+        }
+        int index = word[0] - 'a';
+        TrieNode *child;
+        if (root->children[index] != NULL){
+            child = root->children[index];
+        }
+        else{
+            return 0;
+        }
+        return CountingPrefix(child, word.substr(1));
+    }
+    int countWordsStartingWith(string &word) {
+        return CountingPrefix(root, word);
+    }
+    bool isempty(TrieNode *root){
+        for (int i = 0; i < 26; i++){
+            if (root->children[i] != NULL){
+                return false;
+            }
+        }
+        return true;
+    }
+    TrieNode *DeletionOfWord(TrieNode *root, string word){
+        if (!root){
+            return NULL;
+        }
+        if (word.length() == 0){
+            if (root->isTerminal == true){
+                root->isTerminal = false;
+                root->prefix--;
+                root->count--;
+                if (isempty(root) && root->prefix <= 0 && root->count <= 0){
+                    delete (root);
+                    root = NULL;
+                }
+            }
+            return root;
+        }
+        int index = word[0] - 'a';
+        root->children[index] = DeletionOfWord(root->children[index], word.substr(1));
+        root->prefix--;
+        root->count--;
+        if (isempty(root) && root->isTerminal == false && root->prefix <= 0 && root->count <= 0){
+            delete (root);
+            root = NULL;
+        }
+        return root;
+    }
+    void erase(string &word) {
+        root = DeletionOfWord(root, word);
+        return;
+    }
+};
+
+// Longest String with All Prefixes
+
+#include <bits/stdc++.h> 
+class Node{
+    Node* links[26];
+    bool fl=false;
+    public:
+     bool contains(char ch){
+         return (links[ch-'a']!=NULL);
+     }
+     void put(char ch,Node* node){
+         links[ch-'a']=node;
+     }
+     Node* get(char ch){
+         return links[ch-'a'];
+     }
+     void setEnd(){
+         fl=true;
+     }
+     bool isEnd(){
+         return fl;
+     }
+};
+class Tries{
+       Node* root;
+    public:
+       Tries(){
+           root=new Node();
+       }
+       void insert(string word){
+           Node* node=root;
+           for(int i=0;i<word.size();i++){
+               if(!node->contains(word[i])){
+                   node->put(word[i], new Node());
+               }
+               node=node->get(word[i]);
+           }
+           node->setEnd();
+       }
+       bool isPresant(string word){
+           Node* node=root;
+           for(int i=0;i<word.size();i++){
+               if(node->contains(word[i])){
+                   node=node->get(word[i]);
+                   if(node->isEnd()==false) return false; 
+               }else{
+                   return false;
+               }
+           }
+           return true;
+       }
+};
+string completeString(int n, vector<string> &a){
+    Tries trie;
+    for(auto &it:a){
+        trie.insert(it);
+    }
+    string len="";
+    for(auto &it:a){
+        if(trie.isPresant(it)){
+            if(it.size()>len.size()){
+                len=it;
+            }else if(it.size()==len.size() and it<len){
+                len=it;
+            }
+        }
+    }
+    if(len=="") return "None";
+    else return len;
+}
+
+// Number of Distinct Substrings in a String
+
+class Node{
+    Node* links[26];
+public:
+    bool contains(char ch){
+        return links[ch-'a']!=NULL;
+    }
+    void put(char ch,Node* node){
+        links[ch-'a']=node;
+    }
+    Node* get(char ch){
+        return links[ch-'a'];
+    }
+};
+int countDistinctSubstrings(string &s){
+    Node* root=new Node();
+    int cnt=0;
+    int n=s.size();
+    for(int i=0;i<n;i++){
+        Node* node=root;
+        for(int j=i;j<n;j++){
+            char ch=s[j];
+            if(!node->contains(ch)){
+                cnt++;
+                node->put(ch, new Node());
+            }
+            node=node->get(ch);
+        }
+    }
+    return ++cnt;
+}
+
+// Bit PreRequisites for TRIE Problems
+
+class Node{
+     public:
+     Node*link[2];
+ };
+class Trie{
+    public:
+    Node*root=new Node();
+    void insert(int m){
+        Node*node=root;
+        for(int i=31;i>=0;i--){
+            if(m>>i &1){
+                node->link[1]=new Node();
+                node=node->link[1];
+            }
+            else{
+            node->link[0]=new Node();
+            node=node->link[0];
+            }
+        }
+    }
+    int findXOR(int n){
+        Node*node=root;
+        int ans=0;
+        for(int i=31;i>=0;i--){
+            int x=(n>>i & 1);
+            int y=!x;
+            if(node->link[y]!=NULL){
+              ans=ans+(1<<i);
+              node=node->link[y];
+            }
+            else
+            node=node->link[x];
+        }
+        return ans;
+    }
+    int getBit(int a, int b){
+        Node*node=root;
+        for(int i=32;i>a;i--){
+            if(node->link[1]){
+                node=node->link[1];
+            }
+            else{
+                node=node->link[0];
+            }
+        }
+        if(node->link[1]){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
+    int setBit(int a, int b){
+        Node*node=root;
+        for(int i=31;i>a;i--){
+            if(node->link[1]){
+                node=node->link[1];
+            }
+            else{
+                node=node->link[0];
+            }
+        }
+        if(node->link[1]){
+            return b;
+        }
+        else{
+            Node*x=node->link[0];
+            node->link[0]=NULL;
+            node->link[1]=x;
+            return b+(1<<a);
+        }
+    }
+};
+class Solution {
+  public:
+  Trie t;
+    int XOR(int n, int m) {
+        t.insert(m);
+        return t.findXOR(n);
+    }
+    int check(int a, int b) {
+        t.insert(b);
+        return t.getBit(a,b);
+    }
+    int setBit(int c, int d) {
+        t.insert(d);
+     return t.setBit(c,d) ;
+    }
+};
+
+// Maximum XOR of two numbers in an array
+
+class TrieNode {
+public:
+    char ch;
+    TrieNode* children[2];
+    bool isTerminal;
+    TrieNode(char ch) {
+        this->ch = ch;
+        for (int i = 0; i < 2; i++)
+            children[i] = NULL;
+        isTerminal = false;
+    }
+};
+class Solution {
+public:
+    string getBitString(int x) {
+        string s = "";
+        while (x > 0) {
+            if (x % 2 == 0) {
+                s.push_back('0');
+
+            } else
+                s.push_back('1');
+            x /= 2;
+        }
+        while (s.size() < 32) {
+            s.push_back('0');
+        }
+        reverse(s.begin(), s.end());
+        return s;
+    }
+    int findMaximumXOR(vector<int>& nums) {
+        vector<string> bits;
+        for (auto i : nums) {
+            bits.push_back(getBitString(i));
+        }
+        TrieNode* root = new TrieNode('\0');
+        for (auto i : bits) {
+            TrieNode* crawler = root;
+            for (auto j : i) {
+                if (crawler->children[j - '0'] == NULL)
+                    crawler->children[j - '0'] = new TrieNode(j);
+                crawler = crawler->children[j - '0'];
+            }
+            crawler->isTerminal = true;
+        }
+        int ans = 0;
+        for (auto i : bits) {
+            TrieNode* crawler = root;
+            int res = 0;
+            for (auto j : i) {
+                auto k = (j == '0') ? '1' : '0';
+                if (crawler->children[k - '0'] != NULL) {
+                    crawler = crawler->children[k - '0'];
+                    res = res * 2;
+                    res += 1;
+                } else {
+                    crawler = crawler->children[!(k - '0')];
+                    res = res * 2;
+                    res += 0;
+                }
+            }
+            ans = max(ans, res);
+        }
+        return ans;
+    }
+};
+
+// Maximum XOR With an Element From Array
+
+class Node {
+    Node* child[2];
+public:
+    bool contain(int bit) { return child[bit] != NULL; }
+    Node* get(int bit) { return child[bit]; }
+    void insert(int bit, Node* node) { child[bit] = node; }
+};
+class Trie {
+    Node* root;
+public:
+    Trie() { root = new Node(); }
+    void insert(int num) {
+        Node* node = root;
+        for (int i = 31; i >= 0; i--) {
+            int bit = (num >> i) & 1;
+            if (!node->contain(bit)) {
+                node->insert(bit, new Node());
+            }
+            node = node->get(bit);
+        }
+    }
+    int getmax(int num) {
+        Node* node = root;
+        int max1 = 0;
+        for (int i = 31; i >= 0; i--) {
+            int bit = (num >> i) & 1;
+            if (node->contain(1 - bit)) {
+                max1 = max1 | (1 << i);
+                node = node->get(1 - bit);
+            } else {
+                node = node->get(bit);
+            }
+        }
+        return max1;
+    }
+};
+class Solution {
+public:
+    vector<int> maximizeXor(vector<int>& arr, vector<vector<int>>& queries) {
+        Trie trie;
+        sort(arr.begin(), arr.end());
+        vector<pair<int, pair<int, int>>> queries1;
+        for (int i = 0; i < queries.size(); i++) {
+            queries1.push_back({queries[i][1], {queries[i][0], i}});
+        }
+        sort(queries1.begin(), queries1.end());
+        vector<int> ans(queries.size(), 0);
+        int j = 0, n = arr.size();
+        for (int i = 0; i < queries.size(); i++) {
+            while (j < n && arr[j] <= queries1[i].first) {
+                trie.insert(arr[j]);
+                j++;
+            }
+            if (j == 0) {
+                ans[queries1[i].second.second] = -1;
+            } else {
+                ans[queries1[i].second.second] =
+                    trie.getmax(queries1[i].second.first);
+            }
+        }
+        return ans;
+    }
+};

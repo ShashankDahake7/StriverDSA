@@ -1,0 +1,342 @@
+/* 1: Hard Problems */
+
+// Minimum number of bracket reversals needed to make an expression balanced
+
+class Solution {
+public:
+    int minAddToMakeValid(string s) {
+        stack<char> st;
+        int count = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s[i] == '(')
+                st.push(')');
+            else {
+                if (!st.empty() && st.top() == s[i])
+                    st.pop();
+                else
+                    count++;
+            }
+        }
+        count += st.size();
+        return count;
+    }
+};
+
+// Count and say
+
+class Solution {
+public:
+    string countAndSay(int n) {
+        if (n == 1) {
+            return "1";
+        }
+        if (n == 2) {
+            return "11";
+        }
+        string s = "11";
+        for (int i = 3; i <= n; i++) {
+            string t = "";
+            s = s + '&';
+            int c = 1;
+            for (int j = 1; j < s.length(); j++) {
+                if (s[j] != s[j - 1]) {
+                    t = t + to_string(c);
+                    t = t + s[j - 1];
+                    c = 1;
+                } else {
+                    c++;
+                }
+            }
+            s = t;
+        }
+        return s;
+    }
+};
+
+// Hashing In Strings | Theory
+
+class Solution {
+  public:
+    int findMatching(string text, string pat) {
+        int n = pat.size();
+        for (int i=0; i<text.size();i++){
+            if (pat==text.substr(i,n)){
+                return i;
+            }
+        }
+        return -1;
+    }
+};
+
+// Rabin Karp
+
+class Solution {
+private:
+    int BASE = 1000000;
+
+public:
+    int repeatedStringMatch(string A, string B) {
+        if (A == B)
+            return 1;
+        int count = 1;
+        string source = A;
+        while (source.size() < B.size()) {
+            count++;
+            source += A;
+        }
+        if (source == B)
+            return count;
+        if (Rabin_Karp(source, B) != -1)
+            return count;
+        if (Rabin_Karp(source + A, B) != -1)
+            return count + 1;
+        return -1;
+    }
+    int Rabin_Karp(string source, string target) {
+        if (source == "" or target == "")
+            return -1;
+        int m = target.size();
+        int power = 1;
+        for (int i = 0; i < m; i++) {
+            power = (power * 31) % BASE;
+        }
+        int targetCode = 0;
+        for (int i = 0; i < m; i++) {
+            targetCode = (targetCode * 31 + target[i]) % BASE;
+        }
+        int hashCode = 0;
+        for (int i = 0; i < source.size(); i++) {
+            hashCode = (hashCode * 31 + source[i]) % BASE;
+            if (i < m - 1)
+                continue;
+            if (i >= m) {
+                hashCode = (hashCode - source[i - m] * power) % BASE;
+            }
+            if (hashCode < 0)
+                hashCode += BASE;
+            if (hashCode == targetCode) {
+                if (source.substr(i - m + 1, m) == target)
+                    return i - m + 1;
+            }
+        }
+        return -1;
+    }
+};
+
+// Z-Function
+
+#include<iostream>
+using namespace std;
+void getZarr(string str, int Z[]);
+// prints all occurrences of pattern in text using Z algo
+void search(string text, string pattern){
+	// Create concatenated string "P$T"
+	string concat = pattern + "$" + text;
+	int l = concat.length();
+	// Construct Z array
+	int Z[l];
+	getZarr(concat, Z);
+	// now looping through Z array for matching condition
+	for (int i = 0; i < l; ++i){
+		// if Z[i] (matched region) is equal to pattern
+		// length we got the pattern
+		if (Z[i] == pattern.length())
+			cout << "Pattern found at index "
+				<< i - pattern.length() -1 << endl;
+	}
+}
+// Fills Z array for given string str[]
+void getZarr(string str, int Z[]){
+	int n = str.length();
+	int L, R, k;
+	// [L,R] make a window which matches with prefix of s
+	L = R = 0;
+	for (int i = 1; i < n; ++i){
+		// if i>R nothing matches so we will calculate.
+		// Z[i] using naive way.
+		if (i > R){
+			L = R = i;
+			// R-L = 0 in starting, so it will start
+			// checking from 0'th index. For example,
+			// for "ababab" and i = 1, the value of R
+			// remains 0 and Z[i] becomes 0. For string
+			// "aaaaaa" and i = 1, Z[i] and R become 5
+			while (R<n && str[R-L] == str[R])
+				R++;
+			Z[i] = R-L;
+			R--;
+		}
+		else{
+			// k = i-L so k corresponds to number which
+			// matches in [L,R] interval.
+			k = i-L;
+			// if Z[k] is less than remaining interval
+			// then Z[i] will be equal to Z[k].
+			// For example, str = "ababab", i = 3, R = 5
+			// and L = 2
+			if (Z[k] < R-i+1)
+				Z[i] = Z[k];
+			// For example str = "aaaaaa" and i = 2, R is 5,
+			// L is 0
+			else{
+				// else start from R and check manually
+				L = i;
+				while (R<n && str[R-L] == str[R])
+					R++;
+				Z[i] = R-L;
+				R--;
+			}
+		}
+	}
+}
+int main(){
+	string text = "GEEKS FOR GEEKS";
+	string pattern = "GEEK";
+	search(text, pattern);
+	return 0;
+}
+
+// KMP algo / LPS(pi) array
+
+class Solution{
+public:
+    vector<int> LPs(string s) {
+	    int n=s.length();
+	    vector<int>LPS(n,0);
+	    if(n==1) return {0};
+	    int pref=0,suff=1;
+	    while(suff<n){
+	        if(s[pref]==s[suff]){
+	            LPS[suff]=pref+1;
+	            pref++;
+	            suff++;
+	        }else{
+	            if(pref == 0){
+	                LPS[suff] = 0;
+	                suff++;
+	            }else{
+	                pref = LPS[pref-1];
+	            }
+	        }
+	    }
+	    return LPS;
+	}
+  vector<int> search(string pat, string txt) {  
+        int n = txt.size();
+        int m = pat.size();
+        vector<int>ans;
+        if(n<m) return ans;
+        vector<int>lps(m,0);
+        lps = LPs(pat);
+        int first = 0,second=0;
+        while(first < n && second <m){
+            if(txt[first] == pat[second]){
+                first++;
+                second++;
+                if(second == m){
+                    ans.push_back(first-second+1);
+                    second =lps[second -1];
+                }
+            }else{
+                if(second == 0){
+                    first++;
+                }else{
+                    second = lps[second -1];
+                }
+            }
+            if(second == m){
+                ans.push_back(first-second);
+                second =lps[second -1];
+            }
+        }
+        return ans;
+    }
+};
+
+// Shortest Palindrome
+
+class Solution {
+public:
+    string shortestPalindrome(string s) {
+        string str = s;
+        reverse(str.begin(), str.end());
+        str = s + "$" + str;
+        int n = str.size();
+        vector<int> LPS(n);
+        int i = 1, j = 0;
+        while (i < n) {
+            if (str[i] == str[j]) {
+                j++;
+                LPS[i] = j;
+                i++;
+            } else {
+                if (j != 0)
+                    j = LPS[j - 1];
+                else
+                    i++;
+            }
+        }
+        i = LPS[n - 1];
+        str = s.substr(i, s.size());
+        reverse(str.begin(), str.end());
+        return str + s;
+    }
+};
+
+// Longest happy prefix
+
+class Solution {
+public:
+    string longestPrefix(string s) {
+        int n = s.size();
+        int i = 1, j = 0;
+        vector<int> lps(n, 0);
+        while (i < n) {
+            if (s[i] == s[j]) {
+                lps[i] = j + 1;
+                i++;
+                j++;
+            } else {
+                if (j > 0) {
+                    j = lps[j - 1];
+                } else {
+                    lps[i] == 0;
+                    i++;
+                }
+            }
+        }
+        int lenOfPrefixSuffix = lps[n - 1];
+        string ans = s.substr(0, lenOfPrefixSuffix);
+        return ans;
+    }
+};
+
+// Count palindromic subsequence in given string
+
+class Solution{
+    public:
+    long long int countPS(string str){
+        long long int mod = 1e9 + 7;
+        int n = str.size();
+        vector<vector<long long int>> dp(n, vector<long long int>(n));
+        for (int k = 0; k < n; k++){
+            for (int i = 0, j = k + i; i < n and j < n; i++, j++){
+                if (i == j)
+                    dp[i][j] = 1;
+                else if (j == i + 1){
+                    if (str[i] == str[j])
+                        dp[i][j] = ((dp[i + 1][j]) % mod + (dp[i][j - 1]) % mod + 1) % mod;
+                    else
+                        dp[i][j] = ((dp[i + 1][j]) % mod + (dp[i][j - 1]) % mod + mod) % mod;
+                }
+                else{
+                    if (str[i] == str[j])
+                        dp[i][j] = ((dp[i + 1][j]) % mod + (dp[i][j - 1]) % mod + 1) % mod;
+                    else
+                        dp[i][j] = ((dp[i + 1][j]) % mod + (dp[i][j - 1]) % mod - (dp[i + 1][j - 1]) % mod + mod) % mod;
+                }
+            }
+        }
+        return (dp[0][n - 1]) % mod;
+    } 
+};

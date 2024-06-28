@@ -675,60 +675,45 @@ ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
 
 // Add 1 to a number represented by LL				
 
-Node *addOne(Node *head)
-{
-    //simply traverse to tail, if num<9 simply incr by 1.
-    //if 9 then move back 1 node and check the above condi again. If somehow we came all the 
-    //way to head and head also 9 then we create a node and put val = 1 while rest all nodes 0s
-    //Now comes the question, how we traverse back?
-    //BUT WAIT, while traversing till tail, we keep on checking all data
-    //Any node with val = 9, is stored.
-    //EDGE CASE N=1
-    if(head->next==NULL){
-        if(head->data==9){
-            Node* newN = new Node(1);
-            newN->next = head;
-            head->data = 0;
+Node* reverse(Node* head){
+        Node* prev=NULL;
+        Node* curr=head;
+        Node* nextptr;
+        while(curr!=NULL){
+            nextptr=curr->next;
+            curr->next=prev;
+            prev=curr;
+            curr=nextptr;
+        }
+        return prev;
+}
+
+Node* addOne(Node *head){   
+        head=reverse(head);
+        Node* temp=head;
+        int carry=1;
+        while(temp!=NULL){
+            temp->data=temp->data+carry;
+            if(temp->data<10){
+                carry=0;
+                break;
+            }
+            else{
+                temp->data=0;
+                carry=1;
+            }
+            temp=temp->next;
+        }
+        if(carry==1){
+            head=reverse(head);
+            Node* newNode=new Node(1);
+            newNode->next=head;
+            return newNode;
         }
         else{
-            head->data = head->data+1;
+            head=reverse(head);
+            return head;
         }
-        return head;
-    }
-    Node* NotNine = head;
-    Node* temp = head;
-    while(temp!=NULL){
-        if(temp->data!=9){
-            NotNine = temp;
-        }
-        temp = temp->next;
-    }
-    //now NotNine basically points to RHS node with val <9
-    temp = head; // reseting temp to head for future use
-    //if NotNine is still head. That means, all nodes after head has data = 9
-    //while head may or may not be 9.
-    //Edge case Check
-    if(NotNine->data==9){
-        Node* first = new Node(1);
-        first->next = head;
-        while(temp!=NULL){
-            temp->data = 0;
-            temp = temp->next;
-        }
-        return first;
-    }
-    //edge case ends
-    //Now, we incr NotNine node by 1. ANd whatev nodes is after,
-    //we set it all to 0s. Since,we made sure NotNine is our
-    //last possible Node that is NOT 9 or <9. Nodes after that is all
-    //9s
-    NotNine->data = NotNine->data+1;
-    NotNine = NotNine->next;
-    while(NotNine!=NULL){
-        NotNine->data = 0;
-        NotNine = NotNine->next;
-    }
-    return head;
 }
 
 // Add 2 numbers in LL

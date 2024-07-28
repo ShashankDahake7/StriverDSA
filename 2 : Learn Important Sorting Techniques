@@ -151,18 +151,21 @@ int parts(int arr[], int s, int e) {
     int temp = arr[pivotIndex];
     arr[pivotIndex] = arr[s];
     arr[s] = temp;
+
     int i = s, j = e;
     while (i < pivotIndex && j > pivotIndex) {
-        while (arr[i] < pivot) {
+        while (arr[i] <= pivot) {
             i++;
         }
-        while (arr[i] > pivot) {
+        while (arr[j] > pivot) {
             j--;
         }
         if (i < pivotIndex && j > pivotIndex) {
-            int temp = arr[i++];
-            arr[i++] = arr[j--];
-            arr[j--] = temp;
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+            i++;
+            j--;
         }
     }
     return pivotIndex;

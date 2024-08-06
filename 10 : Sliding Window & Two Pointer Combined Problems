@@ -67,27 +67,25 @@ public:
 
 // Fruit Into Baskets				
 
-int findMaxFruits(vector<int> &a, int n) {
-    int i = 0, j = 0, maxi = 0;
-    unordered_map<int, int> mp;
-    while(j < n){
-        mp[a[j]]++;
-        if(mp.size() == 2){
-            maxi = max(maxi, j - i + 1);
-        }
-        if(mp.size() > 2){
-            if(mp[a[i]] == 1){
-                mp.erase(a[i]);
+class Solution {
+public:
+    int totalFruit(vector<int>& fruits) {
+        unordered_map<int, int> baskets;
+        int left = 0, ans = 0;
+        for (int right = 0; right < fruits.size(); right++) {
+            baskets[fruits[right]]++;
+            if (baskets.size() > 2) {
+                baskets[fruits[left]]--;
+                if (baskets[fruits[left]] == 0) {
+                    baskets.erase(fruits[left]);
+                }
+                left++;
             }
-            else{
-                mp[a[i]]--;
-            }
-            i++;
+            ans = max(ans, right - left + 1);
         }
-        j++;
+        return ans;
     }
-    return maxi;
-}
+};
 
 // Longest repeating character replacement		
 

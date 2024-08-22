@@ -1454,66 +1454,75 @@ public:
 
 // Minimum multiplications to reach end		
 
-int minimumOperations(int n, int start, int end, vector<int> &a){
-    vector<bool> visited(1000,false);
-    queue<pair<int,int>> q;
-    q.push({0,start});
-    visited[start] = true;
-    while(!q.empty()){
-        int node = q.front().second;
-        int dist = q.front().first;
-        q.pop();
-        if(node == end){
-            return dist;
-        }
-        for(auto i: a){
-            int val = (i*node)%1000;
-            if(visited[val]==false){
-              visited[val] = true;
-              q.push({dist+1,val});
+class Solution {
+public:
+    int mod = 100000;
+    int minimumMultiplications(vector<int>& arr, int start, int end) {
+        if (start == end) 
+            return 0;
+        // BFS queue to store pairs (current_value, steps_count)
+        queue<pair<int, int>> q;
+        q.push({start, 0});
+        // Distance array to track the minimum steps to reach a value
+        vector<int> dist(mod, INT_MAX);
+        dist[start] = 0;
+        while (!q.empty()) {
+            int current = q.front().first;
+            int steps = q.front().second;
+            q.pop();
+            // Explore all possible multiplications
+            for (int num : arr) {
+                int next = (current * num) % mod;
+                // If this next state gives a shorter path
+                if (dist[next] > steps + 1) {
+                    dist[next] = steps + 1;
+                    q.push({next, steps + 1});
+                    // If we've reached the end, return the number of steps
+                    if (next == end) {
+                        return steps + 1;
+                    }
+                }
             }
         }
+        // If we exhaust all options and don't find the end, return -1
+        return -1;
     }
-    return -1;
-}
+};
 
 // Bellman Ford Algorithm		
 
-#include <bits/stdc++.h> 
-int bellmonFord(int n, int m, int src, int dest, vector<vector<int>> &edges) {
-    vector<int> dist(n+1, 1e9);
-    dist[src] = 0;
-    for (int i=1; i<=n; i++){
-        for (int j=0; j<m; j++){
-            int u = edges[j][0];
-            int v = edges[j][1];
-            int wt = edges[j][2];
-            if (dist[u] != 1e9 && ((dist[u]+wt) < dist[v])){
-                dist[v] = dist[u]+wt;
+class Solution {
+  public:
+      vector<int> bellman_ford(int v, vector<vector<int>>& edges, int S) {
+        vector<int> dis(v, 1e8); //dis array
+        dis[S] = 0;
+        
+        for(int i=0; i<v-1; i++){ //n-1 iters
+            for(auto it: edges){
+                int u = it[0];
+                int v = it[1];
+                int wt = it[2];
+                if(dis[u] != 1e8 && dis[u] + wt < dis[v]){
+                    dis[v] = dis[u] + wt;
+                }
             }
         }
+        // nth iter to check negative cycle 
+        for(auto it: edges){
+            int u = it[0];
+            int v = it[1];
+            int wt = it[2];
+            if(dis[u] != 1e8 && dis[u] + wt < dis[v]){
+                return {-1};
+            }
+        } 
+        return dis;
     }
-    return dist[dest];
-
-    // if -ve cycle is present
-    // bool flag = 0;
-    // for (int j=0; j<m; j++){
-    //     int u = edges[j][0];
-    //     int v = edges[j][1];
-    //     int wt = edges[j][2];
-    //     if (dist[u] != 1e9 && ((dist[u]+wt) < dist[v])){
-    //         bool flag = 1;
-    //     }
-    // }
-    // if (flag == 0){
-    //     return dist[dest];
-    // }
-    // return -1;
-}
-
+};
 
 // Floyd Warshal Algorithm		
 
+// Method-1
 int floydWarshall(int n, int m, int src, int dest, vector<vector<int>> &edges) {
     vector<vector<int>> matrix(n + 1, vector<int>(n + 1, 1e9));
     for (auto i : edges) {
@@ -1535,6 +1544,46 @@ int floydWarshall(int n, int m, int src, int dest, vector<vector<int>> &edges) {
     }
     return matrix[src][dest];
 }
+
+// Method-2
+class Solution {
+public:
+    void shortest_distance(vector<vector<int>>&matrix){
+        int n = matrix.size();
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+                if(matrix[i][j] == -1){
+                    matrix[i][j] = 1e9;
+                }
+                if(i == j) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        //to check the source and the destination node via node and 
+        // add the source and the via node to reach the destination node
+        for(int k = 0; k < n; k++){
+            for(int i = 0; i < n; i++){
+                for(int j = 0; j < n; j++){
+                    matrix[i][j] = min(matrix[i][j], matrix[i][k] + matrix[k][j]); 
+                }
+            }
+        }
+        // to detect negative cycles
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+               if(matrix[i][j] < 0){}
+            }
+        }
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+                if(matrix[i][j] == 1e9){
+                    matrix[i][j] = -1;
+                }
+            } 
+        }
+    }
+};
 
 // Find the city with the smallest number of neighbours in a threshold distance		
 

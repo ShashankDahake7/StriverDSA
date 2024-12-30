@@ -874,7 +874,9 @@ vector<int> printNos(int x) {
     return ans;
 }
 
-// Print N to 1 using recursionvoid print(vector<int> &ans,int x){
+// Print N to 1 using recursion
+
+void print(vector<int> &ans,int x){
     if(x==0){
         return;
     }

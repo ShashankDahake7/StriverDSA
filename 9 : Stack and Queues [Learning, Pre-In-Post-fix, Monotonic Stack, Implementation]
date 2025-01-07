@@ -705,6 +705,7 @@ vector<int> nextGreaterElement(vector<int> &arr, int n){
 }
 
 // LC
+// Method-1
 class Solution {
 public:
     vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
@@ -736,8 +737,26 @@ public:
             k[i]=ans[j];
         }
         return k;
-        
+    }
+};
 
+// Method-2
+class Solution {
+public:
+    vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
+        unordered_map<int, int> mp;
+        stack<int> st;
+        for(auto num : nums2){
+            while(!st.empty() && st.top() < num){
+                mp[st.top()] = num;
+                st.pop();
+            }
+            st.push(num);
+        }
+        for(int i = 0; i < nums1.size(); i++){
+            nums1[i] = mp.count(nums1[i]) ? mp[nums1[i]] : -1;
+        }
+        return nums1;
     }
 };
 
@@ -792,40 +811,26 @@ vector<int> nextGreaterElementII(vector<int>& a) {
 
 // Next Smaller Element				
 
-// Method-1
-void immediateSmaller(vector<int>& arr){
-	int n = arr.size();
-	for(int i=0; i<n-1; i++){
-		if(arr[i] > arr[i+1]){
-			arr[i] = arr[i+1];
-		} 
-		else{ 
-			arr[i] = -1;
-		}
-	}
-	arr[n-1] = -1;
-}
-
-// Method-2
-#include<bits/stdc++.h>
-void immediateSmaller(vector<int> &a) {
-    int n = a.size();
+vector<int> Solution::prevSmaller(vector<int> &a) {
     stack<int> s;
-    s.push(a[n - 1]);
-    a[n - 1] = -1;
-    for (int i = n - 2; i >= 0; i--) {
-        if (a[i] > s.top()) {
-            int temp = s.top();
-            s.pop();
-            s.push(a[i]);
-            a[i] = temp;
-        } 
-		else {
-            s.pop();
-            s.push(a[i]);
-            a[i] = -1;
+    int n = a.size();
+    s.push(a[0]);
+    vector<int> res(n, -1);
+    for(int i = 1; i < n; i++){
+        if(s.top() < a[i]){
+            res[i] = s.top();
         }
+        else{
+            while(!s.empty() && s.top() >= a[i]){
+               s.pop();
+            }
+            if(!s.empty()){
+                res[i] = s.top();
+            }
+        }
+        s.push(a[i]);
     }
+    return res;
 }
 
 // Number of NGEs to the right				
@@ -919,24 +924,34 @@ vector<int> countGreater(vector<int>&nums, vector<int>&queries) {
 }
 
 // Method-3
-vector<int> countGreater(vector<int> &arr, vector<int> &query) {
-    int n = arr.size();
-    int m = query.size();
-    vector<int> ans;
-    stack<int> st;
-    for (int i = 0; i < m; i++) {
-        st.push(arr[query[i]]);
-        int count = 0;
-        for (int j = query[i] + 1; j < n; j++) {
-            if (arr[j] > st.top()) {
-                count++;
+class Solution{
+public:
+    vector<int> count_NGE(int n, vector<int> &arr, int queries, vector<int> &indices){
+        stack<int> s1, s2;
+        int el=0;
+        vector<int> count(n,0);
+        vector<int> ans;
+        for(int i=n-1;i>=0;i--){
+            while(!s2.empty() && arr[i]<=s2.top()){
+                el=s2.top();
+                s2.pop();
+                s1.push(el);
             }
+            while(!s1.empty() && arr[i]>=s1.top()){
+                el=s1.top();
+                s1.pop();
+                s2.push(el);
+            }
+            if(!s1.empty()) 
+                count[i]=s1.size();
+            s1.push(arr[i]);
         }
-        ans.push_back(count);
-        count = 0;
+        for(int j=0;j<queries;j++){
+            ans.push_back(count[indices[j]]);
+        }
+        return ans;
     }
-    return ans;
-}
+};
 
 // Trapping Rainwater		
 	

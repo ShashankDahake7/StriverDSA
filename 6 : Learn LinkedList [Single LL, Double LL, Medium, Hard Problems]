@@ -881,22 +881,26 @@ vector<pair<int, int>> findPairs(Node* head, int k){
 
 // Remove duplicates from sorted DLL
 
-Node * uniqueSortedList(Node * head) {
-    if(head==NULL)return NULL;
-    Node* curr=head;
-    while(curr!=NULL){
-        if(curr->next!=NULL && curr->data==curr->next->data){
-            Node* next_next=curr->next->next;
-            Node* nodeToDelete=curr->next;
-            delete(nodeToDelete);
-            curr->next= next_next;
+class Solution {
+public:
+    ListNode *removeDuplicates(ListNode *head) {
+        if (head == NULL) return NULL;
+        ListNode* curr = head;
+        while (curr != NULL) {
+            if (curr->next != NULL && curr->val == curr->next->val) {
+                ListNode* next_next = curr->next->next;
+                delete curr->next;
+                curr->next = next_next;
+                if (next_next != NULL) {
+                    next_next->prev = curr;
+                }
+            } else {
+                curr = curr->next;
+            }
         }
-        else{
-            curr=curr->next; 
-        }
+        return head;
     }
-    return head;
-}
+};
 
 // Step 6.5: Hard Problems of LL
 
@@ -1009,49 +1013,32 @@ Node *rotate(Node *head, int k) {
 
 // Flattening of LL		
 
-Node* merge(Node* &down, Node* &right){
-    if(down == NULL){
-        return right;
-    }
-    if(right == NULL){
-        return down;
-    }
-    Node* ans = new Node(-1);
-    Node* temp = ans;
-    while(down != NULL && right != NULL){
-        if(down -> data < right -> data){
-            temp -> child = down;
-            temp = down;
-            down = down -> child;
+class Solution {
+public:
+    Node* merge(Node* a,Node* b){
+        if(!a)
+            return b;
+        if(!b) 
+            return a;
+        Node* ans = 0;
+        if(a->data < b->data){
+            ans = a;
+            a->bottom = merge(a->bottom, b);
         }
-        else {
-            temp -> child = right;
-            temp = right;
-            right = right-> child;
+        else{
+            ans = b;
+            b->bottom = merge(a, b->bottom);
         }
+        return ans;
     }
-    while(down != NULL){
-        temp -> child = down;
-        temp = down;
-        down = down -> child;
+    Node *flatten(Node *root){
+        if(root == NULL) {
+            return 0; 
+        }
+        Node* mergedll = merge(root, flatten(root->next));
+        return mergedll;
     }
-    while(right != NULL){
-        temp -> child = right;
-        temp = right;
-        right = right -> child;
-    }
-    ans = ans -> child;
-    return ans;
-}
-Node* flattenLinkedList(Node* head) {
-    if (head == NULL || head->next == NULL) {
-        return head;
-    }
-    Node* down = head;
-    Node* right = flattenLinkedList(head->next);
-    down->next=NULL;
-    return merge(down,right);
-}
+};
 
 // Clone a Linked List with random and next pointer
 
